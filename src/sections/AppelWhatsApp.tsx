@@ -39,17 +39,7 @@ export function AppelWhatsApp({ titre = 'Une question, une envie ?', catalogue 
           <p className="mt-4 max-w-lg text-lg text-ivoire/80">
             Écris-nous sur WhatsApp au <span className="whitespace-nowrap font-semibold text-ivoire">{contacts.telephoneAffiche}</span> : on
             te répond et on te conseille.
-          </p>
-          {contacts.horairesWhatsApp ? (
-            <p className="mt-2 text-ivoire/70">On répond généralement {contacts.horairesWhatsApp}.</p>
-          ) : (
-            import.meta.env.DEV && (
-              <p className="mt-3 max-w-lg rounded-xl border border-dashed border-dispo-limite/60 p-3 text-sm text-dispo-limite">
-                TODO cliente : « On répond généralement entre TODO et TODO. »
-              </p>
-            )
-          )}
-          <ul className="mt-6 flex flex-wrap gap-2" aria-label="Réseaux sociaux">
+          </p>          <ul className="mt-6 flex flex-wrap gap-2" aria-label="Réseaux sociaux">
             {contacts.reseaux.map((r) => {
               const Icone = ICONES_RESEAUX[r.id];
               return (

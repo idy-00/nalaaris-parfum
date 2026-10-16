@@ -2,13 +2,13 @@
  * Pré-rendu statique de toutes les pages (après `vite build` + `vite build --ssr`).
  *
  * Pour chaque URL : HTML rendu par React (texte visible avant le JS), balises Open Graph,
- * données structurées JSON-LD, préchargement des polices. Écrit aussi 404.html (vraie 404 sur
+ * données structurées JSON-LD. Écrit aussi 404.html (vraie 404 sur
  * Cloudflare Pages), sitemap.xml et robots.txt.
  *
  * Cloudflare Pages sert /catalogue depuis catalogue.html, /parfum/x depuis parfum/x.html, etc.
  * Une adresse inconnue reçoit 404.html avec le statut 404.
  */
-import { readFile, writeFile, mkdir, readdir, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -23,17 +23,9 @@ const absolue = (u) => (u.startsWith('http') ? u : `${SITE_URL}${u}`);
 const IMAGE_PARTAGE = '/brand/partage-1200x630.jpg';
 
 const gabarit = await readFile(resolve(dist, 'index.html'), 'utf8');
-for (const m of ['<!--app-->', '<!--og:start-->', '<!--jsonld-->', '<!--preload-->']) {
+for (const m of ['<!--app-->', '<!--og:start-->', '<!--jsonld-->']) {
   if (!gabarit.includes(m)) throw new Error(`Marqueur ${m} absent de index.html`);
 }
-
-// Préchargement des deux polices du premier écran (titre serif + texte)
-const assets = await readdir(resolve(dist, 'assets'));
-const police = (motif) => assets.find((f) => motif.test(f));
-const preload = [police(/^bodoni-moda-latin-opsz-normal-.*\.woff2$/), police(/^manrope-latin-wght-normal-.*\.woff2$/)]
-  .filter(Boolean)
-  .map((f) => `<link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin />`)
-  .join('\n    ');
 
 const DISPO_SCHEMA = { disponible: 'InStock', limite: 'LimitedAvailability', epuise: 'OutOfStock' };
 
@@ -142,7 +134,6 @@ for (const pg of PAGES) {
   let html = gabarit
     .replace(/<!--og:start-->[\s\S]*?<!--og:end-->/, meta)
     .replace('<!--jsonld-->', jsonld)
-    .replace('<!--preload-->', preload)
     .replace('<!--app-->', render(pg.url));
   if (!html.includes('<h1')) throw new Error(`Rendu vide pour ${pg.url}`);
 

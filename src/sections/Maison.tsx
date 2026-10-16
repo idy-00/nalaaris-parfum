@@ -11,7 +11,7 @@ import { gsap, useGSAP, MQ } from '../lib/gsap';
 const ENGAGEMENTS = [
   { Icone: ShieldCheck, titre: 'Authentiques, toujours', texte: 'Chaque flacon vient d’une source sûre. Pas de copie, pas de surprise.' },
   { Icone: HandHeart, titre: 'Conseillés, pas vendus à l’aveugle', texte: 'On te pose deux ou trois questions et on te propose ce qui te ressemble.' },
-  { Icone: Truck, titre: 'Livrés chez toi', texte: 'À Dakar. Le quartier, le tarif et le délai sont confirmés avec toi sur WhatsApp avant que tu valides.' },
+  { Icone: Truck, titre: 'Simples à commander', texte: 'Un message WhatsApp suffit. La suite, on s’organise avec toi.' },
 ];
 
 /** La maison : histoire courte, photo + gravure, engagements. `apercu` : version courte pour l'accueil. */

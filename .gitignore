@@ -9,3 +9,6 @@ dist
 # Doublon local du logo (identique à public/brand/logo-nalaaris.jpg)
 WhatsApp Image*.jpeg
 dist-ssr
+
+# Photos sources téléchargées par scripts/photos/telecharger.py (27 Mo, CC0)
+scripts/photos/sources/

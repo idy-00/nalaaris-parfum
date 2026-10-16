@@ -1,17 +1,16 @@
 import { useRef } from 'react';
-import { Banknote, MapPin, ShieldCheck, Truck } from 'lucide-react';
+import { Banknote, HandHeart, ShieldCheck, Truck } from 'lucide-react';
 import { infosPratiques } from '../data/infos';
 import { useReveal } from '../hooks/useReveal';
 import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 
-const ICONES = { livraison: Truck, retrait: MapPin, paiement: Banknote, authenticite: ShieldCheck } as const;
+const ICONES = { livraison: Truck, paiement: Banknote, conseil: HandHeart, authenticite: ShieldCheck } as const;
 
-/** Infos pratiques : livraison, retrait, paiement, authenticité. */
+/** Infos pratiques : livraison, paiement, conseil, authenticité (le détail se règle sur WhatsApp). */
 export function Infos({ numero }: { numero?: string }) {
   const root = useRef<HTMLElement>(null);
   useReveal(root);
-  const montrerTodo = import.meta.env.DEV;
 
   return (
     <section ref={root} id="infos" aria-labelledby="infos-titre" className="shell py-16 md:py-24">
@@ -38,10 +37,6 @@ export function Infos({ numero }: { numero?: string }) {
                   <li key={l}>{l}</li>
                 ))}
               </ul>
-              {/* Les TODO restent visibles en développement pour la cliente, jamais en production */}
-              {montrerTodo && b.todo && (
-                <p className="mt-4 rounded-xl border border-dashed border-dispo-limite/60 p-3 text-sm text-dispo-limite">{b.todo}</p>
-              )}
             </li>
           );
         })}

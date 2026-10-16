@@ -41,7 +41,7 @@ prechargement(window.location.pathname)
     hydrateRoot(
       document.getElementById('root')!,
       <StrictMode>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter>
           <Coquille pages={pages} />
         </BrowserRouter>
       </StrictMode>,

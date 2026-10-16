@@ -7,7 +7,6 @@ import { useReveal } from '../hooks/useReveal';
 export function Faq() {
   const root = useRef<HTMLElement>(null);
   useReveal(root);
-  const montrerTodo = import.meta.env.DEV;
 
   return (
     <section ref={root} id="questions" aria-labelledby="faq-titre" className="shell py-16 md:py-24">
@@ -34,11 +33,6 @@ export function Faq() {
                 </summary>
                 <div className="pb-6 pr-14 text-ivoire/80">
                   <p>{f.r}</p>
-                  {montrerTodo && f.todo && (
-                    <p className="mt-3 rounded-xl border border-dashed border-dispo-limite/60 p-3 text-sm text-dispo-limite">
-                      TODO cliente : confirmer cette réponse.
-                    </p>
-                  )}
                 </div>
               </details>
             </li>

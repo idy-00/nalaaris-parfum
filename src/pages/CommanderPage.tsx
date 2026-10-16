@@ -10,7 +10,7 @@ export function CommanderPage() {
   useSeo({
     title: 'Commander & livraison · Nal’Aaris Perfumes',
     description:
-      'Comment commander chez Nal’Aaris Perfumes : choisis, envoie ta sélection sur WhatsApp, on confirme la livraison à Dakar et le paiement (Wave, Orange Money, espèces).',
+      'Comment commander chez Nal’Aaris Perfumes : choisis, envoie ta sélection sur WhatsApp, on s’occupe du reste avec toi.',
     path: ROUTES.commander,
   });
 

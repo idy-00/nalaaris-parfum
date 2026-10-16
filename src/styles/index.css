@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Design system « Le Sillage »
+   Le noir domine, le rose est précieux, le verre laisse deviner la brume.
+------------------------------------------------------------------- */
+:root {
+  --noir: #0b0a0c;
+  --noir-2: #141116;
+  --rose: #a8124f;
+  --rose-vif: #c81e63;
+  --rose-doux: #e58bae;
+  --rose-brume: #f2c6d6;
+  --ivoire: #f5efea;
+  --gris: #a99ea5;
+  --nav-h: 64px;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--noir);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--nav-h) + 16px);
+  }
+  body {
+    @apply bg-noir font-sans text-base text-ivoire antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 {
+    @apply font-serif font-normal;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  a, button, [role='button'], label, summary { touch-action: manipulation; }
+  button:not(:disabled), a[href] { cursor: pointer; }
+
+  /* Anneau de focus en rose clair : 3:1 minimum garanti sur le noir */
+  :focus-visible {
+    outline: 2px solid var(--rose-doux);
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
+  ::selection { background: rgba(168, 18, 79, 0.7); color: var(--ivoire); }
+}
+
+@layer components {
+  /* Labels en petites capitales espacées, comme sur le logo */
+  .label {
+    @apply font-sans text-label font-semibold uppercase;
+  }
+
+  .shell { @apply mx-auto w-full max-w-site px-5 md:px-12; }
+
+  /* ---------- Verre ----------
+     -webkit-backdrop-filter en dur : Safari ne lit pas les variables CSS dans la version préfixée. */
+  .verre-rose,
+  .verre-fume {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-top-color: rgba(255, 255, 255, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 20px 60px -24px rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+  }
+  .verre-rose { background: rgba(229, 139, 174, 0.1); }
+  .verre-fume { background: rgba(11, 10, 12, 0.45); }
+  /* Verre « léger » pour les surfaces répétées (cartes, tuiles) : translucide, sans flou,
+     pour respecter la limite de 3–4 surfaces floutées visibles et rester fluide sur mobile. */
+  .verre-carte {
+    position: relative;
+    background: linear-gradient(160deg, rgba(229, 139, 174, 0.09), rgba(229, 139, 174, 0.03) 60%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top-color: rgba(255, 255, 255, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 20px 50px -30px rgba(0, 0, 0, 0.8);
+  }
+  /* Voile plus opaque pour le texte long */
+  .verre-voile { background: rgba(20, 17, 22, 0.78); }
+
+  /* Reflet : fin dégradé diagonal ; sa position suit le pointeur (GSAP quickTo) sur desktop */
+  .reflet {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  .reflet::before {
+    content: '';
+    position: absolute;
+    inset: -40% -60%;
+    background: linear-gradient(
+      115deg,
+      transparent 38%,
+      rgba(255, 255, 255, 0.12) 47%,
+      rgba(255, 255, 255, 0.04) 53%,
+      transparent 60%
+    );
+    transform: translate3d(var(--rx, -12%), var(--ry, 0%), 0);
+  }
+
+  /* ---------- Boutons ---------- */
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 text-[0.95rem] font-semibold;
+    transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  }
+  .btn:active { transform: scale(0.97); }
+  /* Ivoire sur framboise profonde : 6.43:1 */
+  .btn-rose {
+    @apply text-ivoire shadow-cta;
+    background: linear-gradient(180deg, #b8175a, #a8124f 55%, #94103f);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .btn-rose:hover { background: linear-gradient(180deg, #c81e63, #b8175a 55%, #a8124f); }
+  .btn-verre { @apply verre-rose text-ivoire; }
+  .btn-verre:hover { background: rgba(229, 139, 174, 0.18); }
+  .btn-trait { @apply border border-white/20 text-ivoire; }
+  .btn-trait:hover { @apply border-rose-doux/70 text-rose-brume; }
+
+  .puce {
+    @apply inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 px-4 text-sm font-medium text-ivoire/90;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .puce:hover { @apply border-rose-doux/60 text-ivoire; }
+  .puce[aria-pressed='true'],
+  .puce[aria-checked='true'] { @apply border-rose-doux/70 bg-rose/40 text-ivoire; }
+
+  .filet { height: 1px; background: linear-gradient(90deg, transparent, rgba(229, 139, 174, 0.55), transparent); }
+
+  /* Repère éditorial de section : « 01 — Par où commencer » */
+  .repere { @apply label flex items-center gap-3 text-rose-doux; }
+  /* ordre visuel : numéro — filet — libellé */
+  .repere::before {
+    content: attr(data-n);
+    order: -2;
+    @apply font-serif text-base normal-case italic tracking-normal text-rose-brume;
+  }
+  .repere::after { content: ''; order: -1; @apply h-px w-10 bg-rose-doux/50; }
+  .repere:not([data-n])::before,
+  .repere[data-n='']::before { display: none; }
+
+  /* Photographie : fondu d'apparition au chargement (pas de saut) */
+  .photo { @apply h-full w-full object-cover; background: #1d181f; }
+}
+
+/* Sans backdrop-filter : fond solide */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .verre-rose, .verre-fume { background: var(--noir-2); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .verre-rose, .verre-fume {
+    background: var(--noir-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .verre-rose, .verre-fume, .verre-carte {
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+  .verre-carte { background: rgba(30, 20, 26, 0.95); }
+  .verre-rose { background: rgba(40, 20, 30, 0.92); }
+  .verre-fume { background: rgba(11, 10, 12, 0.92); }
+}
+
+/* Utilitaires */
+.sr-only-focusable:not(:focus) {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.safe-bottom { padding-bottom: max(12px, env(safe-area-inset-bottom)); }

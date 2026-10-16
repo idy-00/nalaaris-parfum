@@ -1,0 +1,4 @@
+# Volontairement sans règle « /* /index.html 200 ».
+# Sur Cloudflare Pages, les règles de ce fichier passent AVANT les fichiers existants :
+# un catch-all écraserait les pages /parfum/<slug>.html générées au build (aperçus Open Graph).
+# Sans 404.html, Cloudflare Pages sert déjà index.html pour toute route inconnue (mode SPA natif).

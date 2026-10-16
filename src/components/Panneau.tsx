@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
@@ -24,10 +24,14 @@ export function Panneau({
   id: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  // Portail vers <body> seulement côté navigateur (le pré-rendu n'a pas de document)
+  const [monte, setMonte] = useState(false);
+  useEffect(() => setMonte(true), []);
   useFocusTrap(root, ouvert, onClose);
 
   useGSAP(
     () => {
+      if (!root.current) return;
       // Lu au moment de l'ouverture : pas de matchMedia persistant qui rejouerait un ancien état
       const desktop = window.matchMedia('(min-width: 768px)').matches;
       const reduce = window.matchMedia(MQ.reduce).matches;
@@ -46,10 +50,11 @@ export function Panneau({
         tl.set(root.current, { autoAlpha: 0 });
       }
     },
-    { scope: root, dependencies: [ouvert] },
+    { scope: root, dependencies: [ouvert, monte] },
   );
 
   // Portail vers <body> : aucun ancêtre transformé ou en verre ne peut casser le position: fixed
+  if (!monte) return null;
   return createPortal(
     <div
       ref={root}

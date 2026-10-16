@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Bell, Check, Plus } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Heart, Plus } from 'lucide-react';
 import {
   categorieLabel,
   contenanceParDefaut,
@@ -38,7 +38,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   const location = useLocation();
   const [contenance, setContenance] = useState<Contenance>(() => contenanceParDefaut(parfum));
   const [image, setImage] = useState(0);
-  const { ajouter, contient, ouvrir } = useSelection();
+  const { ajouter, contient, ouvrir, count } = useSelection();
   const proches = useMemo(() => suggestions(parfum), [parfum]);
 
   useSeo({
@@ -71,26 +71,51 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   const lienWa = buildWhatsAppLink(epuise ? messageAlerte(parfum, contenance.ml) : messageFiche(parfum, contenance.ml));
   const retour = () => (location.key !== 'default' ? navigate(-1) : navigate(ROUTES.catalogue));
 
-  const actions = (
+  // barre = barre collée en bas sur mobile : libellé court avec la contenance + accès direct à Ma sélection
+  const actions = (barre: boolean) => (
     <>
       <a
         href={lienWa}
         target="_blank"
         rel="noopener noreferrer"
-        className={`btn min-w-0 flex-1 px-4 lg:flex-[1.4] ${epuise ? 'btn-verre' : 'btn-rose'}`}
+        className={`btn min-w-0 flex-1 px-3 min-[360px]:px-4 lg:flex-[1.4] ${epuise ? 'btn-verre' : 'btn-rose'}`}
       >
-        {epuise ? <Bell size={18} strokeWidth={1.5} aria-hidden="true" /> : <IconeWhatsApp />}
-        <span className="truncate">{epuise ? 'Me prévenir quand il revient' : 'Commander sur WhatsApp'}</span>
+        <span className={barre ? 'contents max-[359px]:hidden' : 'contents'}>
+          {epuise ? <Bell size={18} strokeWidth={1.5} aria-hidden="true" /> : <IconeWhatsApp />}
+        </span>
+        <span className="truncate">
+          {barre
+            ? `${epuise ? 'Me prévenir' : 'Commander'} · ${contenance.ml} ml`
+            : epuise
+              ? 'Me prévenir quand il revient'
+              : 'Commander sur WhatsApp'}
+        </span>
       </a>
       {!epuise && (
         <button
           type="button"
           onClick={() => (dejaLa ? ouvrir() : ajouter(parfum.slug, contenance.ml))}
-          className="btn btn-verre w-12 shrink-0 px-0 lg:w-auto lg:flex-1 lg:px-4"
+          className="btn btn-verre w-11 shrink-0 px-0 min-[360px]:w-12 lg:w-auto lg:flex-1 lg:px-4"
           aria-label={dejaLa ? 'Déjà dans ma sélection — ouvrir ma sélection' : `Ajouter ${contenance.ml} ml à ma sélection`}
         >
           {dejaLa ? <Check size={18} strokeWidth={2} aria-hidden="true" /> : <Plus size={18} strokeWidth={1.5} aria-hidden="true" />}
           <span className="hidden truncate lg:inline">{dejaLa ? 'Dans ma sélection' : 'Ajouter à ma sélection'}</span>
+        </button>
+      )}
+      {barre && count > 0 && (
+        <button
+          type="button"
+          onClick={ouvrir}
+          className="btn btn-verre relative w-11 shrink-0 px-0 min-[360px]:w-12"
+          aria-label={`Ouvrir ma sélection (${count} parfum${count > 1 ? 's' : ''})`}
+        >
+          <Heart size={18} strokeWidth={1.5} aria-hidden="true" />
+          <span
+            className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-ivoire"
+            aria-hidden="true"
+          >
+            {count}
+          </span>
         </button>
       )}
     </>
@@ -128,17 +153,17 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           </nav>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-16">
           {/* Visuel */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div className="fiche-visuel relative aspect-[4/5] overflow-hidden rounded-[28px] ring-1 ring-white/10">
+            <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-white/10 sm:aspect-[4/5]">
               <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" />
               <span className="reflet" aria-hidden="true" />
-              <div className="absolute inset-0 px-12 pb-8 pt-14 md:px-20 md:pb-12 md:pt-20">
+              <div className="absolute inset-0 px-16 pb-4 pt-6 sm:px-12 sm:pb-8 sm:pt-14 md:px-20 md:pb-12 md:pt-20">
                 <VisuelParfum parfum={parfum} index={image} priority />
               </div>
               {(parfum.nouveau || parfum.coupDeCoeur) && (
-                <span className="label absolute left-5 top-5 rounded-full bg-noir/70 px-3 py-1.5 text-[0.6875rem] text-rose-brume">
+                <span className="label absolute left-5 top-5 rounded-full bg-noir/70 px-3 py-1.5 text-xs text-rose-brume">
                   {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
                 </span>
               )}
@@ -162,12 +187,12 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           </div>
 
           {/* Informations */}
-          <div className="fiche-info flex flex-col gap-6">
+          <div className="fiche-info flex flex-col gap-5 sm:gap-6">
             <div>
               <p className="label text-rose-doux">
                 {categorieLabel(parfum.categorie)} · {parfum.marque}
               </p>
-              <h1 className="mt-3 text-[2.75rem] leading-[1.02] md:text-5xl">{parfum.nom}</h1>
+              <h1 className="mt-2 text-[2.25rem] leading-[1.02] sm:mt-3 sm:text-[2.75rem] md:text-5xl">{parfum.nom}</h1>
               <ul className="mt-4 flex flex-wrap gap-2" aria-label="Style d’odeur">
                 {parfum.styles.map((s) => (
                   <li key={s}>
@@ -181,8 +206,6 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 ))}
               </ul>
             </div>
-
-            <p className="max-w-prose text-lg text-ivoire/90">{parfum.description}</p>
 
             <fieldset>
               <legend className="label mb-3 text-gris">Contenance</legend>
@@ -208,7 +231,9 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             </fieldset>
 
             {/* Actions : intégrées en desktop, barre collée en bas sur mobile */}
-            <div className="hidden gap-3 lg:flex">{actions}</div>
+            <div className="hidden flex-col gap-3 lg:flex xl:flex-row">{actions(false)}</div>
+
+            <p className="max-w-prose text-lg text-ivoire/90">{parfum.description}</p>
 
             {/* Les notes, présentées comme une carte de parfumeur : début → cœur → ce qui reste */}
             <div className="verre-carte verre-voile rounded-card p-5 md:p-7">
@@ -298,7 +323,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
 
       {/* Barre d'action mobile (hors de tout conteneur animé pour garder position: fixed) */}
       <div className="verre-fume safe-bottom fixed inset-x-0 bottom-0 z-barre flex gap-2 rounded-t-[24px] px-3 pt-3 lg:hidden">
-        {actions}
+        {actions(true)}
       </div>
     </div>
   );

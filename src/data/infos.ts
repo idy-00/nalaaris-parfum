@@ -9,6 +9,8 @@ export const marque = {
   signature: 'By Yannick & Laetitia',
   devise: 'Sentir bon c’est se respecter et respecter les autres',
   ville: 'Dakar',
+  /** TODO cliente : photo de Yannick & Laetitia (ex. '/media/duo.webp', format 4:5). Vide = bouquet d'ambiance. */
+  photoDuo: '' as string,
 };
 
 /** URL publique du site (aperçus Open Graph). TODO : remplacer par le domaine définitif. */
@@ -17,6 +19,8 @@ export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nalaaris.page
 export const contacts = {
   whatsappNumero: '221770331313',
   telephoneAffiche: '77 033 13 13',
+  /** TODO cliente : plage de réponse WhatsApp, ex. 'entre 9 h et 21 h'. Vide = phrase masquée en ligne (TODO visible en dev). */
+  horairesWhatsApp: '' as string,
   reseaux: [
     { id: 'instagram', label: 'Instagram', handle: '@nalaaris', url: 'https://instagram.com/nalaaris' },
     { id: 'tiktok', label: 'TikTok', handle: '@nalaaris.perfumes', url: 'https://www.tiktok.com/@nalaaris.perfumes' },
@@ -89,6 +93,12 @@ export const faq: { q: string; r: string; todo?: boolean }[] = [
   {
     q: 'Je veux offrir un parfum. C’est possible ?',
     r: 'Oui. Dis-le-nous sur WhatsApp en commandant : on voit ensemble comment le faire livrer à la personne.',
+    todo: true,
+  },
+  {
+    q: 'Un problème avec ma commande ?',
+    r: 'Écris-nous sur WhatsApp avec ton prénom et le parfum commandé : on regarde avec toi et on trouve une solution.',
+    // TODO cliente : préciser la politique (flacon abîmé, erreur de parfum, retour ou échange)
     todo: true,
   },
 ];

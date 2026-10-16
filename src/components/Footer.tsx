@@ -16,13 +16,13 @@ export function Footer() {
 
       <div className="shell relative grid gap-12 md:grid-cols-[auto_1fr_auto] md:items-start md:gap-16">
         <img
-          src="/brand/logo-nalaaris-240.webp"
+          src="/brand/logo-nalaaris-transparent-240.webp"
           alt="Nal’Aaris Perfumes — by Yannick et Laetitia"
           width={120}
           height={120}
           loading="lazy"
           decoding="async"
-          className="h-28 w-28 rounded-full ring-1 ring-rose-doux/30"
+          className="h-32 w-32"
         />
         <div>
           <p className="label text-ivoire">{marque.nom}</p>

@@ -15,6 +15,7 @@ interface SelectionCtx {
   retirer: (slug: string, ml: number) => void;
   changerMl: (slug: string, ancien: number, nouveau: number) => void;
   vider: () => void;
+  restaurer: (lignes: LigneSelection[]) => void;
   contient: (slug: string, ml: number) => boolean;
   ouvert: boolean;
   ouvrir: () => void;
@@ -25,10 +26,19 @@ const CLE = 'nalaaris:selection:v1';
 const Ctx = createContext<SelectionCtx | null>(null);
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
-  const [brut, setBrut] = useState<LigneSelection[]>(() => lire<LigneSelection[]>(CLE, []));
+  // Vide au premier rendu (identique au HTML pré-rendu, donc hydratable), puis relu depuis le stockage
+  const [brut, setBrut] = useState<LigneSelection[]>([]);
+  const [charge, setCharge] = useState(false);
   const [ouvert, setOuvert] = useState(false);
 
-  useEffect(() => ecrire(CLE, brut), [brut]);
+  useEffect(() => {
+    setBrut(lire<LigneSelection[]>(CLE, []));
+    setCharge(true);
+  }, []);
+  // On n'écrit qu'après la lecture : sinon la liste vide initiale écraserait la sélection enregistrée
+  useEffect(() => {
+    if (charge) ecrire(CLE, brut);
+  }, [brut, charge]);
 
   const lignes = useMemo(
     () =>
@@ -61,6 +71,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     retirer,
     changerMl,
     vider: () => setBrut([]),
+    restaurer: (l) => setBrut(l),
     contient: (slug, ml) => brut.some((l) => l.slug === slug && l.ml === ml),
     ouvert,
     ouvrir: () => setOuvert(true),

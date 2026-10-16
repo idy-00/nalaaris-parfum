@@ -1,6 +1,8 @@
 /**
  * Photo d'ambiance responsive (WebP) depuis /public/media.
  * Les fichiers suivent la convention <nom>-<largeur>.webp ; `largeurs` liste celles disponibles.
+ * `type` : « ambiance » = photo traitée (duotone sombre), recadrée plein cadre ;
+ *          « produit » = flacon en couleurs naturelles, jamais recadré ni teinté (vraie couleur du jus et de l’étiquette).
  */
 export function Photo({
   nom,
@@ -10,6 +12,7 @@ export function Photo({
   sizes = '100vw',
   priorite = false,
   className = '',
+  type = 'ambiance',
 }: {
   nom: string;
   largeurs: number[];
@@ -18,6 +21,7 @@ export function Photo({
   sizes?: string;
   priorite?: boolean;
   className?: string;
+  type?: 'ambiance' | 'produit';
 }) {
   const max = largeurs[largeurs.length - 1];
   return (
@@ -32,7 +36,8 @@ export function Photo({
       decoding="async"
       // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
       fetchpriority={priorite ? 'high' : undefined}
-      className={`photo ${className}`}
+      data-type={type}
+      className={`${type === 'produit' ? 'photo-produit' : 'photo'} ${className}`}
     />
   );
 }

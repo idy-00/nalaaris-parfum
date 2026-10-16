@@ -12,7 +12,7 @@ export function Commander({ numero, lienInfos = false, enPage = false }: { numer
 
   return (
     <section ref={root} id="comment-commander" aria-labelledby="commander-titre" className="shell py-16 md:py-24">
-      <div data-reveal className="mb-10 flex flex-col justify-between gap-6 md:mb-14 md:flex-row md:items-end">
+      <div data-reveal className="mb-10 flex flex-col justify-between gap-6 md:mb-14 lg:flex-row lg:items-end">
         <div>
           <p className="repere mb-4" data-n={numero}>
             Comment commander
@@ -30,7 +30,7 @@ export function Commander({ numero, lienInfos = false, enPage = false }: { numer
           </h2>
         </div>
         {lienInfos && (
-          <Link to={ROUTES.commander} className="btn btn-trait self-start md:self-auto">
+          <Link to={ROUTES.commander} className="btn btn-trait self-start lg:self-auto">
             Livraison, paiement, questions
             <ArrowRight size={18} strokeWidth={1.5} aria-hidden="true" />
           </Link>

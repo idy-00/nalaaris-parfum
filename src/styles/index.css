@@ -10,7 +10,8 @@
   --noir: #0b0a0c;
   --noir-2: #141116;
   --rose: #a8124f;
-  --rose-vif: #c81e63;
+  --rose-vif: #be1a5c;
+  --rose-logo: #da0862;
   --rose-doux: #e58bae;
   --rose-brume: #f2c6d6;
   --ivoire: #f5efea;
@@ -18,6 +19,9 @@
   --nav-h: 64px;
   color-scheme: dark;
 }
+
+/* Intro du hero : texte masqué au plus 900 ms (voir index.html et src/lib/intro.ts) */
+.intro [data-intro] { opacity: 0; }
 
 @layer base {
   html {
@@ -107,7 +111,8 @@
 
   /* ---------- Boutons ---------- */
   .btn {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 text-[0.95rem] font-semibold;
+    /* nowrap : un bouton ne se coupe jamais sur deux lignes (les conteneurs empilent sous ~560 px) */
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-6 text-[0.95rem] font-semibold;
     transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.2s;
   }
   .btn:active { transform: scale(0.97); }
@@ -117,7 +122,7 @@
     background: linear-gradient(180deg, #b8175a, #a8124f 55%, #94103f);
     border: 1px solid rgba(255, 255, 255, 0.14);
   }
-  .btn-rose:hover { background: linear-gradient(180deg, #c81e63, #b8175a 55%, #a8124f); }
+  .btn-rose:hover { background: linear-gradient(180deg, #c41a60, #b8175a 55%, #a8124f); }
   .btn-verre { @apply verre-rose text-ivoire; }
   .btn-verre:hover { background: rgba(229, 139, 174, 0.18); }
   .btn-trait { @apply border border-white/20 text-ivoire; }
@@ -147,6 +152,8 @@
 
   /* Photographie : fondu d'apparition au chargement (pas de saut) */
   .photo { @apply h-full w-full object-cover; background: #1d181f; }
+  /* Photo produit : couleurs naturelles, flacon entier (pas de recadrage ni de teinte) */
+  .photo-produit { @apply h-full w-full object-contain; }
 }
 
 /* Sans backdrop-filter : fond solide */

@@ -22,9 +22,9 @@ export function BrumeProvider({ children }: { children: ReactNode }) {
 }
 
 const HALOS = [
-  { cls: 'left-[-25vw] top-[-15vh] h-[85vh] w-[85vw]', color: 'rgba(168,18,79,0.34)' },
-  { cls: 'right-[-30vw] top-[25vh] h-[90vh] w-[90vw]', color: 'rgba(110,8,46,0.42)' },
-  { cls: 'left-[10vw] bottom-[-35vh] h-[80vh] w-[80vw]', color: 'rgba(229,139,174,0.09)' },
+  { cls: 'left-[-25vw] top-[-15vh] h-[85vh] w-[85vw]', color: 'rgba(168,18,79,0.16)' },
+  { cls: 'right-[-30vw] top-[25vh] h-[90vh] w-[90vw]', color: 'rgba(74,6,32,0.32)' },
+  { cls: 'left-[10vw] bottom-[-35vh] h-[80vh] w-[80vw]', color: 'rgba(229,139,174,0.04)' },
 ];
 
 function Brume({ teinte }: { teinte: Style | null }) {
@@ -78,7 +78,7 @@ function Brume({ teinte }: { teinte: Style | null }) {
           key={s.id}
           data-style={s.id}
           className="teinte absolute left-1/2 top-1/2 h-[110vmax] w-[110vmax] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
-          style={{ background: `radial-gradient(closest-side, ${s.teinte}38, transparent 70%)` }}
+          style={{ background: `radial-gradient(closest-side, ${s.teinte}1f, transparent 70%)` }}
         />
       ))}
       {/* Grain très léger pour éviter le banding des dégradés sur écrans 8 bits */}

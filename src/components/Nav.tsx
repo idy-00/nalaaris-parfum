@@ -59,8 +59,8 @@ export function Nav() {
           className="verre-fume mx-auto flex h-[var(--nav-h)] max-w-site items-center justify-between rounded-full pl-4 pr-2 md:pl-6"
         >
           <Link to="/" className="flex items-center gap-3 rounded-full py-1 pr-2" aria-label="Nal’Aaris Perfumes — accueil">
-            <Monogramme className="h-9 w-auto text-rose-vif" title="" />
-            <span className="label hidden text-ivoire sm:block">Nal’Aaris</span>
+            <Monogramme className="h-9 w-auto text-rose-logo" title="" />
+            <span className="label text-ivoire">Nal’Aaris</span>
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
@@ -84,7 +84,7 @@ export function Nav() {
               <Heart size={20} strokeWidth={1.5} aria-hidden="true" />
               {count > 0 && (
                 <span
-                  className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-[0.6875rem] font-semibold tabular-nums text-ivoire"
+                  className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-ivoire"
                   aria-hidden="true"
                 >
                   {count}
@@ -129,7 +129,7 @@ export function Nav() {
         <div className="menu-fond verre-fume absolute inset-0 rounded-none border-0" style={{ background: 'rgba(11,10,12,0.72)' }} />
         <div className="relative flex h-full flex-col px-6 pb-10 pt-5">
           <div className="flex items-center justify-between">
-            <Monogramme className="h-10 w-auto text-rose-vif" title="" />
+            <Monogramme className="h-10 w-auto text-rose-logo" title="" />
             <button
               type="button"
               onClick={fermer}

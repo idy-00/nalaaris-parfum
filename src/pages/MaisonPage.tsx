@@ -1,7 +1,6 @@
 import { EntetePage } from '../components/EntetePage';
 import { Maison } from '../sections/Maison';
-import { Manifeste } from '../sections/Manifeste';
-import { Humeurs } from '../sections/Humeurs';
+import { Ombre } from '../sections/Ombre';
 import { AppelWhatsApp } from '../sections/AppelWhatsApp';
 import { useSeo } from '../hooks/useSeo';
 import { ROUTES } from '../lib/routes';
@@ -33,8 +32,7 @@ export function MaisonPage() {
         }}
       />
       <Maison />
-      <Manifeste />
-      <Humeurs />
+      <Ombre />
       <AppelWhatsApp titre="Parlons parfum." />
     </>
   );

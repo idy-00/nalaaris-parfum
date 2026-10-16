@@ -51,7 +51,7 @@ export function EntetePage({
   );
 
   return (
-    <header ref={root} className="relative isolate overflow-hidden pb-14 pt-32 md:pb-20 md:pt-44">
+    <header ref={root} className="relative isolate overflow-hidden pb-8 pt-28 md:pb-12 md:pt-36">
       {photo && (
         // Masque en bas : la photo se fond dans la brume au lieu de s'arrêter net sur du noir
         <div className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,#000_45%,transparent)]" aria-hidden="true">

@@ -7,13 +7,23 @@ export default {
     extend: {
       colors: {
         noir: { DEFAULT: '#0B0A0C', 2: '#141116', 3: '#1D181F' },
+        /*
+         * Rôle de chaque rose (aucune autre teinte rose en dehors de ces tokens) — règle 70/20/10 :
+         * 70 % noirs, 20 % ivoire/gris, 10 % rose maximum à l'écran.
+         *  rose        boutons (fond) — ivoire dessus 6.43:1
+         *  rose.vif    survol des boutons
+         *  rose.logo   marque : monogramme, goutte, liserés, états actifs (magenta échantillonné dans le logo)
+         *  rose.doux   titres en italique, liens, icônes (8.1:1 sur noir)
+         *  rose.brume  reflets, petits textes d'accent clairs
+         *  rose.profond  bordeaux réservé au hero et au manifeste
+         */
         rose: {
-          DEFAULT: '#A8124F', // framboise profonde — fonds de CTA, texte ivoire dessus (6.43:1)
-          survol: '#BE1A5C',
-          vif: '#C81E63', // traits décoratifs (monogramme, filets)
-          profond: '#4A0620', // bordeaux des halos
-          doux: '#E58BAE', // accents de texte sur noir (8.1:1)
-          brume: '#F2C6D6', // texte d'accent clair
+          DEFAULT: '#A8124F',
+          vif: '#BE1A5C',
+          logo: '#DA0862',
+          doux: '#E58BAE',
+          brume: '#F2C6D6',
+          profond: '#4A0620',
         },
         cuivre: '#C9876A',
         ivoire: '#F5EFEA',

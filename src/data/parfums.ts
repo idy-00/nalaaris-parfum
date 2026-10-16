@@ -228,7 +228,7 @@ export const CATEGORIES: { id: Categorie; label: string }[] = [
 /** `photo` : visuel d'ambiance dans /public/media (humeur-<photo>-480|900.webp). */
 export const STYLES: { id: Style; label: string; humeur: string; teinte: string; photo: string }[] = [
   { id: 'frais', label: 'Frais', humeur: 'léger comme un matin', teinte: '#E58BAE', photo: 'humeur-frais' },
-  { id: 'fleuri', label: 'Fleuri', humeur: 'un bouquet sur la peau', teinte: '#C81E63', photo: 'humeur-fleuri' },
+  { id: 'fleuri', label: 'Fleuri', humeur: 'un bouquet sur la peau', teinte: '#DA0862', photo: 'humeur-fleuri' },
   { id: 'boise', label: 'Boisé', humeur: 'chaud, posé, rassurant', teinte: '#B5755C', photo: 'humeur-boise' },
   { id: 'doux', label: 'Doux', humeur: 'une caresse, rien de plus', teinte: '#F2C6D6', photo: 'humeur-doux' },
   { id: 'vanille', label: 'Vanillé', humeur: 'gourmand et enveloppant', teinte: '#D9A27E', photo: 'humeur-vanille' },

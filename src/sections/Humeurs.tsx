@@ -94,7 +94,7 @@ export function Humeurs({ numero }: { numero?: string }) {
                   <ArrowUpRight size={18} strokeWidth={1.5} />
                 </span>
                 <span className="tuile-texte absolute inset-x-0 bottom-0 flex flex-col gap-1 p-4 md:p-6" aria-hidden="true">
-                  <span className="label text-[0.6875rem] text-rose-brume/90">
+                  <span className="label text-xs text-rose-brume/90">
                     {n} parfum{n > 1 ? 's' : ''}
                   </span>
                   <span className="font-serif text-[1.9rem] leading-none md:text-[2.6rem]">{s.label}</span>

@@ -5,3 +5,7 @@ dist
 *.tsbuildinfo
 .DS_Store
 .env
+
+# Doublon local du logo (identique à public/brand/logo-nalaaris.jpg)
+WhatsApp Image*.jpeg
+dist-ssr

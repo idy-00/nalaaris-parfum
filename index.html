@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0B0A0C" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/brand/logo-nalaaris-240.webp" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <!--preload-->
 
     <!--og:start-->
     <title>Nal’Aaris Perfumes — Parfums authentiques à Dakar</title>
@@ -18,20 +19,31 @@
     <meta property="og:locale" content="fr_SN" />
     <meta property="og:title" content="Nal’Aaris Perfumes — Parfums authentiques à Dakar" />
     <meta property="og:description" content="Parfums authentiques pour elle et lui, à Dakar. Commande sur WhatsApp." />
-    <meta property="og:image" content="/brand/logo-nalaaris.jpg" />
+    <meta property="og:image" content="/brand/partage-1200x630.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <!--og:end-->
+    <!--jsonld-->
 
     <style>
       /* Fond immédiat, avant le chargement du CSS : pas de flash blanc */
       html, body { background: #0b0a0c; color: #f5efea; }
     </style>
+    <script>
+      // Intro du hero : le texte [data-intro] peut rester masqué au plus 900 ms, puis s'affiche
+      // de lui-même si le JavaScript n'a pas encore pris le relais (voir src/lib/intro.ts).
+      (function (h) {
+        h.classList.add('intro');
+        setTimeout(function () { h.classList.remove('intro'); }, 900);
+      })(document.documentElement);
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app--></div>
     <noscript>
       <p style="padding: 24px; font-family: system-ui">
-        Nal’Aaris Perfumes — commande sur WhatsApp : <a href="https://wa.me/221770331313" style="color: #f4a7c1">77 033 13 13</a>
+        Nal’Aaris Perfumes — commande sur WhatsApp : <a href="https://wa.me/221770331313" style="color: #e58bae">77 033 13 13</a>
       </p>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

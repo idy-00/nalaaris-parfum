@@ -97,7 +97,7 @@ export function Catalogue() {
   };
   const nbActifs = nbFiltresActifs(filtres);
 
-  const controles = (
+  const controles = (idMarque: string) => (
     <div className="space-y-7 lg:flex lg:flex-wrap lg:items-end lg:gap-x-10 lg:gap-y-5 lg:space-y-0">
       <fieldset>
         <legend className="label mb-3 text-gris">Pour qui</legend>
@@ -137,11 +137,11 @@ export function Catalogue() {
       </fieldset>
       <div className="grid gap-6 sm:grid-cols-2 lg:flex lg:items-end lg:gap-8">
         <div>
-          <label htmlFor="filtre-marque" className="label mb-3 block text-gris">
+          <label htmlFor={idMarque} className="label mb-3 block text-gris">
             Marque
           </label>
           <select
-            id="filtre-marque"
+            id={idMarque}
             value={filtres.marque ?? ''}
             onChange={(e) => appliquer({ marque: e.target.value || null })}
             className="min-h-[44px] w-full rounded-full border border-white/15 bg-noir-2 px-4 text-base text-ivoire lg:w-56"
@@ -222,7 +222,7 @@ export function Catalogue() {
       </div>
 
       {/* Desktop : filtres en rangée */}
-      <div className="verre-carte mb-8 hidden rounded-card px-6 py-5 lg:block">{controles}</div>
+      <div className="verre-carte mb-8 hidden rounded-card px-6 py-5 lg:block">{controles('filtre-marque')}</div>
 
       {/* Mobile : catégories en accès direct */}
       <div className="no-scrollbar -mx-5 mb-6 flex gap-2 overflow-x-auto px-5 lg:hidden">
@@ -299,7 +299,7 @@ export function Catalogue() {
           </div>
         }
       >
-        {controles}
+        {controles('filtre-marque-panneau')}
       </Panneau>
     </section>
   );

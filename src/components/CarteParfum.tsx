@@ -64,13 +64,13 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
             <VisuelParfum parfum={parfum} />
           </div>
           {(parfum.nouveau || parfum.coupDeCoeur) && (
-            <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-white/15 bg-noir/70 px-2.5 py-1.5 text-[0.625rem] text-rose-brume md:text-[0.6875rem]">
+            <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-white/15 bg-noir/70 px-2.5 py-1.5 text-xs text-rose-brume md:text-[0.8125rem]">
               {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
             </span>
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1 px-3.5 pb-4 pt-2.5 md:px-4">
-          <p className="label text-[0.6875rem] text-gris">
+          <p className="label text-xs text-gris">
             {categorieLabel(parfum.categorie)} · {styleLabel(parfum.styles[0])}
           </p>
           <h3 className="text-xl leading-tight text-ivoire md:text-[1.5rem]">{parfum.nom}</h3>

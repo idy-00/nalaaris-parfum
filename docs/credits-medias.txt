@@ -1,15 +1,8 @@
-fumee-a: File:Colorful smoke (abstraction) 4.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Colorful_smoke_(abstraction)_4.jpg
-fumee-b: File:Colorful smoke (abstraction) 1.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Colorful_smoke_(abstraction)_1.jpg
-fumee-c: File:Colorful smoke (abstraction) 3.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Colorful_smoke_(abstraction)_3.jpg
 frais: File:Citrus slices-1002778.jpeg — CC0 — https://commons.wikimedia.org/wiki/File:Citrus_slices-1002778.jpeg
 fleuri: File:Pink Peony Flower.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Pink_Peony_Flower.jpg
 boise: File:Sandalwood sticks on a plate.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Sandalwood_sticks_on_a_plate.jpg
 doux: File:Dried rose petals.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Dried_rose_petals.jpg
-vanille: File:La vanille de Madagasikara 01.jpg — CC0 — https://commons.wikimedia.org/wiki/File:La_vanille_de_Madagasikara_01.jpg
 oriental: File:Incense in India.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Incense_in_India.jpg
-epices: File:Fragrant Spices (Unsplash).jpg — CC0 — https://commons.wikimedia.org/wiki/File:Fragrant_Spices_(Unsplash).jpg
-rose: File:Wet pink rose against dark backdrop.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Wet_pink_rose_against_dark_backdrop.jpg
-vague: File:Darkness (Unsplash).jpg — CC0 — https://commons.wikimedia.org/wiki/File:Darkness_(Unsplash).jpg
 vanille2: File:Vanilla in raw form.jpg — CC0 — https://commons.wikimedia.org/wiki/File:Vanilla_in_raw_form.jpg
 bouquet-sombre: File:Wet rose bouquet (Unsplash).jpg — CC0 — https://commons.wikimedia.org/wiki/File:Wet_rose_bouquet_(Unsplash).jpg
 bouquet-rose: File:Pink rose bouquet (Unsplash).jpg — CC0 — https://commons.wikimedia.org/wiki/File:Pink_rose_bouquet_(Unsplash).jpg

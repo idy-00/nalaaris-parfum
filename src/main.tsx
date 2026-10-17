@@ -5,9 +5,15 @@ import '@fontsource-variable/bodoni-moda/opsz.css';
 import '@fontsource-variable/bodoni-moda/opsz-italic.css';
 import '@fontsource-variable/manrope/wght.css';
 import './styles/index.css';
-import { Coquille, type Pages } from './App';
+import { Coquille, rechargerUneFois, type Pages } from './App';
 import { Accueil } from './pages/Accueil';
 import { NotFound } from './pages/NotFound';
+
+// Après un nouveau déploiement, les fichiers JS de l'ancienne version n'existent plus :
+// une page déjà ouverte qui en demande un se recharge au lieu de rester bloquée.
+window.addEventListener('vite:preloadError', (e) => {
+  if (rechargerUneFois()) e.preventDefault();
+});
 
 // Pages intérieures chargées à la demande : l'accueil reste léger
 const chargeurs = {

@@ -63,16 +63,17 @@ export function Hero() {
     <section
       ref={root}
       aria-labelledby="hero-titre"
-      className="relative isolate flex min-h-[85svh] flex-col overflow-hidden md:min-h-[100svh]"
+      className="relative isolate flex min-h-[100svh] flex-col overflow-hidden"
     >
-      {/* Fond : le geste du parfum + voiles de lisibilité (le texte reste lisible sur l'image la plus claire) */}
+      {/* Fond plein écran : le geste du parfum + voile de lisibilité léger (la vidéo reste visible partout) */}
       <VideoFond />
-      {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : la vidéo occupe le haut, le texte se pose en bas sur un dégradé blanc */}
+      {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : voile qui s'épaissit sous le texte, sans masquer la vidéo */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.1)_28%,rgba(255,255,255,0.88)_55%,#ffffff_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.88)_0%,rgba(255,255,255,0.5)_50%,rgba(255,255,255,0.08)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.25)_35%,rgba(255,255,255,0.55)_65%,rgba(255,255,255,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.8)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0.05)_100%)]"
         aria-hidden="true"
       />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-fond to-transparent" aria-hidden="true" />
+      {/* Raccord court avec la section suivante */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-fond to-transparent" aria-hidden="true" />
 
       <div className="hero-contenu shell relative grid flex-1 items-end gap-10 pb-5 pt-24 md:items-center md:pb-8 md:pt-32 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
         <div

@@ -67,17 +67,17 @@ export function Hero() {
     >
       {/* Fond : le geste du parfum + voiles de lisibilité (le texte reste lisible sur l'image la plus claire) */}
       <VideoFond />
-      {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : la vidéo occupe le haut, le texte se pose en bas sur un dégradé noir */}
+      {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : la vidéo occupe le haut, le texte se pose en bas sur un dégradé blanc */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,10,12,0.35)_0%,rgba(11,10,12,0.25)_28%,rgba(11,10,12,0.88)_55%,#0b0a0c_100%)] md:bg-[linear-gradient(90deg,rgba(11,10,12,0.9)_0%,rgba(11,10,12,0.55)_50%,rgba(11,10,12,0.15)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.1)_28%,rgba(255,255,255,0.88)_55%,#ffffff_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.88)_0%,rgba(255,255,255,0.5)_50%,rgba(255,255,255,0.08)_100%)]"
         aria-hidden="true"
       />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-noir to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-fond to-transparent" aria-hidden="true" />
 
       <div className="hero-contenu shell relative grid flex-1 items-end gap-10 pb-5 pt-24 md:items-center md:pb-8 md:pt-32 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
         <div
           ref={panneau}
-          className="hero-panneau relative overflow-hidden md:verre-fume md:rounded-[36px] md:bg-[rgba(11,10,12,0.62)] md:px-14 md:pb-14 md:pt-14"
+          className="hero-panneau relative overflow-hidden md:verre-fume md:rounded-[36px] md:bg-[rgba(255,255,255,0.6)] md:px-14 md:pb-14 md:pt-14"
         >
           <span className="reflet hidden md:block" aria-hidden="true" />
           <Monogramme className="hero-np np-depart mb-5 h-12 w-auto text-rose-logo lg:hidden" title="" />
@@ -92,7 +92,7 @@ export function Hero() {
           >
             Un parfum, c’est ce qui reste <em className="text-rose-doux">quand tu pars.</em>
           </h1>
-          <p data-intro className="hero-sous mt-5 max-w-md text-lg text-ivoire/85 md:mt-7">
+          <p data-intro className="hero-sous mt-5 max-w-md text-lg text-encre/85 md:mt-7">
             Parfums authentiques pour elle et lui, à Dakar.
           </p>
           <div className="hero-cta mt-7 flex flex-col gap-3 min-[560px]:flex-row md:mt-10">
@@ -105,7 +105,7 @@ export function Hero() {
               href={buildWhatsAppLink(messageConseil())}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-trait bg-noir/30"
+              className="btn btn-trait bg-fond/30"
             >
               <IconeWhatsApp /> Écrire sur WhatsApp
             </a>
@@ -114,11 +114,11 @@ export function Hero() {
 
         <div className="relative hidden flex-col items-center gap-8 lg:flex">
           <Monogramme
-            className="hero-np np-depart h-auto w-full max-w-[300px] text-rose-logo drop-shadow-[0_0_40px_rgba(218,8,98,0.45)]"
+            className="hero-np np-depart h-auto w-full max-w-[300px] text-rose-logo drop-shadow-[0_0_36px_rgba(218,8,98,0.22)]"
             title=""
           />
           <div className="text-center">
-            <p className="label text-ivoire">Nal’Aaris Perfumes</p>
+            <p className="label text-encre">Nal’Aaris Perfumes</p>
             <p className="mt-2 font-serif text-xl italic text-rose-brume">by Yannick &amp; Laetitia</p>
           </div>
         </div>
@@ -126,7 +126,7 @@ export function Hero() {
 
       {/* Assurances */}
       <div className="shell relative pb-5 md:pb-10">
-        <ul className="verre-fume grid grid-cols-3 divide-x divide-white/10 rounded-2xl py-3 md:rounded-full md:py-4">
+        <ul className="verre-fume grid grid-cols-3 divide-x divide-encre/10 rounded-2xl py-3 md:rounded-full md:py-4">
           {ASSURANCES.map(({ Icone, court, long }) => (
             <li
               key={court}
@@ -134,8 +134,8 @@ export function Hero() {
               className="assurance flex flex-col items-center gap-1.5 px-2 text-center md:flex-row md:justify-center md:gap-3"
             >
               <Icone width={20} height={20} strokeWidth={1.5} className="shrink-0 text-rose-doux" aria-hidden="true" />
-              <span className="text-[0.8125rem] font-medium leading-tight text-ivoire/90 md:hidden">{court}</span>
-              <span className="hidden text-sm font-medium text-ivoire/90 md:inline">{long}</span>
+              <span className="text-[0.8125rem] font-medium leading-tight text-encre/90 md:hidden">{court}</span>
+              <span className="hidden text-sm font-medium text-encre/90 md:inline">{long}</span>
             </li>
           ))}
         </ul>

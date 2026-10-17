@@ -16,8 +16,8 @@ const LIENS = PAGES;
 const classeLien = ({ isActive }: { isActive: boolean }) =>
   `relative inline-flex min-h-[44px] items-center rounded-full px-4 text-sm font-medium transition-colors hover:text-rose-doux ${
     isActive
-      ? 'text-ivoire after:absolute after:inset-x-4 after:bottom-2 after:h-px after:bg-rose-doux'
-      : 'text-ivoire/75'
+      ? 'text-encre after:absolute after:inset-x-4 after:bottom-2 after:h-px after:bg-rose-doux'
+      : 'text-encre/75'
   }`;
 
 export function Nav() {
@@ -60,7 +60,7 @@ export function Nav() {
         >
           <Link to="/" className="flex items-center gap-3 rounded-full py-1 pr-2" aria-label="Nal’Aaris Perfumes — accueil">
             <Monogramme className="h-9 w-auto text-rose-logo" title="" />
-            <span className="label text-ivoire">Nal’Aaris</span>
+            <span className="label text-encre">Nal’Aaris</span>
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
@@ -79,12 +79,12 @@ export function Nav() {
               onClick={ouvrir}
               aria-haspopup="dialog"
               aria-label={`Ma sélection : ${count} parfum${count > 1 ? 's' : ''}`}
-              className="relative grid h-11 w-11 place-items-center rounded-full text-ivoire transition-colors hover:text-rose-doux"
+              className="relative grid h-11 w-11 place-items-center rounded-full text-encre transition-colors hover:text-rose-doux"
             >
               <Heart size={20} strokeWidth={1.5} aria-hidden="true" />
               {count > 0 && (
                 <span
-                  className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-ivoire"
+                  className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-white"
                   aria-hidden="true"
                 >
                   {count}
@@ -103,7 +103,7 @@ export function Nav() {
             </a>
             <button
               type="button"
-              className="grid h-11 w-11 place-items-center rounded-full text-ivoire md:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full text-encre md:hidden"
               aria-label="Ouvrir le menu"
               aria-expanded={menu}
               aria-controls="menu-mobile"
@@ -126,14 +126,14 @@ export function Nav() {
         // @ts-expect-error — `inert` est un attribut HTML valide, pas encore typé dans React 18
         inert={menu ? undefined : ''}
       >
-        <div className="menu-fond verre-fume absolute inset-0 rounded-none border-0" style={{ background: 'rgba(11,10,12,0.72)' }} />
+        <div className="menu-fond verre-fume absolute inset-0 rounded-none border-0" style={{ background: 'rgba(255,255,255,0.86)' }} />
         <div className="relative flex h-full flex-col px-6 pb-10 pt-5">
           <div className="flex items-center justify-between">
             <Monogramme className="h-10 w-auto text-rose-logo" title="" />
             <button
               type="button"
               onClick={fermer}
-              className="grid h-11 w-11 place-items-center rounded-full border border-white/15"
+              className="grid h-11 w-11 place-items-center rounded-full border border-encre/15"
               aria-label="Fermer le menu"
             >
               <X size={22} strokeWidth={1.5} />
@@ -147,10 +147,10 @@ export function Nav() {
                   end
                   onClick={fermer}
                   className={({ isActive }) =>
-                    `flex items-baseline gap-4 py-2.5 font-serif text-[2.6rem] leading-tight ${isActive ? 'text-rose-doux' : 'text-ivoire'}`
+                    `flex items-baseline gap-4 py-2.5 font-serif text-[2.6rem] leading-tight ${isActive ? 'text-rose-doux' : 'text-encre'}`
                   }
                 >
-                  <span className="font-sans text-xs tabular-nums text-gris">0{i + 1}</span>
+                  <span className="font-sans text-xs tabular-nums text-sourdine">0{i + 1}</span>
                   {l.label}
                 </NavLink>
               </li>
@@ -175,7 +175,7 @@ export function Nav() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${r.label} ${r.handle}`}
-                      className="grid h-12 w-12 place-items-center rounded-full border border-white/15 text-ivoire"
+                      className="grid h-12 w-12 place-items-center rounded-full border border-encre/15 text-encre"
                     >
                       <Icone />
                     </a>

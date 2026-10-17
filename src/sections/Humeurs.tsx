@@ -55,7 +55,7 @@ export function Humeurs({ numero }: { numero?: string }) {
             Choisis ton <em className="text-rose-doux">humeur</em>
           </h2>
         </div>
-        <p className="max-w-sm text-ivoire/75 md:text-right">
+        <p className="max-w-sm text-encre/75 md:text-right">
           Commence par ce que tu aimes sentir. On filtre la sélection pour toi.
         </p>
       </div>
@@ -78,7 +78,7 @@ export function Humeurs({ numero }: { numero?: string }) {
                 aria-pressed={actif}
                 aria-label={`${s.label} — ${s.humeur}. ${n} parfum${n > 1 ? 's' : ''}`}
                 className={`tuile group relative block aspect-[4/5] w-full overflow-hidden rounded-card text-left ring-1 ring-inset transition-shadow lg:aspect-[5/6] ${
-                  actif ? 'ring-2 ring-rose-doux' : 'ring-white/10 hover:ring-rose-doux/50'
+                  actif ? 'ring-2 ring-rose-doux' : 'ring-encre/10 hover:ring-rose-doux/50'
                 }`}
               >
                 <PhotoHumeur
@@ -86,9 +86,9 @@ export function Humeurs({ numero }: { numero?: string }) {
                   sizes="(min-width: 1024px) 400px, 50vw"
                   className="absolute inset-0 transition-transform duration-[900ms] ease-sillage group-hover:scale-[1.06]"
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-noir via-noir/35 to-noir/0" aria-hidden="true" />
+                <span className="absolute inset-0 bg-gradient-to-t from-fond via-fond/35 to-fond/0" aria-hidden="true" />
                 <span
-                  className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border border-white/25 bg-noir/45 transition-colors group-hover:border-rose-doux group-hover:bg-rose md:right-4 md:top-4 md:h-11 md:w-11"
+                  className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border border-encre/25 bg-fond/45 transition-colors group-hover:border-rose-doux group-hover:bg-rose md:right-4 md:top-4 md:h-11 md:w-11"
                   aria-hidden="true"
                 >
                   <ArrowUpRight size={18} strokeWidth={1.5} />
@@ -98,7 +98,7 @@ export function Humeurs({ numero }: { numero?: string }) {
                     {n} parfum{n > 1 ? 's' : ''}
                   </span>
                   <span className="font-serif text-[1.9rem] leading-none md:text-[2.6rem]">{s.label}</span>
-                  <span className="text-sm leading-snug text-ivoire/80 md:text-base">{s.humeur}</span>
+                  <span className="text-sm leading-snug text-encre/80 md:text-base">{s.humeur}</span>
                 </span>
               </button>
             </li>

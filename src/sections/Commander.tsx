@@ -46,7 +46,7 @@ export function Commander({ numero, lienInfos = false, enPage = false }: { numer
               <span className="sr-only">Étape {i + 1} : </span>
               {e.titre}
             </h3>
-            <p className="mt-2 text-ivoire/80">{e.texte}</p>
+            <p className="mt-2 text-encre/80">{e.texte}</p>
             {i < etapesCommande.length - 1 && (
               <span className="filet absolute -right-4 top-1/2 hidden w-8 md:block" aria-hidden="true" />
             )}

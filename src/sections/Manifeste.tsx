@@ -64,16 +64,16 @@ export function Manifeste() {
             className="manifeste-photo absolute inset-x-0 top-[-12%] h-[124%] w-full object-cover"
           />
         </picture>
-        <div className="absolute inset-0 bg-noir/45" />
-        <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-noir to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-noir to-transparent" />
+        <div className="absolute inset-0 bg-fond/55" />
+        <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-fond to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-fond to-transparent" />
       </div>
 
       <div className="shell flex min-h-[80svh] flex-col items-center justify-center py-28 text-center md:min-h-[90vh]">
         <p className="label mb-10 text-rose-brume">Notre devise</p>
         <div className="manifeste-filet filet mb-10 w-40 md:mb-14" aria-hidden="true" />
         <blockquote>
-          <p className="devise mx-auto max-w-5xl font-serif text-[2.4rem] italic leading-[1.06] text-ivoire sm:text-5xl md:text-[4.25rem] [text-shadow:0_2px_30px_rgba(0,0,0,0.6)]">
+          <p className="devise mx-auto max-w-5xl font-serif text-[2.4rem] italic leading-[1.06] text-encre sm:text-5xl md:text-[4.25rem] [text-shadow:0_2px_28px_rgba(255,255,255,0.95)]">
             « {marque.devise} »
           </p>
           <footer className="signature mt-12 flex items-center justify-center gap-4">

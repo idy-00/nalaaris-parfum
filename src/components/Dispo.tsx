@@ -10,7 +10,7 @@ const POINT: Record<Dispo, string> = {
 export function BadgeDispo({ dispo, long = false, className = '' }: { dispo: Dispo; long?: boolean; className?: string }) {
   const texte = dispo === 'epuise' && long ? 'Épuisé — demande quand il revient' : DISPO_LABEL[dispo];
   return (
-    <span className={`inline-flex items-center gap-2 text-sm text-ivoire/90 ${className}`}>
+    <span className={`inline-flex items-center gap-2 text-sm text-encre/90 ${className}`}>
       <span className={`h-2 w-2 shrink-0 rounded-full ${POINT[dispo]}`} aria-hidden="true" />
       {texte}
     </span>

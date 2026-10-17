@@ -58,7 +58,7 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
       <div className="shell grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
         {/* Visuels */}
         <div className="relative mx-auto w-full max-w-[520px] pb-16 pr-10 sm:pr-16 lg:mx-0">
-          <div className="maison-photo relative aspect-[4/5] overflow-hidden rounded-[28px] ring-1 ring-white/10">
+          <div className="maison-photo relative aspect-[4/5] overflow-hidden rounded-[28px] ring-1 ring-encre/10">
             {marque.photoDuo ? (
               // Photo de Yannick & Laetitia (couleurs naturelles, pas de duotone)
               <img
@@ -76,13 +76,13 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
                 largeurs={[640, 1100]}
                 ratio={4 / 5}
                 sizes="(min-width: 1024px) 480px, 90vw"
-                alt="Bouquet de roses roses, enveloppé dans un papier sombre"
+                alt="Bouquet de roses roses, enveloppé dans un papier transparent"
                 className="absolute inset-0 h-[115%]"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-noir/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-fond/50 to-transparent" />
           </div>
-          <div className="maison-gravure verre-carte absolute -bottom-2 right-0 w-[52%] overflow-hidden rounded-[22px] bg-noir/90 p-4 shadow-douce sm:p-5">
+          <div className="maison-gravure verre-carte absolute -bottom-2 right-0 w-[52%] overflow-hidden rounded-[22px] bg-fond/90 p-4 shadow-douce sm:p-5">
             <img
               src="/media/gravure-vaporisateur.webp"
               alt="Gravure ancienne : une femme se parfume avec un vaporisateur"
@@ -105,17 +105,17 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
           </h2>
           {apercu ? (
             // Accueil : une accroche courte, l'histoire complète reste sur /la-maison
-            <p className="mt-7 max-w-lg text-lg text-ivoire/85">
+            <p className="mt-7 max-w-lg text-lg text-encre/85">
               Deux passionnés, une sélection courte et des conseils sincères. Derrière chaque flacon, il y a quelqu’un qui l’a porté
               avant toi.
             </p>
           ) : (
             <>
-              <p className="mt-7 max-w-lg text-lg text-ivoire/85">
+              <p className="mt-7 max-w-lg text-lg text-encre/85">
                 Nal’Aaris, c’est une sélection de parfums authentiques, choisis un par un à Dakar. On les porte, on les compare, et on te
                 dit franchement ce qu’on en pense.
               </p>
-              <p className="mt-4 max-w-lg text-ivoire/70">
+              <p className="mt-4 max-w-lg text-encre/70">
                 Parce qu’un parfum se choisit mieux en parlant qu’en cliquant, tout se passe sur WhatsApp, simplement.
               </p>
             </>
@@ -128,7 +128,7 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
             </Link>
           ) : (
             <>
-              <ul className="mt-10 space-y-6 border-t border-white/10 pt-8">
+              <ul className="mt-10 space-y-6 border-t border-encre/10 pt-8">
                 {ENGAGEMENTS.map(({ Icone, titre, texte }) => (
                   <li key={titre} className="flex gap-4">
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-rose-doux/30 text-rose-doux">
@@ -136,7 +136,7 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
                     </span>
                     <div>
                       <h3 className="font-sans text-base font-semibold">{titre}</h3>
-                      <p className="mt-1 text-ivoire/70">{texte}</p>
+                      <p className="mt-1 text-encre/70">{texte}</p>
                     </div>
                   </li>
                 ))}

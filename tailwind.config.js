@@ -6,29 +6,35 @@ export default {
     screens: { sm: '480px', md: '768px', lg: '1024px', xl: '1280px' },
     extend: {
       colors: {
-        noir: { DEFAULT: '#0B0A0C', 2: '#141116', 3: '#1D181F' },
         /*
-         * Rôle de chaque rose (aucune autre teinte rose en dehors de ces tokens) — règle 70/20/10 :
-         * 70 % noirs, 20 % ivoire/gris, 10 % rose maximum à l'écran.
-         *  rose        boutons (fond) — ivoire dessus 6.43:1
-         *  rose.vif    survol des boutons
-         *  rose.logo   marque : monogramme, goutte, liserés, états actifs (magenta échantillonné dans le logo)
-         *  rose.doux   titres en italique, liens, icônes (8.1:1 sur noir)
-         *  rose.brume  reflets, petits textes d'accent clairs
-         *  rose.profond  bordeaux réservé au hero et au manifeste
+         * Version « Rose & blanc » — règle 60/30/10 :
+         * 60 % blancs (fond), 30 % rose poudré (fond.3, photos, brume), 10 % magenta/framboise maximum.
+         *  fond         surfaces : blanc, blanc rosé (2), rose poudré (3, sections alternées)
+         *  encre        texte principal, prune très sombre
+         *  sourdine     texte secondaire (AA sur blanc et sur rose poudré)
+         */
+        fond: { DEFAULT: '#FFFFFF', 2: '#FFF7F9', 3: '#FBEAF0' },
+        encre: '#2B1620',
+        sourdine: '#6E5A64',
+        /*
+         * Rôle de chaque rose (aucune autre teinte rose en dehors de ces tokens) :
+         *  rose        boutons (fond) — blanc dessus 6.4:1
+         *  rose.vif    survol des boutons (plus sombre sur fond clair)
+         *  rose.logo   marque : monogramme, goutte, liserés, états actifs (magenta échantillonné dans le logo) — graphismes seulement
+         *  rose.doux   titres en italique, liens, icônes (framboise lisible sur blanc)
+         *  rose.brume  petits textes d'accent (plus sombre que rose.doux)
+         *  rose.profond  rose poudré soutenu, réservé aux grands aplats (manifeste, pied de page)
          */
         rose: {
           DEFAULT: '#A8124F',
-          vif: '#BE1A5C',
+          vif: '#8E0F43',
           logo: '#DA0862',
-          doux: '#E58BAE',
-          brume: '#F2C6D6',
-          profond: '#4A0620',
+          doux: '#B3175A',
+          brume: '#8A2550',
+          profond: '#F6D7E2',
         },
-        cuivre: '#C9876A',
-        ivoire: '#F5EFEA',
-        gris: '#A99EA5',
-        dispo: { ok: '#6FCF97', limite: '#F2B66D', epuise: '#8A8089' },
+        cuivre: '#9A5A3F',
+        dispo: { ok: '#1F7A4D', limite: '#A55A00', epuise: '#7A6F78' },
       },
       fontFamily: {
         serif: ['"Bodoni Moda Variable"', '"Bodoni Moda"', 'Didot', 'Georgia', 'serif'],
@@ -50,8 +56,8 @@ export default {
       maxWidth: { site: '1240px' },
       zIndex: { brume: '0', contenu: '10', nav: '40', barre: '50', pastille: '60', tiroir: '90', menu: '100' },
       boxShadow: {
-        douce: '0 20px 60px -20px rgba(0,0,0,0.6)',
-        cta: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 14px 34px -14px rgba(168,18,79,0.9)',
+        douce: '0 20px 60px -24px rgba(122,28,66,0.22)',
+        cta: 'inset 0 1px 0 rgba(255,255,255,0.22), 0 12px 28px -14px rgba(168,18,79,0.55)',
       },
       transitionTimingFunction: { sillage: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     },

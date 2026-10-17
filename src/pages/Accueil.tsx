@@ -22,13 +22,13 @@ export function Accueil() {
         <Humeurs numero="01" />
         <Goutte cible="#humeurs-titre" />
       </div>
-      {/* Fonds alternés noir / noir-2 : rythme les sections sans ajouter de couleur */}
-      <div className="border-y border-white/5 bg-noir-2/85">
+      {/* Fonds alternés blanc / blanc rosé : rythme les sections sans ajouter de couleur */}
+      <div className="border-y border-encre/5 bg-fond-2/85">
         <SelectionMoment numero="02" />
       </div>
       <Maison numero="03" apercu />
       <Manifeste />
-      <div className="border-t border-white/5 bg-noir-2/85">
+      <div className="border-t border-encre/5 bg-fond-2/85">
         <Commander numero="04" lienInfos />
       </div>
     </>

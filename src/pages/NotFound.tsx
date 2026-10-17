@@ -11,7 +11,7 @@ export function NotFound() {
       <div className="verre-rose max-w-lg rounded-[28px] px-8 py-12 text-center">
         <p className="label text-rose-doux">Page introuvable</p>
         <h1 className="mt-4 text-3xl">Ce parfum s’est envolé.</h1>
-        <p className="mt-4 text-gris">Le lien est peut-être ancien. Retrouve toute la sélection ou demande-nous directement.</p>
+        <p className="mt-4 text-sourdine">Le lien est peut-être ancien. Retrouve toute la sélection ou demande-nous directement.</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link to={ROUTES.catalogue} className="btn btn-rose">
             Voir la sélection

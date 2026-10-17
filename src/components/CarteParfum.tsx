@@ -64,17 +64,17 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
             <VisuelParfum parfum={parfum} />
           </div>
           {(parfum.nouveau || parfum.coupDeCoeur) && (
-            <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-white/15 bg-noir/70 px-2.5 py-1.5 text-xs text-rose-brume md:text-[0.8125rem]">
+            <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-encre/15 bg-fond/70 px-2.5 py-1.5 text-xs text-rose-brume md:text-[0.8125rem]">
               {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
             </span>
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1 px-3.5 pb-4 pt-2.5 md:px-4">
-          <p className="label text-xs text-gris">
+          <p className="label text-xs text-sourdine">
             {categorieLabel(parfum.categorie)} · {styleLabel(parfum.styles[0])}
           </p>
-          <h3 className="text-xl leading-tight text-ivoire md:text-[1.5rem]">{parfum.nom}</h3>
-          <p className="text-sm text-gris">{parfum.marque}</p>
+          <h3 className="text-xl leading-tight text-encre md:text-[1.5rem]">{parfum.nom}</h3>
+          <p className="text-sm text-sourdine">{parfum.marque}</p>
           <BadgeDispo dispo={dispo} className="mt-auto pt-2 text-[0.8125rem]" />
         </div>
       </Link>
@@ -85,8 +85,8 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
           onClick={() => (dejaLa ? ouvrir() : ajouter(parfum.slug, c.ml))}
           className={`absolute right-3.5 top-3.5 grid h-11 w-11 place-items-center rounded-full border transition-colors ${
             dejaLa
-              ? 'border-rose-doux/60 bg-rose text-ivoire'
-              : 'border-white/25 bg-noir/55 text-ivoire hover:border-rose-doux hover:bg-rose'
+              ? 'border-rose-doux/60 bg-rose text-white'
+              : 'border-encre/25 bg-fond/55 text-encre hover:border-rose-doux hover:bg-rose hover:text-white'
           }`}
           aria-label={
             dejaLa

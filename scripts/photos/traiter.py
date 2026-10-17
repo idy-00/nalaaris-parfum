@@ -14,7 +14,7 @@ OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ICI, "..", "..", "publi
 os.makedirs(OUT, exist_ok=True)
 
 # Dégradé (position, couleur) — rose framboise profond, hautes lumières poudrées
-STOPS = [
+STOPS_SOMBRE = [
     (0.00, (9, 7, 9)),
     (0.30, (38, 6, 20)),
     (0.55, (110, 14, 52)),
@@ -22,6 +22,17 @@ STOPS = [
     (0.90, (229, 139, 174)),
     (1.00, (250, 230, 237)),
 ]
+# Thème « clair » (Rose & blanc, par défaut) : ombres framboise douce, milieux rose poudré, hautes lumières blanches.
+# NALAARIS_THEME=sombre régénère la version noir & rose (V2).
+STOPS_CLAIR = [
+    (0.00, (140, 52, 88)),
+    (0.30, (196, 120, 152)),
+    (0.55, (232, 184, 202)),
+    (0.80, (248, 226, 234)),
+    (1.00, (255, 251, 252)),
+]
+CLAIR = os.environ.get("NALAARIS_THEME", "clair") != "sombre"
+STOPS = STOPS_CLAIR if CLAIR else STOPS_SOMBRE
 
 
 def gradient_map(img: Image.Image, gamma=1.0, contraste=1.0, noir=0.0, canal=None) -> Image.Image:
@@ -72,8 +83,8 @@ def grain(img, q=5):
 
 # nom: (source, zone d'intérêt, ratio, réglages, tailles)
 TRAVAUX = {
-    "manifeste-roses": ("bouquet-sombre", (0.25, 0.2, 0.75, 0.8), 16 / 9, dict(gamma=0.9, contraste=1.4, noir=0.04, canal="r"), (960, 1920)),
-    "manifeste-roses-portrait": ("bouquet-sombre", (0.38, 0.2, 0.66, 0.8), 3 / 4, dict(gamma=0.9, contraste=1.4, noir=0.04, canal="r"), (720,)),
+    "manifeste-roses": ("bouquet-sombre", (0.25, 0.2, 0.75, 0.8), 16 / 9, dict(gamma=0.5 if CLAIR else 0.9, contraste=1.15 if CLAIR else 1.4, noir=0.04, canal="r"), (960, 1920)),
+    "manifeste-roses-portrait": ("bouquet-sombre", (0.38, 0.2, 0.66, 0.8), 3 / 4, dict(gamma=0.5 if CLAIR else 0.9, contraste=1.15 if CLAIR else 1.4, noir=0.04, canal="r"), (720,)),
     "univers-bouquet": ("bouquet-rose", (0.3, 0.05, 0.7, 0.95), 4 / 5, dict(gamma=1.05, contraste=1.15), (640, 1100)),
 }
 
@@ -82,7 +93,7 @@ for nom, (src, box, ratio, reglages, tailles) in TRAVAUX.items():
     im = Image.open(os.path.join(SRC, src + ".jpg")).convert("RGB")
     im = recadrer(im, box, ratio)
     im = gradient_map(im, **reglages)
-    im = vignette(im, 0.5 if not nom.startswith("hero") else 0.3)
+    im = vignette(im, 0.12 if CLAIR else 0.5)
     for w in tailles:
         h = round(w / ratio)
         v = grain(im.resize((w, h), Image.LANCZOS), 4)
@@ -98,7 +109,9 @@ gr = gr.crop((0, 0, gr.width, int(gr.height * 0.9)))  # retire la légende « At
 alpha = 255 - np.asarray(gr, dtype=np.float32)
 alpha = np.clip((alpha - 20) * 1.4, 0, 255).astype(np.uint8)
 rgba = np.zeros((gr.height, gr.width, 4), dtype=np.uint8)
-rgba[..., 0], rgba[..., 1], rgba[..., 2], rgba[..., 3] = 242, 198, 214, alpha
+# Traits framboise sur fond clair, rose poudré sur fond sombre
+rgba[..., 0], rgba[..., 1], rgba[..., 2] = (179, 23, 90) if CLAIR else (242, 198, 214)
+rgba[..., 3] = alpha
 grav = Image.fromarray(rgba, "RGBA")
 grav.thumbnail((900, 1200), Image.LANCZOS)
 grav.save(os.path.join(OUT, "gravure-vaporisateur.webp"), "WEBP", quality=82, method=6)

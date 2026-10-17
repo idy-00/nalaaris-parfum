@@ -6,11 +6,11 @@ import { PAGES, ROUTES } from '../lib/routes';
 
 export function Footer() {
   return (
-    <footer className="relative mt-16 overflow-hidden border-t border-white/10 bg-noir pb-28 pt-20 md:pb-10">
-      {/* Halo bordeaux discret derrière le pied de page */}
+    <footer className="relative overflow-hidden border-t border-rose-doux/15 bg-fond-3 pb-28 pt-20 md:pb-10">
+      {/* Halo magenta très léger derrière le pied de page */}
       <div
         className="pointer-events-none absolute -bottom-40 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full"
-        style={{ background: 'radial-gradient(closest-side, rgba(168,18,79,0.28), transparent)' }}
+        style={{ background: 'radial-gradient(closest-side, rgba(218,8,98,0.10), transparent)' }}
         aria-hidden="true"
       />
 
@@ -25,14 +25,14 @@ export function Footer() {
           className="h-32 w-32"
         />
         <div>
-          <p className="label text-ivoire">{marque.nom}</p>
+          <p className="label text-encre">{marque.nom}</p>
           <p className="mt-3 max-w-sm font-serif text-xl italic text-rose-brume">« {marque.devise} »</p>
-          <p className="mt-3 text-sm text-gris">
+          <p className="mt-3 text-sm text-sourdine">
             {marque.signature} · {marque.ville}
           </p>
           <nav aria-label="Liens du pied de page" className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm">
             {[{ to: ROUTES.accueil, label: 'Accueil' }, ...PAGES, { to: `${ROUTES.commander}#questions`, label: 'Questions fréquentes' }].map((l) => (
-              <Link key={l.to} to={l.to} className="inline-flex min-h-[44px] items-center text-ivoire/75 hover:text-rose-doux">
+              <Link key={l.to} to={l.to} className="inline-flex min-h-[44px] items-center text-encre/75 hover:text-rose-doux">
                 {l.label}
               </Link>
             ))}
@@ -43,7 +43,7 @@ export function Footer() {
             href={buildWhatsAppLink(messageConseil())}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center gap-3 text-lg text-ivoire hover:text-rose-doux"
+            className="inline-flex min-h-[44px] items-center gap-3 text-lg text-encre hover:text-rose-doux"
           >
             <IconeWhatsApp className="text-rose-doux" /> {contacts.telephoneAffiche}
           </a>
@@ -56,7 +56,7 @@ export function Footer() {
                     href={r.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 px-4 text-sm text-ivoire/90 transition-colors hover:border-rose-doux/60 hover:text-rose-doux"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-encre/15 px-4 text-sm text-encre/90 transition-colors hover:border-rose-doux/60 hover:text-rose-doux"
                   >
                     <Icone width={18} height={18} />
                     <span>
@@ -74,18 +74,18 @@ export function Footer() {
       {/* Signature typographique monumentale */}
       <p
         className="relative mt-16 select-none whitespace-nowrap text-center font-serif text-[19vw] italic leading-[0.8] text-transparent md:mt-20 md:text-[15vw]"
-        style={{ WebkitTextStroke: '1px rgba(229,139,174,0.28)' }}
+        style={{ WebkitTextStroke: '1px rgba(179,23,90,0.28)' }}
         aria-hidden="true"
       >
         Nal’Aaris
       </p>
 
-      <div className="shell relative mt-10 flex flex-col gap-2 border-t border-white/5 pt-6 text-xs text-gris sm:flex-row sm:justify-between">
+      <div className="shell relative mt-10 flex flex-col gap-2 border-t border-encre/5 pt-6 text-xs text-sourdine sm:flex-row sm:justify-between">
         <p>
           © {new Date().getFullYear()} {marque.nom}. Parfums authentiques.
         </p>
         <p>
-          Site réalisé par <span className="text-ivoire/80">IkDev</span>
+          Site réalisé par <span className="text-encre/80">IkDev</span>
         </p>
       </div>
     </footer>

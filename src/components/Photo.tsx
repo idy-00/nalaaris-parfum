@@ -1,7 +1,7 @@
 /**
  * Photo d'ambiance responsive (WebP) depuis /public/media.
  * Les fichiers suivent la convention <nom>-<largeur>.webp ; `largeurs` liste celles disponibles.
- * `type` : « ambiance » = photo traitée (duotone sombre), recadrée plein cadre ;
+ * `type` : « ambiance » = photo traitée (duotone rose poudré), recadrée plein cadre ;
  *          « produit » = flacon en couleurs naturelles, jamais recadré ni teinté (vraie couleur du jus et de l’étiquette).
  */
 export function Photo({

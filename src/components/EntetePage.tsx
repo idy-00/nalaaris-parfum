@@ -53,7 +53,7 @@ export function EntetePage({
   return (
     <header ref={root} className="relative isolate overflow-hidden pb-8 pt-28 md:pb-12 md:pt-36">
       {photo && (
-        // Masque en bas : la photo se fond dans la brume au lieu de s'arrêter net sur du noir
+        // Masque en bas : la photo se fond dans la brume au lieu de s'arrêter net sur le fond
         <div className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,#000_45%,transparent)]" aria-hidden="true">
           <img
             src={photo.src}
@@ -67,22 +67,22 @@ export function EntetePage({
             className="entete-fond h-[115%] w-full object-cover opacity-60"
             style={{ objectPosition: photo.position ?? 'center' }}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,10,12,0.92)_0%,rgba(11,10,12,0.6)_60%,rgba(11,10,12,0.35)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.7)_60%,rgba(255,255,255,0.4)_100%)]" />
         </div>
       )}
       <div className="shell">
         <div className="entete-meta">
           <nav aria-label="Fil d’Ariane" className="mb-8">
-            <ol className="flex items-center gap-1.5 text-sm text-gris">
+            <ol className="flex items-center gap-1.5 text-sm text-sourdine">
               <li>
-                <Link to="/" className="inline-flex min-h-[44px] items-center hover:text-ivoire">
+                <Link to="/" className="inline-flex min-h-[44px] items-center hover:text-encre">
                   Accueil
                 </Link>
               </li>
               <li aria-hidden="true">
                 <ChevronRight size={14} strokeWidth={1.5} />
               </li>
-              <li aria-current="page" className="text-ivoire/90">
+              <li aria-current="page" className="text-encre/90">
                 {fil}
               </li>
             </ol>
@@ -93,7 +93,7 @@ export function EntetePage({
           </p>
         </div>
         <h1 className="entete-titre max-w-4xl text-[3rem] leading-[0.98] sm:text-6xl md:text-[5.5rem]">{titre}</h1>
-        {intro && <div className="entete-meta mt-7 max-w-2xl text-lg text-ivoire/80">{intro}</div>}
+        {intro && <div className="entete-meta mt-7 max-w-2xl text-lg text-encre/80">{intro}</div>}
         {children && <div className="entete-meta mt-8">{children}</div>}
       </div>
     </header>

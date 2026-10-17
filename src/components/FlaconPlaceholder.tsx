@@ -221,7 +221,7 @@ export function VisuelParfum({
       style={parfum.styles[0]}
       nom={parfum.nom}
       forme={formeDe(parfum.slug)}
-      className={`h-full w-full drop-shadow-[0_24px_30px_rgba(0,0,0,0.55)] ${className}`}
+      className={`h-full w-full drop-shadow-[0_24px_30px_rgba(122,28,66,0.28)] ${className}`}
     />
   );
 }
@@ -246,7 +246,7 @@ export function SceneParfum({ parfum, sizes = '(min-width: 1024px) 25vw, 50vw' }
         decoding="async"
         className="scene-photo h-full w-full scale-110 object-cover opacity-50"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-noir/30 via-noir/10 to-noir/85" />
+      <div className="absolute inset-0 bg-gradient-to-b from-fond/30 via-fond/10 to-fond/85" />
     </div>
   );
 }

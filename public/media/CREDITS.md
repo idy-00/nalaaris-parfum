@@ -1,6 +1,6 @@
 # Crédits des médias
 
-Tous les médias d’ambiance sont utilisables commercialement **sans attribution obligatoire**. Ils sont ré-étalonnés aux couleurs de la marque (noir + magenta du logo `#DA0862`). Les crédits ci-dessous sont donnés par transparence.
+Tous les médias d’ambiance sont utilisables commercialement **sans attribution obligatoire**. Ils sont ré-étalonnés aux couleurs de la marque (version Rose & blanc : blancs, rose poudré, magenta du logo `#DA0862`). Les crédits ci-dessous sont donnés par transparence.
 
 ## Vidéo du hero — « le pschitt »
 
@@ -10,7 +10,7 @@ Tous les médias d’ambiance sont utilisables commercialement **sans attributio
 
 - Fichier source : `https://videos.pexels.com/video-files/4154241/4154241-uhd_2732_1440_25fps.mp4`
 - Recadrage sur le geste (mains, poignet, flacon) : **aucun visage**, aucune marque lisible sur le flacon.
-- Extrait 0 → 6 s, boucle par fondu de 0,5 s, étalonnage LUT `scripts/lut/noir-magenta.cube`, encodage `scripts/video-hero.sh`.
+- Extrait 0 → 6 s, boucle par fondu de 0,5 s, étalonnage clair (`bash scripts/video-hero.sh <source> clair 0`, carte de dégradé rose poudré) ; version noire V2 : LUT `scripts/lut/noir-magenta.cube`.
 - **À remplacer** par une vidéo IA du « pschitt » (prompt dans le cahier des charges V2) : même noms de fichiers, aucun changement de code.
 
 ## Photos d’ambiance (humeurs, manifeste, maison)

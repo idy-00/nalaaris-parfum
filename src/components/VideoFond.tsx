@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Vidéo d'ambiance du hero : le geste du parfum (« pschitt »), étalonnée noir + magenta.
+ * Vidéo d'ambiance du hero : le geste du parfum (« pschitt »), étalonnée en clair (rose poudré, blancs), voir scripts/video-hero.sh.
  * Fichiers stables (remplaçables par une vidéo IA sans toucher au code) :
  *   /media/hero-pschitt-desktop.{webm,mp4,webp}  — 1920×1080
  *   /media/hero-pschitt-mobile.{mp4,webp}        — 720×1280

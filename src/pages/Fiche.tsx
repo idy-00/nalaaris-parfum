@@ -111,7 +111,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         >
           <Heart size={18} strokeWidth={1.5} aria-hidden="true" />
           <span
-            className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-ivoire"
+            className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose px-1 text-xs font-semibold tabular-nums text-white"
             aria-hidden="true"
           >
             {count}
@@ -128,25 +128,25 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           <button
             type="button"
             onClick={retour}
-            className="inline-flex min-h-[44px] items-center gap-2 text-sm text-gris transition-colors hover:text-ivoire"
+            className="inline-flex min-h-[44px] items-center gap-2 text-sm text-sourdine transition-colors hover:text-encre"
           >
             <ArrowLeft size={18} strokeWidth={1.5} aria-hidden="true" /> Retour
           </button>
           <nav aria-label="Fil d’Ariane" className="hidden sm:block">
-            <ol className="flex items-center gap-1.5 text-sm text-gris">
+            <ol className="flex items-center gap-1.5 text-sm text-sourdine">
               <li>
-                <Link to={ROUTES.accueil} className="inline-flex min-h-[44px] items-center hover:text-ivoire">
+                <Link to={ROUTES.accueil} className="inline-flex min-h-[44px] items-center hover:text-encre">
                   Accueil
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to={ROUTES.catalogue} className="inline-flex min-h-[44px] items-center hover:text-ivoire">
+                <Link to={ROUTES.catalogue} className="inline-flex min-h-[44px] items-center hover:text-encre">
                   Catalogue
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-ivoire/90">
+              <li aria-current="page" className="text-encre/90">
                 {parfum.nom}
               </li>
             </ol>
@@ -156,14 +156,14 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-16">
           {/* Visuel */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-white/10 sm:aspect-[4/5]">
+            <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-encre/10 sm:aspect-[4/5]">
               <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" />
               <span className="reflet" aria-hidden="true" />
               <div className="absolute inset-0 px-16 pb-4 pt-6 sm:px-12 sm:pb-8 sm:pt-14 md:px-20 md:pb-12 md:pt-20">
                 <VisuelParfum parfum={parfum} index={image} priority />
               </div>
               {(parfum.nouveau || parfum.coupDeCoeur) && (
-                <span className="label absolute left-5 top-5 rounded-full bg-noir/70 px-3 py-1.5 text-xs text-rose-brume">
+                <span className="label absolute left-5 top-5 rounded-full bg-fond/70 px-3 py-1.5 text-xs text-rose-brume">
                   {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
                 </span>
               )}
@@ -177,7 +177,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                     onClick={() => setImage(i)}
                     aria-label={`Photo ${i + 1}`}
                     aria-pressed={image === i}
-                    className="h-16 w-14 overflow-hidden rounded-xl border border-white/15 aria-pressed:border-rose-doux"
+                    className="h-16 w-14 overflow-hidden rounded-xl border border-encre/15 aria-pressed:border-rose-doux"
                   >
                     <img src={src} alt="" width={56} height={64} loading="lazy" className="h-full w-full object-cover" />
                   </button>
@@ -208,7 +208,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             </div>
 
             <fieldset>
-              <legend className="label mb-3 text-gris">Contenance</legend>
+              <legend className="label mb-3 text-sourdine">Contenance</legend>
               <div role="radiogroup" aria-label="Contenance" className="flex flex-wrap gap-2">
                 {parfum.contenances.map((c) => (
                   <button
@@ -217,7 +217,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                     role="radio"
                     aria-checked={contenance.ml === c.ml}
                     onClick={() => setContenance(c)}
-                    className={`puce min-w-[88px] justify-center ${c.dispo === 'epuise' ? 'text-gris line-through decoration-white/30' : ''}`}
+                    className={`puce min-w-[88px] justify-center ${c.dispo === 'epuise' ? 'text-sourdine line-through decoration-encre/30' : ''}`}
                   >
                     {c.ml} ml
                     {c.dispo === 'epuise' && <span className="sr-only"> (épuisé)</span>}
@@ -233,11 +233,11 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             {/* Actions : intégrées en desktop, barre collée en bas sur mobile */}
             <div className="hidden flex-col gap-3 lg:flex xl:flex-row">{actions(false)}</div>
 
-            <p className="max-w-prose text-lg text-ivoire/90">{parfum.description}</p>
+            <p className="max-w-prose text-lg text-encre/90">{parfum.description}</p>
 
             {/* Les notes, présentées comme une carte de parfumeur : début → cœur → ce qui reste */}
             <div className="verre-carte verre-voile rounded-card p-5 md:p-7">
-              <h2 className="label mb-2 text-gris">Ce que tu sens</h2>
+              <h2 className="label mb-2 text-sourdine">Ce que tu sens</h2>
               <dl>
                 {(
                   [
@@ -246,14 +246,14 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                     ['Ce qui reste', 'le sillage, jusqu’au soir', parfum.notes.fond],
                   ] as const
                 ).map(([titre, quand, notes], i) => (
-                  <div key={titre} className={`grid gap-2 py-4 sm:grid-cols-[150px_1fr] sm:gap-6 ${i ? 'border-t border-white/10' : ''}`}>
+                  <div key={titre} className={`grid gap-2 py-4 sm:grid-cols-[150px_1fr] sm:gap-6 ${i ? 'border-t border-encre/10' : ''}`}>
                     <dt>
                       <span className="block font-serif text-xl italic text-rose-brume">{titre}</span>
-                      <span className="text-xs text-gris">{quand}</span>
+                      <span className="text-xs text-sourdine">{quand}</span>
                     </dt>
                     <dd className="flex flex-wrap items-center gap-1.5">
                       {notes.map((n) => (
-                        <span key={n} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm text-ivoire/90">
+                        <span key={n} className="rounded-full border border-encre/10 bg-encre/[0.04] px-3 py-1 text-sm text-encre/90">
                           {n}
                         </span>
                       ))}
@@ -263,7 +263,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
               </dl>
             </div>
 
-            <p className="text-sm text-gris">
+            <p className="text-sm text-sourdine">
               Un écran ne transmet pas une odeur. Pour un conseil, écris-nous sur WhatsApp : on te répond avec plaisir.
             </p>
           </div>
@@ -284,17 +284,17 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 <li key={s}>
                   <Link
                     to={catalogueStyle(s)}
-                    className="group relative block aspect-[4/5] overflow-hidden rounded-card ring-1 ring-white/10 sm:aspect-[16/10]"
+                    className="group relative block aspect-[4/5] overflow-hidden rounded-card ring-1 ring-encre/10 sm:aspect-[16/10]"
                   >
                     <PhotoHumeur
                       photo={info.photo}
                       sizes="(min-width: 768px) 600px, 50vw"
                       className="absolute inset-0 transition-transform duration-[900ms] ease-sillage group-hover:scale-[1.05]"
                     />
-                    <span className="absolute inset-0 bg-gradient-to-t from-noir via-noir/30 to-transparent" aria-hidden="true" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-fond via-fond/30 to-transparent" aria-hidden="true" />
                     <span className="absolute inset-x-0 bottom-0 p-4 md:p-6">
                       <span className="block font-serif text-2xl md:text-4xl">{info.label}</span>
-                      <span className="mt-1 block text-sm text-ivoire/80 md:text-base">
+                      <span className="mt-1 block text-sm text-encre/80 md:text-base">
                         {info.humeur} <span className="text-rose-doux">— voir tous</span>
                       </span>
                     </span>

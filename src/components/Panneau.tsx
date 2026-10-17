@@ -62,15 +62,15 @@ export function Panneau({
       // @ts-expect-error — `inert` est un attribut HTML valide, pas encore typé dans React 18
       inert={ouvert ? undefined : ''}
     >
-      <div className="voile absolute inset-0 bg-noir/60" onClick={onClose} aria-hidden="true" />
+      <div className="voile absolute inset-0 bg-fond/60" onClick={onClose} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-titre`}
         className="tiroir verre-fume absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-drawer md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[440px] md:rounded-l-drawer md:rounded-tr-none"
-        style={{ background: 'rgba(20,17,22,0.82)' }}
+        style={{ background: 'rgba(255,247,249,0.94)' }}
       >
-        <span className="mx-auto mt-3 block h-1 w-10 rounded-full bg-white/20 md:hidden" aria-hidden="true" />
+        <span className="mx-auto mt-3 block h-1 w-10 rounded-full bg-encre/20 md:hidden" aria-hidden="true" />
         <div className="flex items-center justify-between gap-4 px-5 pt-3 md:px-7 md:pt-7">
           <h2 id={`${id}-titre`} className="text-2xl">
             {titre}
@@ -78,7 +78,7 @@ export function Panneau({
           <button
             type="button"
             onClick={onClose}
-            className="grid h-11 w-11 place-items-center rounded-full border border-white/15 text-ivoire hover:border-rose-doux/60"
+            className="grid h-11 w-11 place-items-center rounded-full border border-encre/15 text-encre hover:border-rose-doux/60"
             aria-label="Fermer"
           >
             <X size={20} strokeWidth={1.5} />
@@ -86,7 +86,7 @@ export function Panneau({
         </div>
         <div className="filet mx-5 mt-4 md:mx-7" />
         <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 md:px-7">{children}</div>
-        {pied && <div className="safe-bottom border-t border-white/10 px-5 pt-4 md:px-7">{pied}</div>}
+        {pied && <div className="safe-bottom border-t border-encre/10 px-5 pt-4 md:px-7">{pied}</div>}
       </div>
     </div>,
     document.body,

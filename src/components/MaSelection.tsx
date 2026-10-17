@@ -107,11 +107,11 @@ export function MaSelection({ page }: { page: string }) {
           onClick={ouvrir}
           aria-haspopup="dialog"
           aria-label={`Ma sélection : ${count} parfum${count > 1 ? 's' : ''}`}
-          className="verre-rose flex h-14 items-center gap-3 rounded-full pl-5 pr-2 text-sm font-semibold text-ivoire"
+          className="verre-rose flex h-14 items-center gap-3 rounded-full pl-5 pr-2 text-sm font-semibold text-encre"
         >
           <span className="halo-pastille pointer-events-none absolute inset-0 rounded-full border border-rose-logo opacity-0" aria-hidden="true" />
           <span className="label text-[0.75rem]">Ma sélection</span>
-          <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-rose text-ivoire" aria-hidden="true">
+          <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-rose text-white" aria-hidden="true">
             <span className="compteur block tabular-nums">{count}</span>
           </span>
         </button>
@@ -128,7 +128,7 @@ export function MaSelection({ page }: { page: string }) {
               <a href={lien} target="_blank" rel="noopener noreferrer" className="btn btn-rose w-full" data-autofocus>
                 <IconeWhatsApp /> Envoyer ma sélection sur WhatsApp
               </a>
-              <p className="text-center text-sm text-gris">On te confirme la disponibilité, le prix et la livraison.</p>
+              <p className="text-center text-sm text-sourdine">On te confirme la disponibilité, le prix et la livraison.</p>
             </div>
           ) : undefined
         }
@@ -136,8 +136,8 @@ export function MaSelection({ page }: { page: string }) {
         {/* Toast d'annulation, annoncé aux lecteurs d'écran sans voler le focus */}
         <div role="status" aria-live="polite">
           {annulable && (
-            <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-white/15 bg-noir-3 px-4 py-2">
-              <span className="text-sm text-ivoire/90">Sélection vidée</span>
+            <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-encre/15 bg-fond-3 px-4 py-2">
+              <span className="text-sm text-encre/90">Sélection vidée</span>
               <button
                 type="button"
                 onClick={annuler}
@@ -152,7 +152,7 @@ export function MaSelection({ page }: { page: string }) {
         {count === 0 ? (
           <div className="py-8 text-center">
             <p className="font-serif text-2xl">Ta sélection est vide.</p>
-            <p className="mt-3 text-gris">Ajoute des parfums depuis le catalogue pour les envoyer ensemble sur WhatsApp.</p>
+            <p className="mt-3 text-sourdine">Ajoute des parfums depuis le catalogue pour les envoyer ensemble sur WhatsApp.</p>
             <Link to={ROUTES.catalogue} onClick={fermer} className="btn btn-verre mt-7">
               Voir le catalogue
             </Link>
@@ -163,7 +163,7 @@ export function MaSelection({ page }: { page: string }) {
               {lignes.map(({ parfum, ml }) => {
                 const c = parfum.contenances.find((x) => x.ml === ml);
                 return (
-                  <li key={`${parfum.slug}-${ml}`} className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                  <li key={`${parfum.slug}-${ml}`} className="flex gap-4 rounded-2xl border border-encre/10 bg-encre/[0.03] p-3">
                     <div className="h-24 w-20 shrink-0">
                       <VisuelParfum parfum={parfum} />
                     </div>
@@ -177,12 +177,12 @@ export function MaSelection({ page }: { page: string }) {
                           >
                             {parfum.nom}
                           </Link>
-                          <p className="text-sm text-gris">{parfum.marque}</p>
+                          <p className="text-sm text-sourdine">{parfum.marque}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => retirer(parfum.slug, ml)}
-                          className="-mr-1 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-gris hover:text-rose-doux"
+                          className="-mr-1 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-sourdine hover:text-rose-doux"
                           aria-label={`Retirer ${parfum.nom} ${ml} ml`}
                         >
                           <Trash2 size={18} strokeWidth={1.5} />
@@ -197,7 +197,7 @@ export function MaSelection({ page }: { page: string }) {
                             role="radio"
                             aria-checked={x.ml === ml}
                             onClick={() => x.ml !== ml && changerMl(parfum.slug, ml, x.ml)}
-                            className={`puce min-w-[64px] justify-center px-3 ${x.dispo === 'epuise' ? 'text-gris line-through decoration-white/30' : ''}`}
+                            className={`puce min-w-[64px] justify-center px-3 ${x.dispo === 'epuise' ? 'text-sourdine line-through decoration-encre/30' : ''}`}
                           >
                             {x.ml} ml
                             {x.dispo !== 'disponible' && <span className="sr-only"> ({DISPO_LABEL[x.dispo].toLowerCase()})</span>}
@@ -215,7 +215,7 @@ export function MaSelection({ page }: { page: string }) {
             <button
               type="button"
               onClick={toutVider}
-              className="mt-5 min-h-[44px] text-sm text-gris underline-offset-4 hover:text-ivoire hover:underline"
+              className="mt-5 min-h-[44px] text-sm text-sourdine underline-offset-4 hover:text-encre hover:underline"
             >
               Vider la sélection
             </button>

@@ -1,7 +1,9 @@
+import { ImageTheme } from './ImageTheme';
+
 /**
  * Photo d'ambiance responsive (WebP) depuis /public/media.
  * Les fichiers suivent la convention <nom>-<largeur>.webp ; `largeurs` liste celles disponibles.
- * `type` : « ambiance » = photo traitée (duotone rose poudré), recadrée plein cadre ;
+ * `type` : « ambiance » = photo traitée (rose poudré en clair, duotone sombre en sombre), recadrée plein cadre ;
  *          « produit » = flacon en couleurs naturelles, jamais recadré ni teinté (vraie couleur du jus et de l’étiquette).
  */
 export function Photo({
@@ -24,8 +26,10 @@ export function Photo({
   type?: 'ambiance' | 'produit';
 }) {
   const max = largeurs[largeurs.length - 1];
+  // Ambiance : étalonnée en deux versions (clair / sombre). Produit : vraie couleur, une seule version.
+  const Img = type === 'ambiance' ? ImageTheme : 'img';
   return (
-    <img
+    <Img
       src={`/media/${nom}-${max}.webp`}
       srcSet={largeurs.map((w) => `/media/${nom}-${w}.webp ${w}w`).join(', ')}
       sizes={sizes}

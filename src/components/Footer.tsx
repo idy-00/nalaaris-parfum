@@ -6,11 +6,11 @@ import { PAGES, ROUTES } from '../lib/routes';
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-rose-doux/15 bg-fond-3 pb-28 pt-20 md:pb-10">
+    <footer className="relative overflow-hidden border-t border-rose-doux/15 bg-fond-3 pb-28 dark:border-encre/10 dark:bg-fond pt-20 md:pb-10">
       {/* Halo magenta très léger derrière le pied de page */}
       <div
         className="pointer-events-none absolute -bottom-40 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full"
-        style={{ background: 'radial-gradient(closest-side, rgba(218,8,98,0.10), transparent)' }}
+        style={{ background: 'radial-gradient(closest-side, var(--halo-pied), transparent)' }}
         aria-hidden="true"
       />
 
@@ -74,7 +74,7 @@ export function Footer() {
       {/* Signature typographique monumentale */}
       <p
         className="relative mt-16 select-none whitespace-nowrap text-center font-serif text-[19vw] italic leading-[0.8] text-transparent md:mt-20 md:text-[15vw]"
-        style={{ WebkitTextStroke: '1px rgba(179,23,90,0.28)' }}
+        style={{ WebkitTextStroke: '1px var(--trait-pied)' }}
         aria-hidden="true"
       >
         Nal’Aaris

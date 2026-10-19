@@ -50,7 +50,7 @@ export function Hero() {
         // En quittant le hero : la vidéo s'approche, le contenu s'efface doucement (transform + opacity)
         gsap
           .timeline({ scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: 0.6 } })
-          .to('.video-fond', { scale: 1.1, yPercent: 5, ease: 'none' }, 0)
+          .to('.video-calque', { scale: 1.1, yPercent: 5, ease: 'none' }, 0)
           .to('.hero-contenu', { yPercent: -6, opacity: 0.3, ease: 'none' }, 0);
       });
 
@@ -69,7 +69,7 @@ export function Hero() {
       <VideoFond />
       {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : voile qui s'épaissit sous le texte, sans masquer la vidéo */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.25)_35%,rgba(255,255,255,0.55)_65%,rgba(255,255,255,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.8)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0.05)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.25)_35%,rgba(255,255,255,0.55)_65%,rgba(255,255,255,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.8)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,rgba(11,10,12,0.3)_0%,rgba(11,10,12,0.3)_35%,rgba(11,10,12,0.6)_65%,rgba(11,10,12,0.7)_100%)] dark:md:bg-[linear-gradient(90deg,rgba(11,10,12,0.85)_0%,rgba(11,10,12,0.5)_50%,rgba(11,10,12,0.12)_100%)]"
         aria-hidden="true"
       />
       {/* Raccord court avec la section suivante */}
@@ -78,7 +78,7 @@ export function Hero() {
       <div className="hero-contenu shell relative grid flex-1 items-end gap-10 pb-5 pt-24 md:items-center md:pb-8 md:pt-32 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
         <div
           ref={panneau}
-          className="hero-panneau relative overflow-hidden md:verre-fume md:rounded-[36px] md:bg-[rgba(255,255,255,0.6)] md:px-14 md:pb-14 md:pt-14"
+          className="hero-panneau relative overflow-hidden md:verre-fume md:rounded-[36px] md:bg-[rgba(255,255,255,0.6)] dark:md:bg-[rgba(11,10,12,0.62)] md:px-14 md:pb-14 md:pt-14"
         >
           <span className="reflet hidden md:block" aria-hidden="true" />
           <Monogramme className="hero-np np-depart mb-5 h-12 w-auto text-rose-logo lg:hidden" title="" />
@@ -115,7 +115,7 @@ export function Hero() {
 
         <div className="relative hidden flex-col items-center gap-8 lg:flex">
           <Monogramme
-            className="hero-np np-depart h-auto w-full max-w-[300px] text-rose-logo drop-shadow-[0_0_36px_rgba(218,8,98,0.22)]"
+            className="hero-np np-depart h-auto w-full max-w-[300px] text-rose-logo drop-shadow-[0_0_36px_rgba(218,8,98,0.22)] dark:drop-shadow-[0_0_40px_rgba(218,8,98,0.45)]"
             title=""
           />
           <div className="text-center">

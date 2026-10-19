@@ -31,7 +31,7 @@ export function Humeurs({ numero }: { numero?: string }) {
           gsap
             .timeline({ scrollTrigger: { trigger: el, start: 'top 92%', once: true }, delay: (i % 3) * 0.08 })
             .from(el, { opacity: 0, y: 40, duration: 1.1, ease: 'expo.out' })
-            .from(el.querySelector('img'), { scale: 1.15, duration: 1.4, ease: 'expo.out' }, 0)
+            .from(el.querySelectorAll('img'), { scale: 1.15, duration: 1.4, ease: 'expo.out' }, 0)
             .from(el.querySelectorAll('.tuile-texte > *'), { opacity: 0, y: 14, stagger: 0.06, duration: 0.7 }, 0.35);
         });
       });

@@ -3,21 +3,128 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------
-   Design system « Le Sillage » — version Rose & blanc
-   Le blanc domine, le rose poudré enveloppe, le magenta reste précieux.
+   Design system « Le Sillage » — deux versions, mêmes rôles
+   Rose & blanc (défaut) : le blanc domine, le rose poudré enveloppe, le magenta reste précieux.
+   Noir & rose ([data-theme='sombre']) : le noir domine, le rose est précieux, le verre laisse deviner la brume.
+   Tout ce qui change d'une version à l'autre est une variable ci-dessous : les classes (et leurs
+   copies Tailwind, ex. `md:verre-fume`) suivent le thème sans règle dupliquée.
+   Tokens Tailwind : triplets RGB (--c-*) pour garder les opacités (`text-encre/80`).
 ------------------------------------------------------------------- */
 :root {
-  --fond: #ffffff;
-  --fond-2: #fff7f9;
-  --fond-3: #fbeaf0;
-  --encre: #2b1620;
-  --sourdine: #6e5a64;
-  --rose: #a8124f;
-  --rose-vif: #8e0f43;
-  --rose-logo: #da0862;
-  --rose-doux: #b3175a;
+  --c-fond: 255 255 255;
+  --c-fond-2: 255 247 249;
+  --c-fond-3: 251 234 240;
+  --c-encre: 43 22 32;
+  --c-sourdine: 110 90 100;
+  --c-rose: 168 18 79;
+  --c-rose-vif: 142 15 67;
+  --c-rose-logo: 218 8 98;
+  --c-rose-doux: 179 23 90;
+  --c-rose-brume: 138 37 80;
+  --c-rose-profond: 246 215 226;
+  --c-cuivre: 154 90 63;
+  --c-dispo-ok: 31 122 77;
+  --c-dispo-limite: 165 90 0;
+  --c-dispo-epuise: 122 111 120;
+
+  --ombre-douce: 0 20px 60px -24px rgba(122, 28, 66, 0.22);
+  --ombre-cta: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 12px 28px -14px rgba(168, 18, 79, 0.55);
+
+  /* Verre */
+  --verre-bord: rgba(179, 23, 90, 0.14);
+  --verre-bord-haut: rgba(255, 255, 255, 0.9);
+  --verre-ombre: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 18px 50px -26px rgba(122, 28, 66, 0.28);
+  --verre-rose: rgba(251, 234, 240, 0.7);
+  --verre-fume: rgba(255, 255, 255, 0.72);
+  --verre-carte: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 249, 0.85) 60%);
+  --verre-carte-bord: rgba(179, 23, 90, 0.12);
+  --verre-carte-bord-haut: rgba(179, 23, 90, 0.12);
+  --verre-carte-ombre: 0 18px 44px -30px rgba(122, 28, 66, 0.3);
+  --verre-voile: rgba(255, 255, 255, 0.94);
+  --reflet-fort: rgba(255, 255, 255, 0.55);
+  --reflet-faible: rgba(255, 255, 255, 0.15);
+  --contraste-bord: rgba(43, 22, 32, 0.6);
+  --contraste-fond: #ffffff;
+
+  /* Boutons, puces, filets */
+  --btn-rose-bord: rgba(255, 255, 255, 0.2);
+  --btn-rose-survol: linear-gradient(180deg, #a8124f, #94103f 55%, #8e0f43);
+  --btn-verre-survol: rgba(246, 215, 226, 0.9);
+  --btn-trait-survol: rgb(var(--c-rose-doux));
+  --puce-active-fond: rgb(var(--c-fond-3));
+  --puce-active-texte: rgb(var(--c-rose-brume));
+  --filet: rgba(179, 23, 90, 0.4);
+  --selection: rgba(218, 8, 98, 0.18);
+
+  /* Décors (halos, voiles) utilisés en style inline par les composants */
+  --halo-1: rgba(246, 215, 226, 0.75);
+  --halo-2: rgba(251, 234, 240, 0.9);
+  --halo-3: rgba(218, 8, 98, 0.05);
+  --halo-pied: rgba(218, 8, 98, 0.1);
+  --trait-pied: rgba(179, 23, 90, 0.28);
+  --halo-ombre: rgba(246, 215, 226, 0.95);
+  --menu-fond: rgba(255, 255, 255, 0.86);
+  --panneau-fond: rgba(255, 247, 249, 0.94);
+
   --nav-h: 64px;
   color-scheme: light;
+}
+
+/* Version « Noir & rose » : valeurs de la V2 */
+[data-theme='sombre'] {
+  --c-fond: 11 10 12;
+  --c-fond-2: 20 17 22;
+  --c-fond-3: 29 24 31;
+  --c-encre: 245 239 234;
+  --c-sourdine: 169 158 165;
+  --c-rose: 168 18 79;
+  --c-rose-vif: 190 26 92;
+  --c-rose-logo: 218 8 98;
+  --c-rose-doux: 229 139 174;
+  --c-rose-brume: 242 198 214;
+  --c-rose-profond: 74 6 32;
+  --c-cuivre: 201 135 106;
+  --c-dispo-ok: 111 207 151;
+  --c-dispo-limite: 242 182 109;
+  --c-dispo-epuise: 138 128 137;
+
+  --ombre-douce: 0 20px 60px -20px rgba(0, 0, 0, 0.6);
+  --ombre-cta: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 14px 34px -14px rgba(168, 18, 79, 0.9);
+
+  --verre-bord: rgba(255, 255, 255, 0.18);
+  --verre-bord-haut: rgba(255, 255, 255, 0.45);
+  --verre-ombre: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 20px 60px -24px rgba(0, 0, 0, 0.7);
+  --verre-rose: rgba(229, 139, 174, 0.1);
+  --verre-fume: rgba(11, 10, 12, 0.45);
+  --verre-carte: linear-gradient(160deg, rgba(229, 139, 174, 0.09), rgba(229, 139, 174, 0.03) 60%);
+  --verre-carte-bord: rgba(255, 255, 255, 0.12);
+  --verre-carte-bord-haut: rgba(255, 255, 255, 0.32);
+  --verre-carte-ombre: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 20px 50px -30px rgba(0, 0, 0, 0.8);
+  --verre-voile: rgba(20, 17, 22, 0.78);
+  --reflet-fort: rgba(255, 255, 255, 0.12);
+  --reflet-faible: rgba(255, 255, 255, 0.04);
+  --contraste-bord: rgba(255, 255, 255, 0.6);
+  --contraste-fond: rgba(11, 10, 12, 0.94);
+
+  --btn-rose-bord: rgba(255, 255, 255, 0.14);
+  --btn-rose-survol: linear-gradient(180deg, #c41a60, #b8175a 55%, #a8124f);
+  --btn-verre-survol: rgba(229, 139, 174, 0.18);
+  --btn-trait-survol: rgb(var(--c-rose-brume));
+  --puce-active-fond: rgb(var(--c-rose) / 0.4);
+  --puce-active-texte: rgb(var(--c-encre));
+  --filet: rgba(229, 139, 174, 0.55);
+  --selection: rgba(168, 18, 79, 0.7);
+
+  --halo-1: rgba(168, 18, 79, 0.16);
+  --halo-2: rgba(74, 6, 32, 0.32);
+  --halo-3: rgba(229, 139, 174, 0.04);
+  --halo-pied: rgba(168, 18, 79, 0.28);
+  --trait-pied: rgba(229, 139, 174, 0.28);
+  --halo-ombre: rgba(74, 6, 32, 0.9);
+  --menu-fond: rgba(11, 10, 12, 0.72);
+  --panneau-fond: rgba(20, 17, 22, 0.82);
+
+  color-scheme: dark;
 }
 
 /* Intro du hero : texte masqué au plus 900 ms (voir index.html et src/lib/intro.ts) */
@@ -25,7 +132,7 @@
 
 @layer base {
   html {
-    background: var(--fond);
+    background: rgb(var(--c-fond));
     -webkit-text-size-adjust: 100%;
     scroll-padding-top: calc(var(--nav-h) + 16px);
   }
@@ -43,13 +150,13 @@
   a, button, [role='button'], label, summary { touch-action: manipulation; }
   button:not(:disabled), a[href] { cursor: pointer; }
 
-  /* Anneau de focus framboise : 6.6:1 sur blanc */
+  /* Anneau de focus : framboise sur blanc (6.6:1), rose clair sur noir (8.1:1) */
   :focus-visible {
-    outline: 2px solid var(--rose-doux);
+    outline: 2px solid rgb(var(--c-rose-doux));
     outline-offset: 3px;
     border-radius: 12px;
   }
-  ::selection { background: rgba(218, 8, 98, 0.18); color: var(--encre); }
+  ::selection { background: var(--selection); color: rgb(var(--c-encre)); }
 }
 
 @layer components {
@@ -60,31 +167,30 @@
 
   .shell { @apply mx-auto w-full max-w-site px-5 md:px-12; }
 
-  /* ---------- Verre (dépoli clair) ----------
+  /* ---------- Verre ----------
      -webkit-backdrop-filter en dur : Safari ne lit pas les variables CSS dans la version préfixée. */
   .verre-rose,
   .verre-fume {
     position: relative;
-    border: 1px solid rgba(179, 23, 90, 0.14);
-    border-top-color: rgba(255, 255, 255, 0.9);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.9),
-      0 18px 50px -26px rgba(122, 28, 66, 0.28);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--verre-bord);
+    border-top-color: var(--verre-bord-haut);
+    box-shadow: var(--verre-ombre);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(150%);
   }
-  .verre-rose { background: rgba(251, 234, 240, 0.7); }
-  .verre-fume { background: rgba(255, 255, 255, 0.72); }
+  .verre-rose { background: var(--verre-rose); }
+  .verre-fume { background: var(--verre-fume); }
   /* Verre « léger » pour les surfaces répétées (cartes, tuiles) : translucide, sans flou,
      pour respecter la limite de 3–4 surfaces floutées visibles et rester fluide sur mobile. */
   .verre-carte {
     position: relative;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 249, 0.85) 60%);
-    border: 1px solid rgba(179, 23, 90, 0.12);
-    box-shadow: 0 18px 44px -30px rgba(122, 28, 66, 0.3);
+    background: var(--verre-carte);
+    border: 1px solid var(--verre-carte-bord);
+    border-top-color: var(--verre-carte-bord-haut);
+    box-shadow: var(--verre-carte-ombre);
   }
   /* Voile plus opaque pour le texte long */
-  .verre-voile { background: rgba(255, 255, 255, 0.94); }
+  .verre-voile { background: var(--verre-voile); }
 
   /* Reflet : fin dégradé diagonal ; sa position suit le pointeur (GSAP quickTo) sur desktop */
   .reflet {
@@ -98,13 +204,7 @@
     content: '';
     position: absolute;
     inset: -40% -60%;
-    background: linear-gradient(
-      115deg,
-      transparent 38%,
-      rgba(255, 255, 255, 0.55) 47%,
-      rgba(255, 255, 255, 0.15) 53%,
-      transparent 60%
-    );
+    background: linear-gradient(115deg, transparent 38%, var(--reflet-fort) 47%, var(--reflet-faible) 53%, transparent 60%);
     transform: translate3d(var(--rx, -12%), var(--ry, 0%), 0);
   }
 
@@ -115,17 +215,17 @@
     transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.2s;
   }
   .btn:active { transform: scale(0.97); }
-  /* Blanc sur framboise profonde : 7.3:1 */
+  /* Blanc sur framboise profonde : 7.3:1 (mêmes boutons dans les deux versions) */
   .btn-rose {
     @apply text-white shadow-cta;
     background: linear-gradient(180deg, #b8175a, #a8124f 55%, #94103f);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--btn-rose-bord);
   }
-  .btn-rose:hover { background: linear-gradient(180deg, #a8124f, #94103f 55%, #8e0f43); }
+  .btn-rose:hover { background: var(--btn-rose-survol); }
   .btn-verre { @apply verre-rose text-encre; }
-  .btn-verre:hover { background: rgba(246, 215, 226, 0.9); }
+  .btn-verre:hover { background: var(--btn-verre-survol); }
   .btn-trait { @apply border border-encre/20 text-encre; }
-  .btn-trait:hover { @apply border-rose-doux/70 text-rose-doux; }
+  .btn-trait:hover { @apply border-rose-doux/70; color: var(--btn-trait-survol); }
 
   .puce {
     @apply inline-flex min-h-[44px] items-center gap-2 rounded-full border border-encre/15 bg-fond px-4 text-sm font-medium text-encre/90;
@@ -133,9 +233,13 @@
   }
   .puce:hover { @apply border-rose-doux/60 text-encre; }
   .puce[aria-pressed='true'],
-  .puce[aria-checked='true'] { @apply border-rose-doux/70 bg-fond-3 text-rose-brume; }
+  .puce[aria-checked='true'] {
+    @apply border-rose-doux/70;
+    background: var(--puce-active-fond);
+    color: var(--puce-active-texte);
+  }
 
-  .filet { height: 1px; background: linear-gradient(90deg, transparent, rgba(179, 23, 90, 0.4), transparent); }
+  .filet { height: 1px; background: linear-gradient(90deg, transparent, var(--filet), transparent); }
 
   /* Repère éditorial de section : « 01 — Par où commencer » */
   .repere { @apply label flex items-center gap-3 text-rose-doux; }
@@ -150,19 +254,24 @@
   .repere[data-n='']::before { display: none; }
 
   /* Photographie : fondu d'apparition au chargement (pas de saut) */
-  .photo { @apply h-full w-full object-cover; background: var(--fond-3); }
+  .photo { @apply h-full w-full object-cover; background: rgb(var(--c-fond-3)); }
   /* Photo produit : couleurs naturelles, flacon entier (pas de recadrage ni de teinte) */
   .photo-produit { @apply h-full w-full object-contain; }
 }
 
+/* Affiche du hero en deux versions (VideoFond) : celle de l'autre thème (HTML pré-rendu, avant l'hydratation)
+   reste invisible — pas d'image claire qui flashe sur le noir. */
+[data-theme='sombre'] [data-variante='clair'],
+:root:not([data-theme='sombre']) [data-variante='sombre'] { visibility: hidden; }
+
 /* Sans backdrop-filter : fond solide */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .verre-rose, .verre-fume { background: var(--fond-2); }
+  .verre-rose, .verre-fume { background: rgb(var(--c-fond-2)); }
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .verre-rose, .verre-fume {
-    background: var(--fond-2);
+    background: rgb(var(--c-fond-2));
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -171,9 +280,9 @@
 @media (prefers-contrast: more) {
   .verre-rose, .verre-fume, .verre-carte {
     border-width: 2px;
-    border-color: rgba(43, 22, 32, 0.6);
+    border-color: var(--contraste-bord);
+    background: var(--contraste-fond);
   }
-  .verre-carte, .verre-rose, .verre-fume { background: #ffffff; }
 }
 
 /* Utilitaires */

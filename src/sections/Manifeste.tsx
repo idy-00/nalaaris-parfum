@@ -1,10 +1,13 @@
 import { useRef } from 'react';
 import { marque } from '../data/infos';
+import { useTheme } from '../hooks/useTheme';
 import { gsap, useGSAP, SplitText, MQ } from '../lib/gsap';
 
 /** Bandeau manifeste : la devise en grand serif italique, sur un bouquet de roses en clair-obscur. */
 export function Manifeste() {
   const root = useRef<HTMLElement>(null);
+  const { theme, pret } = useTheme();
+  const d = theme === 'sombre' ? '/media/sombre' : '/media';
 
   useGSAP(
     () => {
@@ -50,11 +53,12 @@ export function Manifeste() {
   return (
     <section ref={root} aria-label="Notre devise" className="relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
+        {/* Photo étalonnée selon la version (clair / sombre) : posée après l'hydratation, voir ImageTheme */}
         <picture>
-          <source media="(max-width: 767px)" srcSet="/media/manifeste-roses-portrait-720.webp" />
+          {pret && <source media="(max-width: 767px)" srcSet={`${d}/manifeste-roses-portrait-720.webp`} />}
           <img
-            src="/media/manifeste-roses-1920.webp"
-            srcSet="/media/manifeste-roses-960.webp 960w, /media/manifeste-roses-1920.webp 1920w"
+            src={pret ? `${d}/manifeste-roses-1920.webp` : undefined}
+            srcSet={pret ? `${d}/manifeste-roses-960.webp 960w, ${d}/manifeste-roses-1920.webp 1920w` : undefined}
             sizes="100vw"
             alt=""
             width={1920}
@@ -64,7 +68,7 @@ export function Manifeste() {
             className="manifeste-photo absolute inset-x-0 top-[-12%] h-[124%] w-full object-cover"
           />
         </picture>
-        <div className="absolute inset-0 bg-fond/55" />
+        <div className="absolute inset-0 bg-fond/55 dark:bg-fond/45" />
         <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-fond to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-fond to-transparent" />
       </div>
@@ -73,7 +77,7 @@ export function Manifeste() {
         <p className="label mb-10 text-rose-brume">Notre devise</p>
         <div className="manifeste-filet filet mb-10 w-40 md:mb-14" aria-hidden="true" />
         <blockquote>
-          <p className="devise mx-auto max-w-5xl font-serif text-[2.4rem] italic leading-[1.06] text-encre sm:text-5xl md:text-[4.25rem] [text-shadow:0_2px_28px_rgba(255,255,255,0.95)]">
+          <p className="devise mx-auto max-w-5xl font-serif text-[2.4rem] italic leading-[1.06] text-encre sm:text-5xl md:text-[4.25rem] [text-shadow:0_2px_28px_rgba(255,255,255,0.95)] dark:[text-shadow:0_2px_30px_rgba(0,0,0,0.6)]">
             « {marque.devise} »
           </p>
           <footer className="signature mt-12 flex items-center justify-center gap-4">

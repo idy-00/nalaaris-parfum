@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { gsap, useGSAP, ScrollTrigger, SplitText, MQ } from '../lib/gsap';
 import { marque } from '../data/infos';
+import { lireTheme } from '../lib/theme';
 import silhouette from '../data/ombre-silhouette.json';
 
 /**
@@ -70,7 +71,8 @@ export function Ombre() {
         const ty = rc.top - z.top + rc.height * 0.4;
         const ang = Math.atan2(ty - oy, tx - ox);
         const dist = Math.hypot(tx - ox, ty - oy);
-        const couleurs = ['229,139,174', '218,8,98', '179,23,90'];
+        // Brume plus soutenue sur blanc, plus claire sur noir
+        const couleurs = lireTheme() === 'sombre' ? ['242,198,214', '229,139,174', '218,8,98'] : ['229,139,174', '218,8,98', '179,23,90'];
 
         const parts: Particule[] = Array.from({ length: NB }, (_, i) => {
           const a = ang + gsap.utils.random(-0.35, 0.35) - 0.25; // légère montée : la brume flotte
@@ -124,7 +126,7 @@ export function Ombre() {
       {/* Halo rose poudré derrière la silhouette : la lumière vient de l'arrière */}
       <div
         className="pointer-events-none absolute left-[10%] top-1/2 -z-10 h-[620px] w-[620px] -translate-y-1/2 rounded-full max-md:left-1/2 max-md:top-[30%] max-md:-translate-x-1/2"
-        style={{ background: 'radial-gradient(closest-side, rgba(246,215,226,0.95), transparent)' }}
+        style={{ background: 'radial-gradient(closest-side, var(--halo-ombre), transparent)' }}
         aria-hidden="true"
       />
       <canvas ref={canvas} className="pointer-events-none absolute inset-0 z-10 h-full w-full" aria-hidden="true" />

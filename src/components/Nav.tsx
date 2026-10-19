@@ -9,6 +9,7 @@ import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
 import { contacts } from '../data/infos';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import { BasculeTheme } from './BasculeTheme';
 
 const LIENS = PAGES;
 
@@ -60,7 +61,8 @@ export function Nav() {
         >
           <Link to="/" className="flex items-center gap-3 rounded-full py-1 pr-2" aria-label="Nal’Aaris Perfumes — accueil">
             <Monogramme className="h-9 w-auto text-rose-logo" title="" />
-            <span className="label text-encre">Nal’Aaris</span>
+            {/* Sous 420 px, le monogramme suffit : la place va à l'interrupteur clair/sombre */}
+            <span className="label text-encre max-[419px]:hidden">Nal’Aaris</span>
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
@@ -74,6 +76,7 @@ export function Nav() {
           </ul>
 
           <div className="flex items-center gap-1">
+            <BasculeTheme />
             <button
               type="button"
               onClick={ouvrir}
@@ -126,7 +129,7 @@ export function Nav() {
         // @ts-expect-error — `inert` est un attribut HTML valide, pas encore typé dans React 18
         inert={menu ? undefined : ''}
       >
-        <div className="menu-fond verre-fume absolute inset-0 rounded-none border-0" style={{ background: 'rgba(255,255,255,0.86)' }} />
+        <div className="menu-fond verre-fume absolute inset-0 rounded-none border-0" style={{ background: 'var(--menu-fond)' }} />
         <div className="relative flex h-full flex-col px-6 pb-10 pt-5">
           <div className="flex items-center justify-between">
             <Monogramme className="h-10 w-auto text-rose-logo" title="" />

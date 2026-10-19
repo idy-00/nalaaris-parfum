@@ -22,9 +22,9 @@ export function BrumeProvider({ children }: { children: ReactNode }) {
 }
 
 const HALOS = [
-  { cls: 'left-[-25vw] top-[-15vh] h-[85vh] w-[85vw]', color: 'rgba(246,215,226,0.75)' },
-  { cls: 'right-[-30vw] top-[25vh] h-[90vh] w-[90vw]', color: 'rgba(251,234,240,0.9)' },
-  { cls: 'left-[10vw] bottom-[-35vh] h-[80vh] w-[80vw]', color: 'rgba(218,8,98,0.05)' },
+  { cls: 'left-[-25vw] top-[-15vh] h-[85vh] w-[85vw]', color: 'var(--halo-1)' },
+  { cls: 'right-[-30vw] top-[25vh] h-[90vh] w-[90vw]', color: 'var(--halo-2)' },
+  { cls: 'left-[10vw] bottom-[-35vh] h-[80vh] w-[80vw]', color: 'var(--halo-3)' },
 ];
 
 function Brume({ teinte }: { teinte: Style | null }) {
@@ -83,7 +83,7 @@ function Brume({ teinte }: { teinte: Style | null }) {
       ))}
       {/* Grain très léger pour éviter le banding des dégradés sur écrans 8 bits */}
       <div
-        className="absolute inset-0 opacity-[0.035] mix-blend-multiply"
+        className="absolute inset-0 opacity-[0.035] mix-blend-multiply dark:opacity-[0.06] dark:mix-blend-overlay"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",

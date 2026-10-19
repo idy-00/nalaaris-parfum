@@ -2,6 +2,7 @@ import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { gsap, useGSAP, SplitText, MQ } from '../lib/gsap';
+import { ImageTheme } from './ImageTheme';
 
 /**
  * En-tête de page intérieure : fil d'Ariane, grand titre serif, introduction,
@@ -55,7 +56,7 @@ export function EntetePage({
       {photo && (
         // Masque en bas : la photo se fond dans la brume au lieu de s'arrêter net sur le fond
         <div className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,#000_45%,transparent)]" aria-hidden="true">
-          <img
+          <ImageTheme
             src={photo.src}
             srcSet={photo.srcSet}
             sizes="100vw"
@@ -67,7 +68,7 @@ export function EntetePage({
             className="entete-fond h-[115%] w-full object-cover opacity-60"
             style={{ objectPosition: photo.position ?? 'center' }}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.7)_60%,rgba(255,255,255,0.4)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.7)_60%,rgba(255,255,255,0.4)_100%)] dark:bg-[linear-gradient(90deg,rgba(11,10,12,0.92)_0%,rgba(11,10,12,0.6)_60%,rgba(11,10,12,0.35)_100%)]" />
         </div>
       )}
       <div className="shell">

@@ -68,7 +68,7 @@ export function Panneau({
         aria-modal="true"
         aria-labelledby={`${id}-titre`}
         className="tiroir verre-fume absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-drawer md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[440px] md:rounded-l-drawer md:rounded-tr-none"
-        style={{ background: 'rgba(255,247,249,0.94)' }}
+        style={{ background: 'var(--panneau-fond)' }}
       >
         <span className="mx-auto mt-3 block h-1 w-10 rounded-full bg-encre/20 md:hidden" aria-hidden="true" />
         <div className="flex items-center justify-between gap-4 px-5 pt-3 md:px-7 md:pt-7">

@@ -4,6 +4,7 @@ import { ArrowRight, HandHeart, ShieldCheck, Truck } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 import { marque } from '../data/infos';
 import { Photo } from '../components/Photo';
+import { ImageTheme } from '../components/ImageTheme';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
@@ -83,7 +84,7 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
             <div className="absolute inset-0 bg-gradient-to-t from-fond/50 to-transparent" />
           </div>
           <div className="maison-gravure verre-carte absolute -bottom-2 right-0 w-[52%] overflow-hidden rounded-[22px] bg-fond/90 p-4 shadow-douce sm:p-5">
-            <img
+            <ImageTheme
               src="/media/gravure-vaporisateur.webp"
               alt="Gravure ancienne : une femme se parfume avec un vaporisateur"
               width={900}

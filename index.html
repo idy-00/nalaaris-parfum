@@ -26,9 +26,19 @@
     <!--jsonld-->
 
     <style>
-      /* Fond immédiat, avant le chargement du CSS : pas de flash blanc */
+      /* Fond immédiat, avant le chargement du CSS : pas de flash */
       html, body { background: #ffffff; color: #2b1620; }
+      html[data-theme='sombre'], html[data-theme='sombre'] body { background: #0b0a0c; color: #f5efea; }
     </style>
+    <script>
+      // Version choisie (bouton du header) posée avant le premier affichage — voir src/lib/theme.ts
+      (function (h) {
+        var t = 'clair';
+        try { t = localStorage.getItem('nalaaris:theme') === 'sombre' ? 'sombre' : 'clair'; } catch (e) {}
+        h.setAttribute('data-theme', t);
+        if (t === 'sombre') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0B0A0C');
+      })(document.documentElement);
+    </script>
     <script>
       // Intro du hero : le texte [data-intro] peut rester masqué au plus 900 ms, puis s'affiche
       // de lui-même si le JavaScript n'a pas encore pris le relais (voir src/lib/intro.ts).

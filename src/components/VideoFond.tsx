@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 /**
- * Vidéo d'ambiance du hero : le geste du parfum (« pschitt »), étalonnée en clair (rose poudré, blancs), voir scripts/video-hero.sh.
+ * Vidéo d'ambiance du hero : le geste du parfum (« pschitt »), étalonnée en deux versions (voir scripts/video-hero.sh) :
+ * clair (rose poudré, blancs) dans /media, sombre (noir + magenta) dans /media/sombre.
  * Fichiers stables (remplaçables par une vidéo IA sans toucher au code) :
  *   /media/hero-pschitt-desktop.{webm,mp4,webp}  — 1920×1080
  *   /media/hero-pschitt-mobile.{mp4,webp}        — 720×1280
@@ -10,9 +12,30 @@ import { useEffect, useRef, useState } from 'react';
  */
 const MOBILE = '(max-width: 767px)';
 
+function Affiche({ dossier, variante }: { dossier: string; variante: string }) {
+  return (
+    <picture>
+      <source media={MOBILE} srcSet={`${dossier}/hero-pschitt-mobile.webp`} />
+      <img
+        src={`${dossier}/hero-pschitt-desktop.webp`}
+        alt=""
+        width={1920}
+        height={1080}
+        // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
+        fetchpriority="high"
+        data-variante={variante}
+        className="video-fond absolute inset-0 h-full w-full object-cover"
+      />
+    </picture>
+  );
+}
+
 export function VideoFond() {
   const video = useRef<HTMLVideoElement>(null);
   const [jouer, setJouer] = useState(false);
+  // Thème réel connu juste après l'hydratation ; la vidéo, elle, n'est montée qu'après le chargement
+  const { theme } = useTheme();
+  const dossier = theme === 'sombre' ? '/media/sombre' : '/media';
 
   useEffect(() => {
     const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -35,25 +58,19 @@ export function VideoFond() {
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()), { threshold: 0.05 });
     io.observe(v);
     return () => io.disconnect();
-  }, [jouer]);
+  }, [jouer, theme]);
 
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-      {/* Poster : toujours présent, c'est lui qui s'affiche en premier */}
-      <picture>
-        <source media={MOBILE} srcSet="/media/hero-pschitt-mobile.webp" />
-        <img
-          src="/media/hero-pschitt-desktop.webp"
-          alt=""
-          width={1920}
-          height={1080}
-          // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
-          fetchpriority="high"
-          className="video-fond absolute inset-0 h-full w-full object-cover"
-        />
-      </picture>
+      {/* Calque animé au défilement par le hero (reste le même quand la vidéo change de thème) */}
+      <div className="video-calque absolute inset-0">
+      {/* Poster : toujours présent, c'est lui qui s'affiche en premier (version du thème, voir ImageTheme) */}
+      {/* Une balise par version (pas de changement de source sur place : le navigateur chargerait la version desktop au passage) */}
+      {theme === 'clair' && <Affiche dossier="/media" variante="clair" />}
+      {theme === 'sombre' && <Affiche dossier="/media/sombre" variante="sombre" />}
       {jouer && (
         <video
+          key={theme}
           ref={video}
           className="video-fond absolute inset-0 h-full w-full object-cover"
           autoPlay
@@ -65,11 +82,12 @@ export function VideoFond() {
           aria-hidden="true"
           tabIndex={-1}
         >
-          <source media="(min-width: 768px)" src="/media/hero-pschitt-desktop.webm" type="video/webm" />
-          <source media="(min-width: 768px)" src="/media/hero-pschitt-desktop.mp4" type="video/mp4" />
-          <source src="/media/hero-pschitt-mobile.mp4" type="video/mp4" />
+          <source media="(min-width: 768px)" src={`${dossier}/hero-pschitt-desktop.webm`} type="video/webm" />
+          <source media="(min-width: 768px)" src={`${dossier}/hero-pschitt-desktop.mp4`} type="video/mp4" />
+          <source src={`${dossier}/hero-pschitt-mobile.mp4`} type="video/mp4" />
         </video>
       )}
+      </div>
     </div>
   );
 }

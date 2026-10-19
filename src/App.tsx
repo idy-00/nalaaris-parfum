@@ -5,6 +5,7 @@ import { Nav } from './components/Nav';
 import { Footer } from './components/Footer';
 import { MaSelection } from './components/MaSelection';
 import { SelectionProvider } from './hooks/useSelection';
+import { ThemeProvider } from './hooks/useTheme';
 import { gsap, useGSAP, ScrollTrigger, prefersReducedMotion } from './lib/gsap';
 import { ROUTES } from './lib/routes';
 
@@ -133,6 +134,7 @@ export function Coquille({ pages }: { pages: Pages }) {
   const { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, NotFound } = pages;
 
   return (
+    <ThemeProvider>
     <SelectionProvider>
       <BrumeProvider>
         <GestionDefilement />
@@ -159,5 +161,6 @@ export function Coquille({ pages }: { pages: Pages }) {
         <MaSelection page={pathname} />
       </BrumeProvider>
     </SelectionProvider>
+    </ThemeProvider>
   );
 }

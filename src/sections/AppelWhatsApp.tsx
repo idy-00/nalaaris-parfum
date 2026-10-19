@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { IconeWhatsApp, ICONES_RESEAUX } from '../components/IconesReseaux';
+import { ImageTheme } from '../components/ImageTheme';
 import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
 import { contacts } from '../data/infos';
 import { ROUTES } from '../lib/routes';
@@ -23,7 +24,7 @@ export function AppelWhatsApp({ titre = 'Une question, une envie ?', catalogue 
         className="verre-rose relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-12 md:grid-cols-[1fr_auto] md:px-14 md:py-16"
       >
         <span className="reflet" aria-hidden="true" />
-        <img
+        <ImageTheme
           src="/media/gravure-vaporisateur.webp"
           alt=""
           width={900}

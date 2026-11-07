@@ -32,7 +32,7 @@ export function Infos({ numero }: { numero?: string }) {
             <li key={b.id} data-reveal className="verre-carte verre-voile rounded-card p-6">
               <Icone size={24} strokeWidth={1.5} className="text-rose-doux" aria-hidden="true" />
               <h3 className="mt-5 font-serif text-2xl">{b.titre}</h3>
-              <ul className="mt-3 space-y-2 text-ivoire/85">
+              <ul className="mt-3 space-y-2 text-encre/85">
                 {b.lignes.map((l) => (
                   <li key={l}>{l}</li>
                 ))}

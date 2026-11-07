@@ -12,7 +12,8 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 SRC = "public/brand/logo-nalaaris.jpg"
 FONTS = "node_modules/@fontsource-variable"
-NOIR = (11, 10, 12)
+FOND = (255, 247, 249)  # blanc rosé (version Rose & blanc ; V2 noire : tag v2-noir-rose)
+ENCRE = (43, 22, 32)
 
 logo = Image.open(SRC).convert("RGB")
 W, H = logo.size
@@ -34,13 +35,13 @@ p240.thumbnail((240, 240), Image.LANCZOS)
 p240.save("public/brand/logo-nalaaris-transparent-240.webp", "WEBP", quality=88, method=6)
 print("logo détouré", petit.size)
 
-# Image de partage 1200×630 : noir, halo bordeaux, logo à gauche, nom et promesse à droite
-fond = Image.new("RGB", (1200, 630), NOIR)
+# Image de partage 1200×630 : blanc rosé, halo rose poudré, logo à gauche, nom et promesse à droite
+fond = Image.new("RGB", (1200, 630), FOND)
 halo = Image.new("L", (1200, 630), 0)
 d = ImageDraw.Draw(halo)
 d.ellipse((-80, -120, 620, 760), fill=255)
 halo = halo.filter(ImageFilter.GaussianBlur(120))
-fond = Image.composite(Image.new("RGB", fond.size, (74, 6, 32)), fond, halo.point(lambda v: int(v * 0.85)))
+fond = Image.composite(Image.new("RGB", fond.size, (246, 215, 226)), fond, halo.point(lambda v: int(v * 0.9)))
 l = detoure.copy()
 l.thumbnail((500, 500), Image.LANCZOS)
 fond.paste(l, (55, 65), l)
@@ -50,17 +51,17 @@ serif_i = ImageFont.truetype(f"{FONTS}/bodoni-moda/files/bodoni-moda-latin-opsz-
 sans = ImageFont.truetype(f"{FONTS}/manrope/files/manrope-latin-wght-normal.woff2", 24)
 d = ImageDraw.Draw(fond)
 x = 610
-d.text((x, 190), "Nal’Aaris", font=serif, fill=(245, 239, 234))
-d.text((x, 262), "Perfumes", font=serif, fill=(245, 239, 234))
+d.text((x, 190), "Nal’Aaris", font=serif, fill=ENCRE)
+d.text((x, 262), "Perfumes", font=serif, fill=ENCRE)
 d.line((x, 362, x + 70, 362), fill=(218, 8, 98), width=2)
-d.text((x, 385), "Parfums authentiques pour elle et lui", font=sans, fill=(242, 198, 214))
-d.text((x, 420), "Dakar · commande sur WhatsApp", font=sans, fill=(169, 158, 165))
-d.text((x, 480), "by Yannick & Laetitia", font=serif_i, fill=(229, 139, 174))
+d.text((x, 385), "Parfums authentiques pour elle et lui", font=sans, fill=(138, 37, 80))
+d.text((x, 420), "Dakar · commande sur WhatsApp", font=sans, fill=(110, 90, 100))
+d.text((x, 480), "by Yannick & Laetitia", font=serif_i, fill=(179, 23, 90))
 fond.save("public/brand/partage-1200x630.jpg", quality=86, optimize=True, progressive=True)
 print("partage 1200x630")
 
-# Icône iOS : logo détouré sur noir
-ic = Image.new("RGB", (180, 180), NOIR)
+# Icône iOS : logo détouré sur blanc
+ic = Image.new("RGB", (180, 180), (255, 255, 255))
 l = detoure.copy()
 l.thumbnail((164, 164), Image.LANCZOS)
 ic.paste(l, ((180 - l.width) // 2, (180 - l.height) // 2), l)

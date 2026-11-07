@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Encode la vidéo du hero « pschitt » depuis une source (Pexels 4154241 par défaut).
-# Usage : bash scripts/video-hero.sh <source.mp4> <lut.cube> [debut_s]
+# Usage : bash scripts/video-hero.sh <source.mp4> <lut.cube | clair> [debut_s]
 # Pour remplacer par une vidéo IA : même commande, même noms de sortie → aucun changement de code.
 set -euo pipefail
 SRC="$1"; LUT="$2"; DEBUT="${3:-0.4}"
@@ -13,8 +13,13 @@ BOUCLE="[0:v]trim=start=${DEBUT}:duration=${DUREE},setpts=PTS-STARTPTS,fps=25,sp
 [a]trim=start=${FONDU},setpts=PTS-STARTPTS[corps];[b]trim=duration=${FONDU},setpts=PTS-STARTPTS[tete];\
 [corps][tete]xfade=transition=fade:duration=${FONDU}:offset=$(awk "BEGIN{print $DUREE - 2*$FONDU}")"
 
-# Étalonnage : noir profond, magenta du logo dans les reflets uniquement
-GRADE="lut3d=${LUT},vignette=PI/5"
+if [ "$LUT" = "clair" ]; then
+  # Étalonnage « Rose & blanc » : carte de dégradé pastel — ombres rose poudré, peau et brume blanc rosé
+  GRADE="hue=s=0,eq=contrast=1.2:brightness=0.02,curves=r='0/0.78 0.35/0.90 0.65/0.965 1/1':g='0/0.56 0.35/0.76 0.65/0.885 1/0.99':b='0/0.64 0.35/0.81 0.65/0.91 1/0.995'"
+else
+  # Étalonnage V2 (noir & rose) : noir profond, magenta du logo dans les reflets uniquement
+  GRADE="lut3d=${LUT},vignette=PI/5"
+fi
 
 # Desktop 16:9 — miroir : flacon et brume à droite du panneau de texte
 ffmpeg -v error -y -i "$SRC" -filter_complex "${BOUCLE}[l];[l]crop=2560:1440:86:0,hflip,${GRADE},scale=1920:1080,format=yuv420p[v]" \

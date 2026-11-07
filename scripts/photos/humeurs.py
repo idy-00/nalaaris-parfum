@@ -12,7 +12,7 @@ SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ICI, "sources")
 OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ICI, "..", "..", "public", "media")
 
 # Moins saturé : ombres neutres, milieu prune désaturé, rose seulement tout en haut
-STOPS = [
+STOPS_SOMBRE = [
     (0.00, (8, 7, 8)),
     (0.35, (26, 14, 19)),
     (0.60, (68, 30, 45)),
@@ -20,6 +20,17 @@ STOPS = [
     (0.93, (214, 150, 176)),
     (1.00, (242, 222, 230)),
 ]
+# Thème « clair » (Rose & blanc, par défaut) : ombres framboise douce, milieux rose poudré, hautes lumières blanches.
+# NALAARIS_THEME=sombre régénère la version noir & rose (V2).
+STOPS_CLAIR = [
+    (0.00, (140, 52, 88)),
+    (0.30, (196, 120, 152)),
+    (0.55, (232, 184, 202)),
+    (0.80, (248, 226, 234)),
+    (1.00, (255, 251, 252)),
+]
+CLAIR = os.environ.get("NALAARIS_THEME", "clair") != "sombre"
+STOPS = STOPS_CLAIR if CLAIR else STOPS_SOMBRE
 
 
 def gradient_map(img, gamma=1.0, contraste=1.0, noir=0.0):
@@ -77,7 +88,8 @@ TRAVAUX = {
 apercus = []
 for nom, (src, box, reglages) in TRAVAUX.items():
     im = Image.open(os.path.join(SRC, src + ".jpg")).convert("RGB")
-    im = vignette(gradient_map(recadrer(im, box, 4 / 5), **reglages))
+    im = gradient_map(recadrer(im, box, 4 / 5), **reglages)
+    im = vignette(im, 0.5 if not CLAIR else 0.12)
     for w in (480, 900):
         grain(im.resize((w, round(w * 5 / 4)), Image.LANCZOS)).save(os.path.join(OUT, f"{nom}-{w}.webp"), "WEBP", quality=74, method=6)
     apercus.append(im)

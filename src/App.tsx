@@ -5,6 +5,7 @@ import { Nav } from './components/Nav';
 import { Footer } from './components/Footer';
 import { MaSelection } from './components/MaSelection';
 import { SelectionProvider } from './hooks/useSelection';
+import { ThemeProvider } from './hooks/useTheme';
 import { gsap, useGSAP, ScrollTrigger, prefersReducedMotion } from './lib/gsap';
 import { ROUTES } from './lib/routes';
 
@@ -92,7 +93,7 @@ class FiletErreur extends Component<{ cle: string; children: ReactNode }, { erre
     return (
       <div className="shell flex min-h-[70svh] flex-col items-start justify-center gap-6 pt-28">
         <h1 className="text-3xl">Un petit souci d’affichage.</h1>
-        <p className="max-w-md text-lg text-ivoire/80">Recharge la page, ou repars de l’accueil.</p>
+        <p className="max-w-md text-lg text-encre/80">Recharge la page, ou repars de l’accueil.</p>
         <div className="flex flex-wrap gap-3">
           <button type="button" className="btn btn-rose" onClick={() => window.location.reload()}>
             Recharger
@@ -133,6 +134,7 @@ export function Coquille({ pages }: { pages: Pages }) {
   const { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, NotFound } = pages;
 
   return (
+    <ThemeProvider>
     <SelectionProvider>
       <BrumeProvider>
         <GestionDefilement />
@@ -159,5 +161,6 @@ export function Coquille({ pages }: { pages: Pages }) {
         <MaSelection page={pathname} />
       </BrumeProvider>
     </SelectionProvider>
+    </ThemeProvider>
   );
 }

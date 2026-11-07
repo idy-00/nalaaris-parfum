@@ -4,6 +4,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { CATEGORIES, STYLES, marques, type Style } from '../data/parfums';
 import { ecrireFiltres, filtrer, lireFiltres, nbFiltresActifs, type Filtres } from '../lib/catalogue';
 import { CarteParfum } from '../components/CarteParfum';
+import { useHydrate } from '../hooks/useHydrate';
 import { Panneau } from '../components/Panneau';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageRecherche } from '../lib/whatsapp';
@@ -11,7 +12,9 @@ import { Flip, gsap, useGSAP, ScrollTrigger, MQ } from '../lib/gsap';
 
 export function Catalogue() {
   const [params, setParams] = useSearchParams();
-  const filtres = useMemo(() => lireFiltres(params), [params]);
+  // Le catalogue pré-rendu n'a pas de filtres : ceux de l'URL s'appliquent juste après l'hydratation
+  const hydrate = useHydrate();
+  const filtres = useMemo(() => lireFiltres(hydrate ? params : new URLSearchParams()), [params, hydrate]);
   const resultats = useMemo(() => filtrer(filtres), [filtres]);
   const [panneau, setPanneau] = useState(false);
   const [saisie, setSaisie] = useState(filtres.q);

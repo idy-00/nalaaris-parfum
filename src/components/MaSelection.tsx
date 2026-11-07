@@ -7,7 +7,7 @@ import { VisuelParfum } from './FlaconPlaceholder';
 import { IconeWhatsApp } from './IconesReseaux';
 import { buildWhatsAppLink, messageSelection } from '../lib/whatsapp';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
-import { DISPO_LABEL } from '../data/parfums';
+import { DISPO_LABEL, nomComplet } from '../data/parfums';
 import { ROUTES } from '../lib/routes';
 
 /**
@@ -175,7 +175,7 @@ export function MaSelection({ page }: { page: string }) {
                             onClick={fermer}
                             className="block font-serif text-xl leading-tight hover:text-rose-doux"
                           >
-                            {parfum.nom}
+                            {nomComplet(parfum)}
                           </Link>
                           <p className="text-sm text-sourdine">{parfum.marque}</p>
                         </div>
@@ -183,13 +183,13 @@ export function MaSelection({ page }: { page: string }) {
                           type="button"
                           onClick={() => retirer(parfum.slug, ml)}
                           className="-mr-1 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-sourdine hover:text-rose-doux"
-                          aria-label={`Retirer ${parfum.nom} ${ml} ml`}
+                          aria-label={`Retirer ${nomComplet(parfum)} ${ml} ml`}
                         >
                           <Trash2 size={18} strokeWidth={1.5} />
                         </button>
                       </div>
                       {/* Contenance : puces, comme sur la fiche */}
-                      <div role="radiogroup" aria-label={`Contenance pour ${parfum.nom}`} className="mt-2 flex flex-wrap gap-1.5">
+                      <div role="radiogroup" aria-label={`Contenance pour ${nomComplet(parfum)}`} className="mt-2 flex flex-wrap gap-1.5">
                         {parfum.contenances.map((x) => (
                           <button
                             key={x.ml}

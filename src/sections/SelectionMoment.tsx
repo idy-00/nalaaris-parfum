@@ -12,7 +12,9 @@ export function SelectionMoment({ numero }: { numero?: string }) {
   // Coups de cœur et nouveautés en alternance, 4 au maximum
   const coeur = parfums.filter((p) => p.coupDeCoeur);
   const nouveaux = parfums.filter((p) => p.nouveau && !p.coupDeCoeur);
-  const liste = coeur.flatMap((p, i) => [p, nouveaux[i]]).filter(Boolean).slice(0, 4);
+  const choisis = coeur.flatMap((p, i) => [p, nouveaux[i]]).filter(Boolean);
+  // Pas encore 4 parfums mis en avant : on complète avec le reste du catalogue (jamais de section vide)
+  const liste = [...choisis, ...parfums.filter((p) => !choisis.includes(p))].slice(0, 4);
 
   useGSAP(
     () => {

@@ -16,14 +16,30 @@ Variable optionnelle au build : `VITE_SITE_URL=https://www.mon-domaine.com` (URL
 
 ## Modifier le catalogue
 
-Tout se passe dans **`src/data/parfums.ts`** :
+Tout se passe dans **`src/data/parfums.ts`** (tableau `vrais`) :
 
-1. Copier un bloc parfum existant et changer `slug` (unique, sans accents ni espaces), `nom`, `marque`, `categorie`, `styles`, `description`, `notes`, `contenances`.
-2. Photos : les déposer dans `public/parfums/<slug>/` (WebP, carré ou 4:5) et les lister dans `images`. Sans photo, un flacon dessiné s’affiche automatiquement.
-3. Prix : ajouter `prix` (en FCFA) sur une contenance. Sans prix, le site affiche « Prix sur demande ».
-4. Disponibilité par contenance : `disponible`, `limite` ou `epuise`.
+1. **Flacon** : déposer la photo produit (flacon + boîte, fond blanc) dans `scripts/photos-brutes/<slug>.png`, puis
+   `python scripts/detourer.py <slug> --apercu` → `public/parfums/flacons/<slug>.webp` (détouré, 1000 px de haut).
+   Si le flacon est à côté de sa boîte, ajouter son cadre dans `CADRES` (en haut du script). Contrôle visuel :
+   `scripts/photos-brutes/_controle.png` (fond noir + fond blanc : pas de liseré, pas de reste de boîte).
+   Dépendances : `pip install "rembg[cpu]" pillow numpy opencv-python-headless`.
+2. **Données** : copier un bloc existant et changer `slug` (unique, sans accents ni espaces), `nom` (+ `sousNom`),
+   `marque`, `type`, `famille`, `categorie`, `styles` (filtres), `description`, `notes` (tête / cœur / fond, ou `bouquet`),
+   `flacon`, `halo` (lueur derrière le flacon), `ingredients` (6 gravures max, liste dans `src/lib/ingredients.ts`),
+   `porter` (« Quand le porter ») et `contenances`.
+3. **Prix** : ajouter `prix` (en FCFA) sur une contenance. Sans prix, le site affiche « Prix sur demande ».
+4. **Disponibilité** par contenance : `disponible`, `limite` ou `epuise`.
+5. **Visuels Instagram** : `npm run cartes` → `public/parfums/cartes/<slug>-clair.jpg` et `-sombre.jpg` (1080 × 1350).
+   La version claire est aussi l’image de partage (WhatsApp, Instagram) de la fiche.
 
-Contacts, zones de livraison, retrait et paiement : **`src/data/infos.ts`** (les `TODO` sont visibles uniquement en mode développement).
+Les 12 parfums fictifs (`demo: true`) sont masqués par `AFFICHER_DEMO` dans `src/data/reglages.ts`.
+
+> **Photos actuelles des 5 parfums** : ce sont des captures d’écran basse résolution (flacon ≈ 180 × 330 px,
+> agrandi ×3). À remplacer par des photos HD fournies par la cliente : les déposer dans `scripts/photos-brutes/`
+> sous le même nom, ajuster `CADRES` (et retirer les retouches `RETOUCHES`, propres aux captures), relancer
+> `scripts/detourer.py` puis `npm run cartes`.
+
+Contacts : **`src/data/infos.ts`** (les `TODO` sont visibles uniquement en mode développement).
 
 ## Déploiement Cloudflare Pages
 
@@ -39,6 +55,7 @@ Contacts, zones de livraison, retrait et paiement : **`src/data/infos.ts`** (les
 | `/parfum/<slug>` | Fiche parfum : contenance, disponibilité, notes, commande WhatsApp, univers, suggestions |
 | `/la-maison` | Yannick & Laetitia, engagements, devise, humeurs |
 | `/commander` | Étapes, livraison / retrait / paiement, questions fréquentes, contact |
+| `/carte/<slug>?theme=clair\|sombre` | Carte parfum 1080 × 1350 pour Instagram (non indexée, sert à `npm run cartes`) |
 
 Chaque page a son aperçu de partage (WhatsApp, Instagram) généré au build, plus `sitemap.xml` et `robots.txt`.
 

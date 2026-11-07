@@ -1,5 +1,5 @@
 import { contacts, SITE_URL } from '../data/infos';
-import type { Parfum } from '../data/parfums';
+import { nomComplet, type Parfum } from '../data/parfums';
 
 const SALUT = 'Bonjour Nal’Aaris Perfumes 🌸';
 
@@ -14,7 +14,7 @@ export const ficheUrl = (slug: string) => `${SITE_URL}/parfum/${slug}`;
 export function messageFiche(p: Parfum, ml: number): string {
   return [
     SALUT,
-    `Je voudrais ${p.nom} (${p.marque}) en ${ml} ml.`,
+    `Je voudrais ${nomComplet(p)} (${p.marque}) en ${ml} ml.`,
     'Est-il disponible ?',
     `Lien : ${ficheUrl(p.slug)}`,
   ].join('\n');
@@ -24,7 +24,7 @@ export function messageFiche(p: Parfum, ml: number): string {
 export function messageAlerte(p: Parfum, ml: number): string {
   return [
     SALUT,
-    `${p.nom} (${p.marque}) en ${ml} ml est indiqué épuisé.`,
+    `${nomComplet(p)} (${p.marque}) en ${ml} ml est indiqué épuisé.`,
     'Pouvez-vous me prévenir quand il revient ?',
     `Lien : ${ficheUrl(p.slug)}`,
   ].join('\n');
@@ -35,7 +35,7 @@ export function messageSelection(lignes: { parfum: Parfum; ml: number }[]): stri
   return [
     SALUT,
     'Voici ma sélection :',
-    ...lignes.map(({ parfum, ml }) => `• ${parfum.nom} (${parfum.marque}) — ${ml} ml`),
+    ...lignes.map(({ parfum, ml }) => `• ${nomComplet(parfum)} (${parfum.marque}) — ${ml} ml`),
     'Sont-ils disponibles ? Merci !',
   ].join('\n');
 }

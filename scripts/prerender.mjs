@@ -9,6 +9,7 @@
  * Une adresse inconnue reçoit 404.html avec le statut 404.
  */
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -21,6 +22,13 @@ const { render, parfums, contacts, marque, SITE_URL } = await import(pathToFileU
 const echapper = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const absolue = (u) => (u.startsWith('http') ? u : `${SITE_URL}${u}`);
 const IMAGE_PARTAGE = '/brand/partage-1200x630.jpg';
+
+/** Nom complet : « L’Interdit Rouge Ultime ». */
+const nomComplet = (p) => (p.sousNom ? `${p.nom} ${p.sousNom}` : p.nom);
+
+/** Image de partage d'une fiche : la carte claire (npm run cartes), sinon la photo, sinon l'image générale. */
+const carte = (p) => `/parfums/cartes/${p.slug}-clair.jpg`;
+const imageFiche = (p) => (existsSync(resolve(dist, carte(p).slice(1))) ? carte(p) : (p.images[0] ?? IMAGE_PARTAGE));
 
 const gabarit = await readFile(resolve(dist, 'index.html'), 'utf8');
 for (const m of ['<!--app-->', '<!--og:start-->', '<!--jsonld-->']) {
@@ -44,11 +52,11 @@ const magasin = {
 };
 
 function produit(p) {
-  const image = p.images[0] ? absolue(p.images[0]) : absolue(IMAGE_PARTAGE);
+  const image = absolue(p.flacon ?? imageFiche(p));
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: p.nom,
+    name: nomComplet(p),
     brand: { '@type': 'Brand', name: p.marque },
     description: p.description,
     image,
@@ -95,14 +103,23 @@ const PAGES = [
   ...parfums.map((p) => ({
     url: `/parfum/${p.slug}`,
     fichier: `parfum/${p.slug}.html`,
-    titre: `${p.nom} — ${p.marque} · Nal’Aaris Perfumes`,
-    ogTitre: `${p.nom} — ${p.marque}`,
+    titre: `${nomComplet(p)} — ${p.marque} · Nal’Aaris Perfumes`,
+    ogTitre: `${nomComplet(p)} — ${p.marque}`,
     description: `${p.description.split('. ')[0]}. Commande sur WhatsApp, livraison à Dakar.`,
-    // Image de partage par fiche : la photo du parfum quand elle sera fournie, sinon l'image générale
-    image: p.images[0] ?? IMAGE_PARTAGE,
+    image: imageFiche(p),
     type: 'product',
     jsonld: [produit(p)],
   })),
+  // Cartes Instagram (/carte/<slug>?theme=…) : outil interne pour `npm run cartes`, non indexé
+  ...parfums
+    .filter((p) => p.flacon)
+    .map((p) => ({
+      url: `/carte/${p.slug}`,
+      fichier: `carte/${p.slug}.html`,
+      titre: `Carte · ${nomComplet(p)} — ${p.marque}`,
+      description: `Carte parfum ${nomComplet(p)} (${p.marque}) — Nal’Aaris Perfumes.`,
+      noindex: true,
+    })),
   {
     url: '/404',
     fichier: '404.html',
@@ -127,6 +144,7 @@ for (const pg of PAGES) {
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${image}" />
     ${image.endsWith(IMAGE_PARTAGE) ? '<meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />' : ''}
+    ${image.includes('/parfums/cartes/') ? '<meta property="og:image:width" content="1080" />\n    <meta property="og:image:height" content="1350" />' : ''}
     <meta name="twitter:card" content="summary_large_image" />
     <!--og:end-->`;
   const jsonld = (pg.jsonld ?? []).map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n    ');

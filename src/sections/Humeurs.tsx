@@ -6,6 +6,7 @@ import { ecrireFiltres, lireFiltres } from '../lib/catalogue';
 import { ROUTES } from '../lib/routes';
 import { useTeinteBrume } from '../components/Brume';
 import { PhotoHumeur } from '../components/Photo';
+import { useHydrate } from '../hooks/useHydrate';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 
 /** « Choisis ton humeur » : 6 tuiles photographiques qui teintent la brume et filtrent le catalogue. */
@@ -14,7 +15,8 @@ export function Humeurs({ numero }: { numero?: string }) {
   const setTeinte = useTeinteBrume();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const actifs = lireFiltres(params).styles;
+  const hydrate = useHydrate(); // filtres de l'URL ignorés au pré-rendu et à l'hydratation
+  const actifs = hydrate ? lireFiltres(params).styles : [];
 
   useGSAP(
     () => {
@@ -76,7 +78,7 @@ export function Humeurs({ numero }: { numero?: string }) {
                 onFocus={() => setTeinte(s.id)}
                 onBlur={() => setTeinte(null)}
                 aria-pressed={actif}
-                aria-label={`${s.label} — ${s.humeur}. ${n} parfum${n > 1 ? 's' : ''}`}
+                aria-label={`${s.label} — ${s.humeur}. ${n ? `${n} parfum${n > 1 ? 's' : ''}` : 'Bientôt'}`}
                 className={`tuile group relative block aspect-[4/5] w-full overflow-hidden rounded-card text-left ring-1 ring-inset transition-shadow lg:aspect-[5/6] ${
                   actif ? 'ring-2 ring-rose-doux' : 'ring-encre/10 hover:ring-rose-doux/50'
                 }`}
@@ -94,9 +96,8 @@ export function Humeurs({ numero }: { numero?: string }) {
                   <ArrowUpRight size={18} strokeWidth={1.5} />
                 </span>
                 <span className="tuile-texte absolute inset-x-0 bottom-0 flex flex-col gap-1 p-4 md:p-6" aria-hidden="true">
-                  <span className="label text-xs text-rose-brume/90">
-                    {n} parfum{n > 1 ? 's' : ''}
-                  </span>
+                  {/* Humeur pas encore dans la sélection : « Bientôt » (la tuile reste cliquable → état vide du catalogue) */}
+                  <span className="label text-xs text-rose-brume/90">{n ? `${n} parfum${n > 1 ? 's' : ''}` : 'Bientôt'}</span>
                   <span className="font-serif text-[1.9rem] leading-none md:text-[2.6rem]">{s.label}</span>
                   <span className="text-sm leading-snug text-encre/80 md:text-base">{s.humeur}</span>
                 </span>

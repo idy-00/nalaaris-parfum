@@ -4,11 +4,13 @@ import { Check, Plus } from 'lucide-react';
 import {
   categorieLabel,
   contenanceParDefaut,
+  nomComplet,
   dispoGlobale,
   styleLabel,
   type Parfum,
 } from '../data/parfums';
 import { SceneParfum, VisuelParfum } from './FlaconPlaceholder';
+import { ScenePalette } from './ScenePalette';
 import { BadgeDispo } from './Dispo';
 import { useSelection } from '../hooks/useSelection';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
@@ -24,16 +26,20 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
 
   // Survol desktop : légère montée, flacon +3 %. Mobile : retour tactile via :active (CSS).
   const { contextSafe } = useGSAP({ scope: root });
+  // Cibles présentes selon le visuel (scène palette ou flacon dessiné) : pas de tween sur un élément absent
+  const cibles = (sel: string) => root.current?.querySelectorAll(sel) ?? [];
   const entrer = contextSafe(() => {
     if (!window.matchMedia(`${MQ.desktop} and ${MQ.motion}`).matches) return;
     gsap.to(root.current, { y: -4, duration: 0.3, overwrite: 'auto' });
-    gsap.to('.flacon', { scale: 1.03, duration: 0.35, overwrite: 'auto' });
-    gsap.to('.scene-photo', { scale: 1.16, duration: 0.9, ease: 'power2.out', overwrite: 'auto' });
+    gsap.to(cibles('.flacon'), { scale: 1.03, duration: 0.35, overwrite: 'auto' });
+    const photo = cibles('.scene-photo');
+    if (photo.length) gsap.to(photo, { scale: 1.16, duration: 0.9, ease: 'power2.out', overwrite: 'auto' });
   });
   const sortir = contextSafe(() => {
     gsap.to(root.current, { y: 0, scale: 1, duration: 0.25, overwrite: 'auto' });
-    gsap.to('.flacon', { scale: 1, duration: 0.25, overwrite: 'auto' });
-    gsap.to('.scene-photo', { scale: 1.1, duration: 0.5, overwrite: 'auto' });
+    gsap.to(cibles('.flacon'), { scale: 1, duration: 0.25, overwrite: 'auto' });
+    const photo = cibles('.scene-photo');
+    if (photo.length) gsap.to(photo, { scale: 1.1, duration: 0.5, overwrite: 'auto' });
   });
   const presser = contextSafe((e: ReactPointerEvent) => {
     if (e.pointerType === 'mouse') return;
@@ -56,13 +62,18 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
       <Link
         to={`/parfum/${parfum.slug}`}
         className="flex flex-1 flex-col rounded-card focus-visible:outline-offset-[-2px]"
-        aria-label={`${parfum.nom}, ${parfum.marque}`}
       >
         <div className="relative m-1.5 aspect-[4/5] overflow-hidden rounded-[19px]">
-          <SceneParfum parfum={parfum} />
-          <div className="flacon absolute inset-0 px-5 pb-3 pt-6 will-change-transform" data-flip-flacon={parfum.slug}>
-            <VisuelParfum parfum={parfum} />
-          </div>
+          {parfum.flacon ? (
+            <ScenePalette parfum={parfum} variante="carte" />
+          ) : (
+            <>
+              <SceneParfum parfum={parfum} />
+              <div className="flacon absolute inset-0 px-5 pb-3 pt-6 will-change-transform" data-flip-flacon={parfum.slug}>
+                <VisuelParfum parfum={parfum} />
+              </div>
+            </>
+          )}
           {(parfum.nouveau || parfum.coupDeCoeur) && (
             <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-encre/15 bg-fond/70 px-2.5 py-1.5 text-xs text-rose-brume md:text-[0.8125rem]">
               {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
@@ -73,7 +84,10 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
           <p className="label text-xs text-sourdine">
             {categorieLabel(parfum.categorie)} · {styleLabel(parfum.styles[0])}
           </p>
-          <h3 className="text-xl leading-tight text-encre md:text-[1.5rem]">{parfum.nom}</h3>
+          <h3 className="text-xl leading-tight text-encre md:text-[1.5rem]">
+            {parfum.nom}
+            {parfum.sousNom && <em className="block text-[0.8em] text-rose-doux">{parfum.sousNom}</em>}
+          </h3>
           <p className="text-sm text-sourdine">{parfum.marque}</p>
           <BadgeDispo dispo={dispo} className="mt-auto pt-2 text-[0.8125rem]" />
         </div>
@@ -90,8 +104,8 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
           }`}
           aria-label={
             dejaLa
-              ? `${parfum.nom} est dans ta sélection — ouvrir ma sélection`
-              : `Ajouter ${parfum.nom} (${c.ml} ml) à ma sélection`
+              ? `${nomComplet(parfum)} est dans ta sélection — ouvrir ma sélection`
+              : `Ajouter ${nomComplet(parfum)} (${c.ml} ml) à ma sélection`
           }
         >
           {dejaLa ? <Check size={18} strokeWidth={2} /> : <Plus size={18} strokeWidth={1.5} />}

@@ -21,6 +21,7 @@ const chargeurs = {
   Fiche: () => import('./pages/Fiche').then((m) => ({ default: m.Fiche })),
   MaisonPage: () => import('./pages/MaisonPage').then((m) => ({ default: m.MaisonPage })),
   CommanderPage: () => import('./pages/CommanderPage').then((m) => ({ default: m.CommanderPage })),
+  CartePage: () => import('./pages/CartePage').then((m) => ({ default: m.CartePage })),
 };
 
 const pages: Pages = {
@@ -30,6 +31,7 @@ const pages: Pages = {
   Fiche: lazy(chargeurs.Fiche),
   MaisonPage: lazy(chargeurs.MaisonPage),
   CommanderPage: lazy(chargeurs.CommanderPage),
+  CartePage: lazy(chargeurs.CartePage),
 };
 
 /** Précharge la page courante avant d'hydrater : React reprend le HTML pré-rendu sans le reconstruire. */
@@ -38,6 +40,7 @@ function prechargement(chemin: string) {
   if (chemin.startsWith('/parfum/')) return chargeurs.Fiche();
   if (chemin.startsWith('/la-maison')) return chargeurs.MaisonPage();
   if (chemin.startsWith('/commander')) return chargeurs.CommanderPage();
+  if (chemin.startsWith('/carte/')) return chargeurs.CartePage();
   return Promise.resolve();
 }
 

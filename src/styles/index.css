@@ -292,3 +292,60 @@
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .safe-bottom { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+
+/* ------------------------------------------------------------------
+   Scène « palette » (src/components/ScenePalette.tsx) et gravures d'ingrédients
+------------------------------------------------------------------- */
+:root {
+  --teinte-gravure: rgb(var(--c-rose-logo) / 0.07);
+  --ombre-flacon: drop-shadow(0 1.6cqw 2.2cqw rgba(122, 28, 66, 0.2));
+  --ombre-sol: rgba(122, 28, 66, 0.2);
+}
+[data-theme='sombre'] {
+  --teinte-gravure: rgb(var(--c-rose-logo) / 0.12);
+  --ombre-flacon: drop-shadow(0 1.6cqw 2.4cqw rgba(0, 0, 0, 0.6));
+  --ombre-sol: rgba(0, 0, 0, 0.55);
+}
+
+.scene-palette { container-type: inline-size; }
+.sp-arche {
+  background:
+    radial-gradient(60% 46% at 50% 58%, var(--halo), transparent 70%),
+    linear-gradient(rgb(var(--c-fond-3)), rgb(var(--c-fond-2)));
+}
+.sp-flacon { z-index: 2; }
+.sp-flacon img { filter: var(--ombre-flacon); }
+.sp-ombre {
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ombre-sol), transparent);
+  filter: blur(0.6cqw);
+}
+/* Reflet : flacon retourné, très léger, qui s'efface en 28 % (masque appliqué avant le retournement) */
+.sp-reflet img {
+  transform: scaleY(-1);
+  opacity: 0.14;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 28%);
+  mask-image: linear-gradient(to top, #000, transparent 28%);
+}
+
+/* Gravures : trait rose doux du thème, remplissage rose logo très léger */
+.gravure { color: rgb(var(--c-rose-doux)); overflow: visible; }
+.gravure .ln {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.gravure .fl { fill: var(--teinte-gravure); }
+.gravure .dt {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+.gravure .dot { fill: currentColor; stroke: none; }

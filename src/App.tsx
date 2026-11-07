@@ -16,6 +16,7 @@ export interface Pages {
   Fiche: ComponentType;
   MaisonPage: ComponentType;
   CommanderPage: ComponentType;
+  CartePage: ComponentType;
   NotFound: ComponentType;
 }
 
@@ -131,7 +132,20 @@ function TransitionPage({ children }: { children: ReactNode }) {
 export function Coquille({ pages }: { pages: Pages }) {
   const { pathname, hash } = useLocation();
   if (pathname === ROUTES.accueil && ANCRES[hash]) return <Navigate to={ANCRES[hash]} replace />;
-  const { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, NotFound } = pages;
+  const { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, CartePage, NotFound } = pages;
+
+  // Carte Instagram (/carte/:slug) : la carte seule, sans navigation ni pied de page
+  if (pathname.startsWith('/carte/')) {
+    return (
+      <ThemeProvider>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/carte/:slug" element={<CartePage />} />
+          </Routes>
+        </Suspense>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>

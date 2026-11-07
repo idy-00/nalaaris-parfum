@@ -35,6 +35,9 @@
       (function (h) {
         var t = 'clair';
         try { t = localStorage.getItem('nalaaris:theme') === 'sombre' ? 'sombre' : 'clair'; } catch (e) {}
+        // ?theme=clair|sombre (cartes Instagram, captures) : imposé pour la page, sans être mémorisé
+        var q = /[?&]theme=(clair|sombre)\b/.exec(location.search);
+        if (q) t = q[1];
         h.setAttribute('data-theme', t);
         if (t === 'sombre') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0B0A0C');
       })(document.documentElement);

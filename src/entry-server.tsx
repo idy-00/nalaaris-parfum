@@ -10,9 +10,10 @@ import { CataloguePage } from './pages/CataloguePage';
 import { Fiche } from './pages/Fiche';
 import { MaisonPage } from './pages/MaisonPage';
 import { CommanderPage } from './pages/CommanderPage';
+import { CartePage } from './pages/CartePage';
 import { NotFound } from './pages/NotFound';
 
-const pages: Pages = { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, NotFound };
+const pages: Pages = { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, CartePage, NotFound };
 
 export function render(url: string): string {
   return renderToString(

@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react';
-import { styleInfo, type Parfum, type Style } from '../data/parfums';
+import { nomComplet, styleInfo, type Parfum, type Style } from '../data/parfums';
 import { ImageTheme } from './ImageTheme';
 
 /**
@@ -203,12 +203,13 @@ export function VisuelParfum({
   priority?: boolean;
   index?: number;
 }) {
-  const src = parfum.images[index];
+  // Vignettes (Ma sélection) : le flacon détouré passe avant le dessin
+  const src = parfum.images[index] ?? (index === 0 ? parfum.flacon : undefined);
   if (src) {
     return (
       <img
         src={src}
-        alt={`${parfum.nom} — ${parfum.marque}`}
+        alt={`Flacon ${parfum.marque} ${nomComplet(parfum)}`}
         width={800}
         height={1000}
         loading={priority ? 'eager' : 'lazy'}

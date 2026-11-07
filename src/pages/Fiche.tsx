@@ -6,6 +6,7 @@ import {
   contenanceParDefaut,
   formatPrix,
   getParfum,
+  nomComplet,
   styleInfo,
   styleLabel,
   suggestions,
@@ -13,6 +14,8 @@ import {
   type Parfum,
 } from '../data/parfums';
 import { SceneParfum, VisuelParfum } from '../components/FlaconPlaceholder';
+import { ScenePalette } from '../components/ScenePalette';
+import { QuandLePorter } from '../components/QuandLePorter';
 import { PhotoHumeur } from '../components/Photo';
 import { BadgeDispo } from '../components/Dispo';
 import { CarteParfum } from '../components/CarteParfum';
@@ -23,6 +26,20 @@ import { buildWhatsAppLink, messageAlerte, messageFiche } from '../lib/whatsapp'
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { ROUTES, catalogueStyle } from '../lib/routes';
 import { NotFound } from './NotFound';
+
+/** Image de partage d'une fiche (générée par `npm run cartes`). */
+const imagePartage = (slug: string) => `/parfums/cartes/${slug}-clair.jpg`;
+
+/** Lignes « Ce que tu sens » : tête → cœur → fond, ou le bouquet quand la marque n'a pas de pyramide. */
+function lignesNotes(p: Parfum): [string, string, string[]][] {
+  if (p.notes.bouquet?.length) return [['Le bouquet', 'du premier instant jusqu’au soir', p.notes.bouquet]];
+  const lignes: [string, string, string[] | undefined][] = [
+    ['Au début', 'les premières minutes', p.notes.tete],
+    ['Au cœur', 'les heures qui suivent', p.notes.coeur],
+    ['Ce qui reste', 'le sillage, jusqu’au soir', p.notes.fond],
+  ];
+  return lignes.filter((l): l is [string, string, string[]] => !!l[2]?.length);
+}
 
 export function Fiche() {
   const { slug = '' } = useParams();
@@ -42,26 +59,41 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   const proches = useMemo(() => suggestions(parfum), [parfum]);
 
   useSeo({
-    title: `${parfum.nom} — ${parfum.marque} · Nal’Aaris Perfumes`,
+    title: `${nomComplet(parfum)} — ${parfum.marque} · Nal’Aaris Perfumes`,
     description: `${parfum.description.split('. ')[0]}. Commande sur WhatsApp, livraison à Dakar.`,
     path: `/parfum/${parfum.slug}`,
-    image: parfum.images[0],
+    // Image de partage : la carte claire générée par `npm run cartes`
+    image: parfum.flacon ? imagePartage(parfum.slug) : parfum.images[0],
   });
 
-  // Arrivée sur la fiche : fondu + léger zoom du flacon, puis le texte
+  // Arrivée sur la fiche, puis le texte.
+  // Scène palette : l'arche apparaît, le flacon monte, les gravures se dessinent en décalé, puis 2 gravures flottent.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
-        gsap
-          .timeline({ defaults: { ease: 'expo.out' } })
-          .from('.fiche-visuel', { opacity: 0, scale: 0.94, duration: 1 }, 0)
-          .from('.fiche-info > *', { opacity: 0, y: 20, duration: 0.8, stagger: 0.05 }, 0.15);
+        const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+        if (parfum.flacon) {
+          const gravures = gsap.utils.toArray<HTMLElement>('.fiche-visuel .sp-ing');
+          tl.from('.fiche-visuel .sp-arche, .fiche-visuel .sp-filet', { opacity: 0, duration: 0.7, ease: 'power2.out' }, 0)
+            .from('.fiche-visuel .sp-flacon, .fiche-visuel .sp-ombre', { opacity: 0, y: 20, duration: 0.9 }, 0.1)
+            .from(gravures, { opacity: 0, scale: 0.96, duration: 0.5, stagger: 0.06, ease: 'power2.out' }, 0.35)
+            .add(() => {
+              // Flottement très lent (± 4 px) sur deux gravures seulement
+              [gravures[0], gravures[3]].filter(Boolean).forEach((el, i) =>
+                gsap.fromTo(el, { y: -4 }, { y: 4, duration: 6.5 + i * 1.5, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
+              );
+            });
+        } else {
+          tl.from('.fiche-visuel', { opacity: 0, scale: 0.94, duration: 1 }, 0);
+        }
+        tl.from('.fiche-info > *', { opacity: 0, y: 20, duration: 0.8, stagger: 0.05 }, 0.15);
         gsap.utils.toArray<HTMLElement>('.fiche-proches').forEach((el) =>
           gsap.from(el, { opacity: 0, y: 24, duration: 0.9, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }),
         );
       });
-      mm.add(MQ.reduce, () => gsap.from('.fiche-visuel, .fiche-info', { opacity: 0, duration: 0.3 }));
+      // Mouvement réduit : la scène reste statique, seul le texte apparaît en fondu court
+      mm.add(MQ.reduce, () => gsap.from(parfum.flacon ? '.fiche-info' : '.fiche-visuel, .fiche-info', { opacity: 0, duration: 0.3 }));
     },
     { scope: root },
   );
@@ -147,7 +179,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
               </li>
               <li aria-hidden="true">/</li>
               <li aria-current="page" className="text-encre/90">
-                {parfum.nom}
+                {nomComplet(parfum)}
               </li>
             </ol>
           </nav>
@@ -156,6 +188,11 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-16">
           {/* Visuel */}
           <div className="lg:sticky lg:top-28 lg:self-start">
+            {parfum.flacon ? (
+              <div className="fiche-visuel mx-auto max-w-[560px]">
+                <ScenePalette parfum={parfum} variante="fiche" />
+              </div>
+            ) : (
             <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-encre/10 sm:aspect-[4/5]">
               <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" />
               <span className="reflet" aria-hidden="true" />
@@ -168,6 +205,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 </span>
               )}
             </div>
+            )}
             {parfum.images.length > 1 && (
               <div className="mt-3 flex gap-2" role="group" aria-label="Photos du parfum">
                 {parfum.images.map((src, i) => (
@@ -189,10 +227,25 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           {/* Informations */}
           <div className="fiche-info flex flex-col gap-5 sm:gap-6">
             <div>
-              <p className="label text-rose-doux">
-                {categorieLabel(parfum.categorie)} · {parfum.marque}
-              </p>
-              <h1 className="mt-2 text-[2.25rem] leading-[1.02] sm:mt-3 sm:text-[2.75rem] md:text-5xl">{parfum.nom}</h1>
+              {parfum.famille ? (
+                <>
+                  <p className="label text-rose-doux">{parfum.famille}</p>
+                  <p className="mt-3 text-sm uppercase tracking-[0.4em] text-sourdine">{parfum.marque}</p>
+                </>
+              ) : (
+                <p className="label text-rose-doux">
+                  {categorieLabel(parfum.categorie)} · {parfum.marque}
+                </p>
+              )}
+              <h1 className="mt-2 text-[2.25rem] leading-[1.02] sm:text-[2.75rem] md:text-5xl">
+                {parfum.nom}
+                {parfum.sousNom && <em className="block text-[0.72em] leading-[1.15] text-rose-doux">{parfum.sousNom}</em>}
+              </h1>
+              {parfum.type && (
+                <p className="mt-2 text-sourdine">
+                  {parfum.type} · {categorieLabel(parfum.categorie)}
+                </p>
+              )}
               <ul className="mt-4 flex flex-wrap gap-2" aria-label="Style d’odeur">
                 {parfum.styles.map((s) => (
                   <li key={s}>
@@ -239,13 +292,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             <div className="verre-carte verre-voile rounded-card p-5 md:p-7">
               <h2 className="label mb-2 text-sourdine">Ce que tu sens</h2>
               <dl>
-                {(
-                  [
-                    ['Au début', 'les premières minutes', parfum.notes.tete],
-                    ['Au cœur', 'les heures qui suivent', parfum.notes.coeur],
-                    ['Ce qui reste', 'le sillage, jusqu’au soir', parfum.notes.fond],
-                  ] as const
-                ).map(([titre, quand, notes], i) => (
+                {lignesNotes(parfum).map(([titre, quand, notes], i) => (
                   <div key={titre} className={`grid gap-2 py-4 sm:grid-cols-[150px_1fr] sm:gap-6 ${i ? 'border-t border-encre/10' : ''}`}>
                     <dt>
                       <span className="block font-serif text-xl italic text-rose-brume">{titre}</span>
@@ -262,6 +309,8 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 ))}
               </dl>
             </div>
+
+            {parfum.porter && <QuandLePorter porter={parfum.porter} />}
 
             <p className="text-sm text-sourdine">
               Un écran ne transmet pas une odeur. Pour un conseil, écris-nous sur WhatsApp : on te répond avec plaisir.

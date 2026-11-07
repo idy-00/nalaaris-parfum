@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { getParfum, type Parfum } from '../data/parfums';
 import { ecrire, lire } from '../lib/storage';
 
@@ -31,9 +31,12 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
   const [charge, setCharge] = useState(false);
   const [ouvert, setOuvert] = useState(false);
 
+  // En transition : une mise à jour urgente pendant l'hydratation ferait jeter le HTML pré-rendu (erreur React #421)
   useEffect(() => {
-    setBrut(lire<LigneSelection[]>(CLE, []));
-    setCharge(true);
+    startTransition(() => {
+      setBrut(lire<LigneSelection[]>(CLE, []));
+      setCharge(true);
+    });
   }, []);
   // On n'écrit qu'après la lecture : sinon la liste vide initiale écraserait la sélection enregistrée
   useEffect(() => {

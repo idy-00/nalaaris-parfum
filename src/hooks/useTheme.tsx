@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, startTransition, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { gsap, prefersReducedMotion } from '../lib/gsap';
 import { appliquerTheme, lireTheme, type Theme } from '../lib/theme';
 
@@ -12,9 +12,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Premier rendu identique au HTML pré-rendu ; le thème réel (posé par index.html) est lu juste après
   const [theme, setTheme] = useState<Theme>('clair');
   const [pret, setPret] = useState(false);
+  // En transition : une mise à jour urgente pendant l'hydratation ferait jeter le HTML pré-rendu (erreur React #421).
+  // Les couleurs ne dépendent pas de cet état (data-theme est déjà posé par index.html), seules les photos étalonnées l'attendent.
   useLayoutIso(() => {
-    setTheme(lireTheme());
-    setPret(true);
+    startTransition(() => {
+      setTheme(lireTheme());
+      setPret(true);
+    });
   }, []);
 
   const basculer = useCallback(() => {

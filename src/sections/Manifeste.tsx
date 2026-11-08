@@ -21,6 +21,7 @@ export function Manifeste() {
         );
         SplitText.create('.devise', {
           type: 'lines',
+          aria: 'none', // découpe en lignes seulement : le texte reste lu tel quel (pas d'aria-label sur un <p>)
           mask: 'lines',
           autoSplit: true,
           onSplit: (self) =>

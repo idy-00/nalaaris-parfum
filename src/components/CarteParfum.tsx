@@ -57,7 +57,6 @@ export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; prio
       <Link
         to={`/parfum/${parfum.slug}`}
         className="flex flex-1 flex-col rounded-card focus-visible:outline-offset-[-2px]"
-        aria-label={`${parfum.nom}, ${parfum.marque}`}
       >
         <div className="relative m-1.5 aspect-[4/5] overflow-hidden rounded-[19px]">
           {/* Le visuel a son propre décor : aucun fond, cadre ni effet par-dessus */}

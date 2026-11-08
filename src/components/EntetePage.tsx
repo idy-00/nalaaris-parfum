@@ -40,6 +40,7 @@ export function EntetePage({
           );
           SplitText.create('.entete-titre', {
             type: 'lines',
+          aria: 'none', // découpe en lignes seulement : le texte reste lu tel quel (pas d'aria-label sur un <p>)
             mask: 'lines',
             autoSplit: true,
             onSplit: (self) => gsap.from(self.lines, { yPercent: 110, duration: 1, stagger: 0.1, ease: 'expo.out', delay: 0.2 }),

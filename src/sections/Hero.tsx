@@ -38,6 +38,7 @@ export function Hero() {
             .from('.assurance', { opacity: 0, y: 10, duration: 0.5, stagger: 0.05 }, 0.55);
           SplitText.create('.hero-titre', {
             type: 'lines',
+          aria: 'none', // découpe en lignes seulement : le texte reste lu tel quel (pas d'aria-label sur un <p>)
             mask: 'lines',
             autoSplit: true,
             onSplit: (self) => gsap.from(self.lines, { yPercent: 110, duration: 0.8, stagger: 0.08, ease: 'expo.out', delay: 0.05 }),

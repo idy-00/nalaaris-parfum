@@ -12,7 +12,10 @@ export function SelectionMoment({ numero }: { numero?: string }) {
   // Coups de cœur et nouveautés en alternance, 4 au maximum
   const coeur = parfums.filter((p) => p.coupDeCoeur);
   const nouveaux = parfums.filter((p) => p.nouveau && !p.coupDeCoeur);
-  const liste = coeur.flatMap((p, i) => [p, nouveaux[i]]).filter(Boolean).slice(0, 4);
+  const choisis = coeur.flatMap((p, i) => [p, nouveaux[i]]).filter(Boolean);
+  // En attendant le choix de la cliente : un parfum par marque, pour montrer la variété
+  const parMarque = parfums.filter((p, i, t) => t.findIndex((o) => o.marque === p.marque) === i);
+  const liste = [...choisis, ...parMarque.filter((p) => !choisis.includes(p))].slice(0, 4);
 
   useGSAP(
     (_ctx, _safe, { tardif }) => {
@@ -45,7 +48,11 @@ export function SelectionMoment({ numero }: { numero?: string }) {
             En ce moment
           </p>
           <h2 id="moment-titre" className="text-[2.6rem] leading-[1.02] md:text-5xl">
-            Nos coups de <em className="text-rose-doux">cœur</em>
+            {choisis.length ? (
+              <>Nos coups de <em className="text-rose-doux">cœur</em></>
+            ) : (
+              <>Un aperçu de la <em className="text-rose-doux">sélection</em></>
+            )}
           </h2>
         </div>
         <Link to={ROUTES.catalogue} className="btn btn-trait self-start md:self-auto">

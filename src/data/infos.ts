@@ -14,7 +14,7 @@ export const marque = {
 };
 
 /** URL publique du site (aperçus Open Graph). TODO : remplacer par le domaine définitif. */
-export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nalaaris.pages.dev').replace(/\/$/, '');
+export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nalaaris-parfum.pages.dev').replace(/\/$/, '');
 
 export const contacts = {
   whatsappNumero: '221770331313',

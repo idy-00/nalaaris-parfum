@@ -1,12 +1,12 @@
 /**
- * CATALOGUE — seul fichier à modifier pour ajouter, retirer ou mettre à jour un parfum.
+ * CATALOGUE — les parfums réels de Nal’Aaris.
  *
- * Les 12 parfums ci-dessous sont des EXEMPLES FICTIFS (noms et marques inventés).
- * Pour un vrai parfum :
- *   1. dépose les photos dans /public/parfums/<slug>/ (WebP de préférence, format carré ou 4:5) ;
- *   2. renseigne `images: ['/parfums/<slug>/1.webp', ...]` — le flacon dessiné disparaît alors tout seul ;
- *   3. ajoute `prix` (en FCFA) sur chaque contenance si tu veux l'afficher, sinon « Prix sur demande ».
+ * - La liste vient de `catalogue.generated.ts`, produit par `npm run import-catalogue` (ne pas l'éditer à la main).
+ * - Ce que choisit la cliente (prix, contenances, disponibilité, nouveautés, coups de cœur, description validée)
+ *   se règle dans `reglages-parfums.ts`, jamais écrasé par l'import.
  */
+import { catalogue } from './catalogue.generated';
+import { REGLAGES } from './reglages-parfums';
 
 export type Categorie = 'femme' | 'homme' | 'unisexe';
 export type Style = 'frais' | 'fleuri' | 'boise' | 'doux' | 'vanille' | 'oriental';
@@ -18,204 +18,43 @@ export interface Contenance {
   dispo: Dispo;
 }
 
-export interface Parfum {
+/** Pyramide tête / cœur / fond quand elle est publiée, sinon les notes principales en un bouquet. */
+export type Notes = { tete: string[]; coeur: string[]; fond: string[] } | { bouquet: string[] };
+
+/** Ce que produit l'import (données du catalogue source). */
+export interface ParfumImporte {
   slug: string;
   nom: string;
   marque: string;
+  concentration?: string; // « Eau de parfum », « Parfum »… ; absente si non confirmée
   categorie: Categorie;
   styles: Style[];
-  description: string; // 2–3 phrases simples
-  notes: { tete: string[]; coeur: string[]; fond: string[] };
-  contenances: Contenance[];
-  images: string[]; // vide = visuel placeholder
+  description: string; // 2 phrases tirées des notes
+  notes: Notes;
+  ingredients: string[]; // ce qu'on retrouve dans le parfum (et sur le visuel)
+  images: string[]; // /parfums/<slug>/1122.webp ; variantes 480 et 800 à côté
+}
+
+/** Réglages de la cliente, fusionnés par-dessus l'import. */
+export interface ReglageParfum {
+  contenances?: Contenance[];
+  dispo?: Dispo;
+  description?: string;
   nouveau?: boolean;
   coupDeCoeur?: boolean;
 }
 
-export const parfums: Parfum[] = [
-  {
-    slug: 'rose-de-minuit',
-    nom: 'Rose de Minuit',
-    marque: 'Maison Exemple',
-    categorie: 'femme',
-    styles: ['fleuri', 'oriental'],
-    description:
-      'Une rose profonde, presque veloutée, qui se réchauffe au fil de la soirée. Élégante sans être lourde. Idéale pour un dîner ou une sortie.',
-    notes: { tete: ['Poivre rose', 'Litchi'], coeur: ['Rose de Damas', 'Pivoine'], fond: ['Ambre', 'Patchouli'] },
-    contenances: [
-      { ml: 30, dispo: 'disponible' },
-      { ml: 50, dispo: 'disponible' },
-      { ml: 100, dispo: 'limite' },
-    ],
-    images: [],
-    coupDeCoeur: true,
-  },
-  {
-    slug: 'brise-de-ngor',
-    nom: 'Brise de Ngor',
-    marque: 'Atelier Exemple',
-    categorie: 'unisexe',
-    styles: ['frais'],
-    description:
-      'Frais et léger, comme le vent de mer en fin de matinée. Il sent le propre et l’agrume. Parfait pour la journée et la chaleur.',
-    notes: { tete: ['Bergamote', 'Citron vert'], coeur: ['Notes marines', 'Menthe'], fond: ['Musc blanc', 'Bois flotté'] },
-    contenances: [
-      { ml: 50, dispo: 'disponible' },
-      { ml: 100, dispo: 'disponible' },
-    ],
-    images: [],
-    nouveau: true,
-  },
-  {
-    slug: 'ambre-teranga',
-    nom: 'Ambre Teranga',
-    marque: 'Maison Exemple',
-    categorie: 'unisexe',
-    styles: ['oriental', 'vanille'],
-    description:
-      'Chaud, enveloppant, généreux. Un ambre doré avec une pointe de vanille qui tient toute la journée. Pour celles et ceux qui aiment qu’on se souvienne d’eux.',
-    notes: { tete: ['Cardamome', 'Safran'], coeur: ['Encens', 'Labdanum'], fond: ['Ambre', 'Vanille', 'Benjoin'] },
-    contenances: [
-      { ml: 30, dispo: 'limite' },
-      { ml: 100, dispo: 'disponible' },
-    ],
-    images: [],
-    coupDeCoeur: true,
-  },
-  {
-    slug: 'cedre-noir',
-    nom: 'Cèdre Noir',
-    marque: 'Studio Exemple',
-    categorie: 'homme',
-    styles: ['boise'],
-    description:
-      'Un bois sec et fumé, très posé. Il rassure et donne de l’allure sans en faire trop. Pour le bureau comme pour le soir.',
-    notes: { tete: ['Poivre noir', 'Pamplemousse'], coeur: ['Cèdre', 'Vétiver'], fond: ['Cuir', 'Bois fumé'] },
-    contenances: [
-      { ml: 50, dispo: 'disponible' },
-      { ml: 100, dispo: 'disponible' },
-    ],
-    images: [],
-  },
-  {
-    slug: 'lait-de-coco',
-    nom: 'Lait de Coco',
-    marque: 'Atelier Exemple',
-    categorie: 'femme',
-    styles: ['doux', 'vanille'],
-    description:
-      'Doux et gourmand, comme une peau sortie du soleil. Une note crémeuse et rassurante. On a envie de se rapprocher.',
-    notes: { tete: ['Noix de coco'], coeur: ['Fleur de tiaré', 'Jasmin'], fond: ['Vanille', 'Musc'] },
-    contenances: [
-      { ml: 30, dispo: 'disponible' },
-      { ml: 50, dispo: 'disponible' },
-    ],
-    images: [],
-    nouveau: true,
-  },
-  {
-    slug: 'vetiver-sable',
-    nom: 'Vétiver Sable',
-    marque: 'Studio Exemple',
-    categorie: 'homme',
-    styles: ['frais', 'boise'],
-    description:
-      'Un vétiver net et lumineux, avec une fraîcheur d’agrumes. Simple, propre, très facile à porter tous les jours.',
-    notes: { tete: ['Citron', 'Gingembre'], coeur: ['Vétiver', 'Géranium'], fond: ['Cèdre', 'Musc'] },
-    contenances: [{ ml: 100, dispo: 'epuise' }],
-    images: [],
-  },
-  {
-    slug: 'fleur-de-bissap',
-    nom: 'Fleur de Bissap',
-    marque: 'Maison Exemple',
-    categorie: 'femme',
-    styles: ['fleuri', 'frais'],
-    description:
-      'Fruité et fleuri, pétillant comme un bissap bien frais. Joyeux, lumineux, il met de bonne humeur dès le matin.',
-    notes: { tete: ['Hibiscus', 'Fruits rouges'], coeur: ['Rose', 'Fleur d’oranger'], fond: ['Musc blanc'] },
-    contenances: [
-      { ml: 30, dispo: 'disponible' },
-      { ml: 50, dispo: 'limite' },
-      { ml: 100, dispo: 'epuise' },
-    ],
-    images: [],
-  },
-  {
-    slug: 'oud-imperial',
-    nom: 'Oud Impérial',
-    marque: 'Atelier Exemple',
-    categorie: 'homme',
-    styles: ['oriental', 'boise'],
-    description:
-      'Intense et profond, fait pour le soir et les grandes occasions. Un oud boisé avec une touche de rose. Quelques gouttes suffisent.',
-    notes: { tete: ['Safran', 'Rose'], coeur: ['Oud', 'Patchouli'], fond: ['Santal', 'Ambre gris'] },
-    contenances: [
-      { ml: 50, dispo: 'limite' },
-      { ml: 100, dispo: 'limite' },
-    ],
-    images: [],
-    coupDeCoeur: true,
-  },
-  {
-    slug: 'nuage-de-musc',
-    nom: 'Nuage de Musc',
-    marque: 'Studio Exemple',
-    categorie: 'unisexe',
-    styles: ['doux'],
-    description:
-      'Un musc doux et propre, comme un linge sorti du séchoir. Très discret, il reste près de la peau. Parfait pour ceux qui n’aiment pas les parfums forts.',
-    notes: { tete: ['Aldéhydes', 'Poire'], coeur: ['Iris', 'Fleur de coton'], fond: ['Musc blanc', 'Ambrette'] },
-    contenances: [
-      { ml: 30, dispo: 'disponible' },
-      { ml: 100, dispo: 'disponible' },
-    ],
-    images: [],
-  },
-  {
-    slug: 'vanille-cachemire',
-    nom: 'Vanille Cachemire',
-    marque: 'Maison Exemple',
-    categorie: 'femme',
-    styles: ['vanille', 'doux'],
-    description:
-      'Une vanille douce et un peu poudrée, comme un pull tout chaud. Réconfortante, jamais écœurante. On la porte matin et soir.',
-    notes: { tete: ['Amande', 'Mandarine'], coeur: ['Héliotrope', 'Fleur de tiaré'], fond: ['Vanille', 'Tonka', 'Santal'] },
-    contenances: [{ ml: 50, dispo: 'epuise' }],
-    images: [],
-  },
-  {
-    slug: 'santal-baobab',
-    nom: 'Santal Baobab',
-    marque: 'Atelier Exemple',
-    categorie: 'unisexe',
-    styles: ['boise', 'doux'],
-    description:
-      'Un santal crémeux, chaleureux et apaisant. Il se fond dans la peau et devient le tien. Pour elle comme pour lui.',
-    notes: { tete: ['Figue', 'Cardamome'], coeur: ['Santal', 'Iris'], fond: ['Cèdre', 'Musc', 'Vanille'] },
-    contenances: [
-      { ml: 50, dispo: 'disponible' },
-      { ml: 100, dispo: 'limite' },
-    ],
-    images: [],
-    nouveau: true,
-  },
-  {
-    slug: 'agrumes-du-lac',
-    nom: 'Agrumes du Lac',
-    marque: 'Studio Exemple',
-    categorie: 'homme',
-    styles: ['frais'],
-    description:
-      'Vif et pétillant, plein d’agrumes et d’herbes fraîches. Il réveille. Idéal après le sport ou pour les journées chaudes.',
-    notes: { tete: ['Orange amère', 'Bergamote'], coeur: ['Basilic', 'Lavande'], fond: ['Musc', 'Mousse de chêne'] },
-    contenances: [
-      { ml: 30, dispo: 'disponible' },
-      { ml: 100, dispo: 'disponible' },
-    ],
-    images: [],
-  },
-];
+export interface Parfum extends ParfumImporte, Omit<ReglageParfum, 'description'> {
+  /** Vide = « Prix et contenances sur demande ». */
+  contenances: Contenance[];
+  /** Disponibilité quand aucune contenance n'est renseignée (par défaut : disponible). */
+  dispo: Dispo;
+}
+
+export const parfums: Parfum[] = catalogue.map((p) => {
+  const r = REGLAGES[p.slug] ?? {};
+  return { ...p, ...r, contenances: r.contenances ?? [], dispo: r.dispo ?? 'disponible' };
+});
 
 /* ---------- Libellés et méta-données d'affichage ---------- */
 
@@ -252,16 +91,33 @@ export const getParfum = (slug: string) => parfums.find((p) => p.slug === slug);
 export const styleLabel = (s: Style) => STYLES.find((x) => x.id === s)?.label ?? s;
 export const categorieLabel = (c: Categorie) => CATEGORIES.find((x) => x.id === c)?.label ?? c;
 
-/** Disponibilité globale : la meilleure des contenances. */
+/** Toutes les notes, dans l'ordre (tête, cœur, fond — ou le bouquet). */
+export const toutesLesNotes = (p: Pick<Parfum, 'notes'>): string[] =>
+  'bouquet' in p.notes ? p.notes.bouquet : [...p.notes.tete, ...p.notes.coeur, ...p.notes.fond];
+
+/** Variantes responsive d'une image du catalogue (/parfums/<slug>/1122.webp → 480, 800, 1122). */
+export function srcsetImage(src: string): string | undefined {
+  const m = src.match(/^(\/parfums\/[^/]+\/)1122\.webp$/);
+  return m ? `${m[1]}480.webp 480w, ${m[1]}800.webp 800w, ${m[1]}1122.webp 1122w` : undefined;
+}
+
+/** Disponibilité globale : la meilleure des contenances, ou celle du parfum s'il n'y en a pas. */
 export function dispoGlobale(p: Parfum): Dispo {
+  if (!p.contenances.length) return p.dispo;
   if (p.contenances.some((c) => c.dispo === 'disponible')) return 'disponible';
   if (p.contenances.some((c) => c.dispo === 'limite')) return 'limite';
   return 'epuise';
 }
 
-/** Contenance proposée par défaut : la première qui n'est pas épuisée. */
+/**
+ * Contenance proposée par défaut : la première qui n'est pas épuisée.
+ * Sans contenance renseignée : ml = 0, c'est-à-dire « contenance à préciser sur WhatsApp ».
+ */
 export const contenanceParDefaut = (p: Parfum): Contenance =>
-  p.contenances.find((c) => c.dispo !== 'epuise') ?? p.contenances[0];
+  p.contenances.find((c) => c.dispo !== 'epuise') ?? p.contenances[0] ?? { ml: 0, dispo: p.dispo };
+
+/** « 50 ml », ou rien si la contenance n'est pas encore connue. */
+export const libelleMl = (ml: number) => (ml > 0 ? `${ml} ml` : '');
 
 export const formatPrix = (prix?: number) =>
   prix == null ? 'Prix sur demande' : `${new Intl.NumberFormat('fr-FR').format(prix)} FCFA`;

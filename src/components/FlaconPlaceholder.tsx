@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react';
-import { styleInfo, type Parfum, type Style } from '../data/parfums';
+import { srcsetImage, styleInfo, type Parfum, type Style } from '../data/parfums';
 import { ImageTheme } from './ImageTheme';
 
 /**
@@ -197,25 +197,33 @@ export function VisuelParfum({
   className = '',
   priority = false,
   index = 0,
+  sizes = '(min-width: 1024px) 25vw, 50vw',
+  urgente = priority,
 }: {
   parfum: Parfum;
   className?: string;
   priority?: boolean;
   index?: number;
+  sizes?: string;
+  /** fetchpriority high (image LCP) ; par défaut = priority. Les premières cartes : eager sans être prioritaires. */
+  urgente?: boolean;
 }) {
   const src = parfum.images[index];
   if (src) {
+    // Visuel 4:5 avec son propre décor : affiché tel quel, sans fond, cadre ni ombre
     return (
       <img
         src={src}
-        alt={`${parfum.nom} — ${parfum.marque}`}
-        width={800}
-        height={1000}
+        srcSet={srcsetImage(src)}
+        sizes={sizes}
+        alt={`${parfum.marque} ${parfum.nom}${parfum.concentration ? `, ${parfum.concentration}` : ''}`}
+        width={1122}
+        height={1402}
         loading={priority ? 'eager' : 'lazy'}
         // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
-        fetchpriority={priority ? 'high' : undefined}
-        decoding={priority ? undefined : 'async'}
-        className={`h-full w-full object-contain ${className}`}
+        fetchpriority={urgente ? 'high' : undefined}
+        decoding="async"
+        className={`aspect-[4/5] h-full w-full object-cover ${className}`}
       />
     );
   }

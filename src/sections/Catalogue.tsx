@@ -10,12 +10,18 @@ import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageRecherche } from '../lib/whatsapp';
 import { Flip, gsap, gsapPret, useGSAP, ScrollTrigger, MQ, sousLaLigne } from '../lib/gsap';
 
+/** Cartes affichées par vague : 81 parfums = 81 images, on n'en charge pas tant d'un coup. */
+const PAR_PAGE = 24;
+
 export function Catalogue() {
   const [params, setParams] = useSearchParams();
   // Le catalogue pré-rendu n'a pas de filtres : ceux de l'URL s'appliquent juste après l'hydratation
   const hydrate = useHydrate();
   const filtres = useMemo(() => lireFiltres(hydrate ? params : new URLSearchParams()), [params, hydrate]);
   const resultats = useMemo(() => filtrer(filtres), [filtres]);
+  const [nbVisibles, setNbVisibles] = useState(PAR_PAGE);
+  const visibles = resultats.slice(0, nbVisibles);
+  const reste = resultats.length - visibles.length;
   const [panneau, setPanneau] = useState(false);
   const [saisie, setSaisie] = useState(filtres.q);
   const root = useRef<HTMLElement>(null);
@@ -27,6 +33,7 @@ export function Catalogue() {
   const appliquer = useCallback(
     (maj: Partial<Filtres>) => {
       if (grille.current && gsapPret()) etatFlip.current = Flip.getState(grille.current.querySelectorAll('.carte'));
+      setNbVisibles(PAR_PAGE); // nouveau filtre : on repart des premières cartes
       setParams(ecrireFiltres({ ...lireFiltres(params), ...maj }), { replace: true, preventScrollReset: true });
     },
     [params, setParams],
@@ -70,7 +77,7 @@ export function Catalogue() {
   );
 
   // Réorganisation douce de la grille au changement de filtre
-  const cle = resultats.map((p) => p.slug).join('|');
+  const cle = visibles.map((p) => p.slug).join('|');
   useGSAP(
     () => {
       const state = etatFlip.current;
@@ -260,13 +267,26 @@ export function Catalogue() {
       </div>
 
       {resultats.length > 0 ? (
-        <ul ref={grille} className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
-          {resultats.map((p) => (
-            <li key={p.slug} className="flex">
-              <CarteParfum parfum={p} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul ref={grille} className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
+            {visibles.map((p, i) => (
+              <li key={p.slug} className="flex">
+                {/* Les 4 premières images (premier écran) partent tout de suite, les autres en lazy */}
+                <CarteParfum parfum={p} priorite={i < 4} />
+              </li>
+            ))}
+          </ul>
+          {reste > 0 && (
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <p className="text-sm text-sourdine" aria-live="polite">
+                {visibles.length} sur {resultats.length} parfums
+              </p>
+              <button type="button" className="btn btn-verre" onClick={() => setNbVisibles((n) => n + PAR_PAGE)}>
+                Voir {Math.min(reste, PAR_PAGE)} parfums de plus
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="verre-rose verre-plat-mobile mx-auto max-w-lg rounded-card px-6 py-12 text-center">
           <p className="font-serif text-2xl">Aucun parfum ne correspond…</p>

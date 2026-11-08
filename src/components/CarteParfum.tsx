@@ -14,7 +14,8 @@ import { useSelection } from '../hooks/useSelection';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { useReflet } from '../hooks/useReflet';
 
-export function CarteParfum({ parfum }: { parfum: Parfum }) {
+/** `priorite` : l'une des premières cartes visibles (image chargée tout de suite, pas en lazy). */
+export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; priorite?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const { ajouter, contient, ouvrir } = useSelection();
   const c = contenanceParDefaut(parfum);
@@ -52,26 +53,31 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
       onPointerCancel={relacher}
       className="carte verre-carte relative flex w-full flex-col overflow-hidden rounded-card"
     >
-      <span className="reflet" aria-hidden="true" />
+      {!parfum.images.length && <span className="reflet" aria-hidden="true" />}
       <Link
         to={`/parfum/${parfum.slug}`}
         className="flex flex-1 flex-col rounded-card focus-visible:outline-offset-[-2px]"
         aria-label={`${parfum.nom}, ${parfum.marque}`}
       >
         <div className="relative m-1.5 aspect-[4/5] overflow-hidden rounded-[19px]">
-          <SceneParfum parfum={parfum} />
-          <div className="flacon absolute inset-0 px-5 pb-3 pt-6 will-change-transform" data-flip-flacon={parfum.slug}>
-            <VisuelParfum parfum={parfum} />
+          {/* Le visuel a son propre décor : aucun fond, cadre ni effet par-dessus */}
+          {!parfum.images.length && <SceneParfum parfum={parfum} />}
+          <div
+            className={`flacon absolute inset-0 will-change-transform ${parfum.images.length ? '' : 'px-5 pb-3 pt-6'}`}
+            data-flip-flacon={parfum.slug}
+          >
+            <VisuelParfum parfum={parfum} priority={priorite} urgente={false} sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw" />
           </div>
+        </div>
+        <div className="flex flex-1 flex-col gap-1 px-3.5 pb-4 pt-2.5 md:px-4">
           {(parfum.nouveau || parfum.coupDeCoeur) && (
-            <span className="label absolute bottom-2.5 left-2.5 rounded-full border border-encre/15 bg-fond/70 px-2.5 py-1.5 text-xs text-rose-brume md:text-[0.8125rem]">
+            <span className="label mb-1 self-start rounded-full border border-rose-doux/30 px-2.5 py-1 text-xs text-rose-brume">
               {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
             </span>
           )}
-        </div>
-        <div className="flex flex-1 flex-col gap-1 px-3.5 pb-4 pt-2.5 md:px-4">
           <p className="label text-xs text-sourdine">
-            {categorieLabel(parfum.categorie)} · {styleLabel(parfum.styles[0])}
+            {categorieLabel(parfum.categorie)}
+            {parfum.styles[0] && ` · ${styleLabel(parfum.styles[0])}`}
           </p>
           <h3 className="text-xl leading-tight text-encre md:text-[1.5rem]">{parfum.nom}</h3>
           <p className="text-sm text-sourdine">{parfum.marque}</p>
@@ -91,7 +97,7 @@ export function CarteParfum({ parfum }: { parfum: Parfum }) {
           aria-label={
             dejaLa
               ? `${parfum.nom} est dans ta sélection — ouvrir ma sélection`
-              : `Ajouter ${parfum.nom} (${c.ml} ml) à ma sélection`
+              : `Ajouter ${parfum.nom}${c.ml ? ` (${c.ml} ml)` : ''} à ma sélection`
           }
         >
           {dejaLa ? <Check size={18} strokeWidth={2} /> : <Plus size={18} strokeWidth={1.5} />}

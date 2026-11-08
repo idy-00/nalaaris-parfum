@@ -79,25 +79,28 @@ const magasin = {
   sameAs: contacts.reseaux.map((r) => r.url),
 };
 
+/** Visuel de partage d'un parfum : la variante 800 px (800 × 1000). */
+const image800 = (p) => p.images[0]?.replace(/1122\.webp$/, '800.webp');
+
 function produit(p) {
-  const image = p.images[0] ? absolue(p.images[0]) : absolue(IMAGE_PARTAGE);
+  const image = image800(p) ? absolue(image800(p)) : absolue(IMAGE_PARTAGE);
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: p.nom,
+    name: [p.nom, p.concentration].filter(Boolean).join(' — '),
     brand: { '@type': 'Brand', name: p.marque },
     description: p.description,
     image,
     url: `${SITE_URL}/parfum/${p.slug}`,
     category: 'Parfum',
-    // Une offre par contenance ; pas de prix tant qu'il n'est pas renseigné
-    offers: p.contenances.map((c) => ({
+    // Une offre par contenance ; aucune offre ni prix tant que la cliente ne les a pas renseignés
+    offers: p.contenances.length ? p.contenances.map((c) => ({
       '@type': 'Offer',
       name: `${c.ml} ml`,
       availability: `https://schema.org/${DISPO_SCHEMA[c.dispo]}`,
       seller: { '@type': 'Organization', name: 'Nal’Aaris Perfumes' },
       ...(c.prix != null ? { price: c.prix, priceCurrency: 'XOF' } : {}),
-    })),
+    })) : undefined, // pas de prix ni de contenance inventés : aucune offre tant qu’ils ne sont pas renseignés
   };
 }
 
@@ -131,11 +134,12 @@ const PAGES = [
   ...parfums.map((p) => ({
     url: `/parfum/${p.slug}`,
     fichier: `parfum/${p.slug}.html`,
-    titre: `${p.nom} — ${p.marque} · Nal’Aaris Perfumes`,
-    ogTitre: `${p.nom} — ${p.marque}`,
-    description: `${p.description.split('. ')[0]}. Commande sur WhatsApp, livraison à Dakar.`,
-    // Image de partage par fiche : la photo du parfum quand elle sera fournie, sinon l'image générale
-    image: p.images[0] ?? IMAGE_PARTAGE,
+    titre: `${p.nom} — ${p.marque}${p.concentration ? ` (${p.concentration})` : ''} · Nal’Aaris Perfumes`,
+    ogTitre: `${p.marque} ${p.nom}${p.concentration ? ` — ${p.concentration}` : ''}`,
+    description: `${p.marque} ${p.nom}. ${p.description.split('. ')[0].replace(/\.$/, '')}. Commande sur WhatsApp, livraison à Dakar.`,
+    // Image de partage par fiche : le visuel du parfum (800 px), sinon l'image générale
+    image: image800(p) ?? IMAGE_PARTAGE,
+    imageTaille: image800(p) ? [800, 1000] : null,
     type: 'product',
     jsonld: [produit(p)],
   })),
@@ -162,7 +166,7 @@ for (const pg of PAGES) {
     <meta property="og:description" content="${echapper(pg.description)}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${image}" />
-    ${image.endsWith(IMAGE_PARTAGE) ? '<meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />' : ''}
+    ${(([l, h]) => `<meta property="og:image:width" content="${l}" />\n    <meta property="og:image:height" content="${h}" />`)(pg.imageTaille ?? [1200, 630])}
     <meta name="twitter:card" content="summary_large_image" />
     <!--og:end-->`;
   const jsonld = (pg.jsonld ?? []).map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n    ');

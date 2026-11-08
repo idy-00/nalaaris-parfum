@@ -164,8 +164,8 @@ export function MaSelection({ page }: { page: string }) {
                 const c = parfum.contenances.find((x) => x.ml === ml);
                 return (
                   <li key={`${parfum.slug}-${ml}`} className="flex gap-4 rounded-2xl border border-encre/10 bg-encre/[0.03] p-3">
-                    <div className="h-24 w-20 shrink-0">
-                      <VisuelParfum parfum={parfum} />
+                    <div className="h-24 w-20 shrink-0 overflow-hidden rounded-xl">
+                      <VisuelParfum parfum={parfum} sizes="80px" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
@@ -183,12 +183,14 @@ export function MaSelection({ page }: { page: string }) {
                           type="button"
                           onClick={() => retirer(parfum.slug, ml)}
                           className="-mr-1 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-sourdine hover:text-rose-doux"
-                          aria-label={`Retirer ${parfum.nom} ${ml} ml`}
+                          aria-label={`Retirer ${parfum.nom}${ml ? ` ${ml} ml` : ''}`}
                         >
                           <Trash2 size={18} strokeWidth={1.5} />
                         </button>
                       </div>
-                      {/* Contenance : puces, comme sur la fiche */}
+                      {/* Contenance : puces, comme sur la fiche ; sinon à préciser sur WhatsApp */}
+                      {!parfum.contenances.length && <p className="mt-2 text-sm text-sourdine">Contenance et prix sur demande</p>}
+                      {parfum.contenances.length > 0 && (
                       <div role="radiogroup" aria-label={`Contenance pour ${parfum.nom}`} className="mt-2 flex flex-wrap gap-1.5">
                         {parfum.contenances.map((x) => (
                           <button
@@ -204,6 +206,7 @@ export function MaSelection({ page }: { page: string }) {
                           </button>
                         ))}
                       </div>
+                      )}
                       {c?.dispo === 'epuise' && (
                         <p className="mt-2 text-sm text-dispo-limite">Cette contenance est épuisée : on te proposera une alternative.</p>
                       )}

@@ -6,6 +6,7 @@ import {
   contenanceParDefaut,
   formatPrix,
   getParfum,
+  libelleMl,
   styleInfo,
   styleLabel,
   suggestions,
@@ -45,7 +46,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
     title: `${parfum.nom} — ${parfum.marque} · Nal’Aaris Perfumes`,
     description: `${parfum.description.split('. ')[0]}. Commande sur WhatsApp, livraison à Dakar.`,
     path: `/parfum/${parfum.slug}`,
-    image: parfum.images[0],
+    image: parfum.images[0]?.replace('1122.webp', '800.webp'),
   });
 
   // Arrivée sur la fiche : fondu + léger zoom du flacon, puis le texte
@@ -89,7 +90,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         </span>
         <span className="truncate">
           {barre
-            ? `${epuise ? 'Me prévenir' : 'Commander'} · ${contenance.ml} ml`
+            ? [epuise ? 'Me prévenir' : 'Commander', libelleMl(contenance.ml)].filter(Boolean).join(' · ')
             : epuise
               ? 'Me prévenir quand il revient'
               : 'Commander sur WhatsApp'}
@@ -100,7 +101,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           type="button"
           onClick={() => (dejaLa ? ouvrir() : ajouter(parfum.slug, contenance.ml))}
           className="btn btn-verre w-11 shrink-0 px-0 min-[360px]:w-12 lg:w-auto lg:flex-1 lg:px-4"
-          aria-label={dejaLa ? 'Déjà dans ma sélection — ouvrir ma sélection' : `Ajouter ${contenance.ml} ml à ma sélection`}
+          aria-label={dejaLa ? 'Déjà dans ma sélection — ouvrir ma sélection' : `Ajouter ${parfum.nom}${contenance.ml ? ` (${contenance.ml} ml)` : ''} à ma sélection`}
         >
           {dejaLa ? <Check size={18} strokeWidth={2} aria-hidden="true" /> : <Plus size={18} strokeWidth={1.5} aria-hidden="true" />}
           <span className="hidden truncate lg:inline">{dejaLa ? 'Dans ma sélection' : 'Ajouter à ma sélection'}</span>
@@ -160,18 +161,20 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-16">
           {/* Visuel */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-encre/10 sm:aspect-[4/5]">
-              <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" priorite />
-              <span className="reflet" aria-hidden="true" />
-              <div className="absolute inset-0 px-16 pb-4 pt-6 sm:px-12 sm:pb-8 sm:pt-14 md:px-20 md:pb-12 md:pt-20">
-                <VisuelParfum parfum={parfum} index={image} priority />
+            {parfum.images.length ? (
+              // Le visuel a son propre décor (mur, table) : aucun fond, cadre, ombre ni verre par-dessus
+              <div className="fiche-visuel relative mx-auto aspect-[4/5] max-w-[560px] overflow-hidden rounded-[20px]">
+                <VisuelParfum parfum={parfum} index={image} priority sizes="(min-width: 1024px) 560px, 100vw" />
               </div>
-              {(parfum.nouveau || parfum.coupDeCoeur) && (
-                <span className="label absolute left-5 top-5 rounded-full bg-fond/70 px-3 py-1.5 text-xs text-rose-brume">
-                  {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
-                </span>
-              )}
-            </div>
+            ) : (
+              // Repli si le visuel manque : flacon dessiné sur la photo d'humeur
+              <div className="fiche-visuel relative mx-auto aspect-[4/5] max-w-[560px] overflow-hidden rounded-[20px] ring-1 ring-encre/10">
+                <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 560px, 100vw" priorite />
+                <div className="absolute inset-0 px-16 pb-8 pt-14 md:px-20 md:pb-12 md:pt-20">
+                  <VisuelParfum parfum={parfum} index={image} priority />
+                </div>
+              </div>
+            )}
             {parfum.images.length > 1 && (
               <div className="mt-3 flex gap-2" role="group" aria-label="Photos du parfum">
                 {parfum.images.map((src, i) => (
@@ -193,10 +196,16 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           {/* Informations */}
           <div className="fiche-info flex flex-col gap-5 sm:gap-6">
             <div>
+              {(parfum.nouveau || parfum.coupDeCoeur) && (
+                <p className="label mb-3 inline-flex rounded-full border border-rose-doux/30 px-3 py-1.5 text-xs text-rose-brume">
+                  {parfum.nouveau ? 'Nouveau' : 'Coup de cœur'}
+                </p>
+              )}
               <p className="label text-rose-doux">
                 {categorieLabel(parfum.categorie)} · {parfum.marque}
               </p>
               <h1 className="mt-2 text-[2.25rem] leading-[1.02] sm:mt-3 sm:text-[2.75rem] md:text-5xl">{parfum.nom}</h1>
+              {parfum.concentration && <p className="mt-2 text-lg text-sourdine">{parfum.concentration}</p>}
               <ul className="mt-4 flex flex-wrap gap-2" aria-label="Style d’odeur">
                 {parfum.styles.map((s) => (
                   <li key={s}>
@@ -211,6 +220,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
               </ul>
             </div>
 
+            {parfum.contenances.length ? (
             <fieldset>
               <legend className="label mb-3 text-sourdine">Contenance</legend>
               <div role="radiogroup" aria-label="Contenance" className="flex flex-wrap gap-2">
@@ -233,6 +243,12 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 <BadgeDispo dispo={contenance.dispo} long className="text-base" />
               </div>
             </fieldset>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-serif text-2xl">Prix et contenances sur demande</p>
+                <BadgeDispo dispo={parfum.dispo} long className="text-base" />
+              </div>
+            )}
 
             {/* Actions : intégrées en desktop, barre collée en bas sur mobile */}
             <div className="hidden flex-col gap-3 lg:flex xl:flex-row">{actions(false)}</div>
@@ -244,12 +260,14 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
               <h2 className="label mb-2 text-sourdine">Ce que tu sens</h2>
               <dl>
                 {(
-                  [
-                    ['Au début', 'les premières minutes', parfum.notes.tete],
-                    ['Au cœur', 'les heures qui suivent', parfum.notes.coeur],
-                    ['Ce qui reste', 'le sillage, jusqu’au soir', parfum.notes.fond],
-                  ] as const
-                ).map(([titre, quand, notes], i) => (
+                  'bouquet' in parfum.notes
+                    ? [['Notes principales', 'la pyramide détaillée n’est pas publiée', parfum.notes.bouquet] as const]
+                    : ([
+                        ['Au début', 'les premières minutes', parfum.notes.tete],
+                        ['Au cœur', 'les heures qui suivent', parfum.notes.coeur],
+                        ['Ce qui reste', 'le sillage, jusqu’au soir', parfum.notes.fond],
+                      ] as const)
+                ).filter(([, , notes]) => notes.length).map(([titre, quand, notes], i) => (
                   <div key={titre} className={`grid gap-2 py-4 sm:grid-cols-[150px_1fr] sm:gap-6 ${i ? 'border-t border-encre/10' : ''}`}>
                     <dt>
                       <span className="block font-serif text-xl italic text-rose-brume">{titre}</span>
@@ -267,6 +285,20 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
               </dl>
             </div>
 
+            {parfum.ingredients.length > 0 && (
+              <div>
+                <h2 className="label mb-3 text-sourdine">Ce qu’on retrouve dans ce parfum</h2>
+                <ul className="flex flex-wrap gap-x-2 gap-y-1 text-lg text-encre/90">
+                  {parfum.ingredients.map((n, i) => (
+                    <li key={n}>
+                      {n}
+                      {i < parfum.ingredients.length - 1 && <span className="ml-2 text-rose-doux" aria-hidden="true">·</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <p className="text-sm text-sourdine">
               Un écran ne transmet pas une odeur. Pour un conseil, écris-nous sur WhatsApp : on te répond avec plaisir.
             </p>
@@ -274,6 +306,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         </div>
 
         {/* Son univers : les humeurs du parfum en images, chacune ouvre le catalogue filtré */}
+        {parfum.styles.length > 0 && (
         <section aria-labelledby="univers-titre" className="fiche-proches mt-20 md:mt-28">
           <p className="repere mb-4" data-n="—">
             Son univers
@@ -308,6 +341,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             })}
           </ul>
         </section>
+        )}
 
         {proches.length > 0 && (
           <section aria-labelledby="proches-titre" className="fiche-proches mt-20 md:mt-28">

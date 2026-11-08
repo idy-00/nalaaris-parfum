@@ -16,12 +16,19 @@ Variable optionnelle au build : `VITE_SITE_URL=https://www.mon-domaine.com` (URL
 
 ## Modifier le catalogue
 
-Tout se passe dans **`src/data/parfums.ts`** :
+Les parfums viennent du catalogue de la cliente (`catalogue.json` + un visuel `<slug>.webp` par parfum) :
 
-1. Copier un bloc parfum existant et changer `slug` (unique, sans accents ni espaces), `nom`, `marque`, `categorie`, `styles`, `description`, `notes`, `contenances`.
-2. Photos : les déposer dans `public/parfums/<slug>/` (WebP, carré ou 4:5) et les lister dans `images`. Sans photo, un flacon dessiné s’affiche automatiquement.
-3. Prix : ajouter `prix` (en FCFA) sur une contenance. Sans prix, le site affiche « Prix sur demande ».
-4. Disponibilité par contenance : `disponible`, `limite` ou `epuise`.
+```bash
+npm run import-catalogue -- "C:\Users\RYZEN  5\Downloads\img-nal\visuels"
+```
+
+L’import (relançable sans risque) génère `public/parfums/<slug>/480|800|1122.webp`, `src/data/catalogue.generated.ts`
+et `docs/descriptions-a-valider.md`. Les styles (frais, fleuri…) sont déduits des notes par la table `STYLES_PAR_NOTE`
+de `scripts/import-catalogue.mjs`, modifiable.
+
+Ce que choisit la cliente se règle dans **`src/data/reglages-parfums.ts`** (jamais écrasé par l’import) :
+`contenances` (avec `prix` en FCFA et `dispo` : `disponible`, `limite`, `epuise`), `nouveau`, `coupDeCoeur`,
+`description` validée. Sans contenance, la fiche affiche « Prix et contenances sur demande » et la commande passe par WhatsApp.
 
 Contacts, zones de livraison, retrait et paiement : **`src/data/infos.ts`** (les `TODO` sont visibles uniquement en mode développement).
 

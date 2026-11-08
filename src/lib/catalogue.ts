@@ -1,4 +1,4 @@
-import { dispoGlobale, parfums, styleLabel, type Categorie, type Parfum, type Style } from '../data/parfums';
+import { dispoGlobale, parfums, styleLabel, toutesLesNotes, type Categorie, type Parfum, type Style } from '../data/parfums';
 
 /** Filtres du catalogue — sérialisés dans l'URL (?q=&cat=&style=&marque=&dispo=1) pour être partageables. */
 export interface Filtres {
@@ -36,11 +36,12 @@ const norm = (s: string) =>
   s
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/['’‘`´]/g, ''); // « jadore » trouve « J’adore »
 
-/** Texte cherché : nom, marque, styles (« vanillé ») et notes (« vanille », « bergamote »…). */
+/** Texte cherché : nom, marque, concentration, styles (« vanillé ») et notes (« vanille », « bergamote »…). */
 const texteRecherche = (p: Parfum) =>
-  [p.nom, p.marque, ...p.styles.map(styleLabel), ...p.notes.tete, ...p.notes.coeur, ...p.notes.fond].join(' ');
+  [p.nom, p.marque, p.concentration ?? '', ...p.styles.map(styleLabel), ...toutesLesNotes(p)].join(' ');
 
 export function filtrer(f: Filtres, liste: Parfum[] = parfums): Parfum[] {
   const q = norm(f.q.trim());

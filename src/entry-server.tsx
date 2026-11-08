@@ -23,4 +23,5 @@ export function render(url: string): string {
 }
 
 export { parfums } from './data/parfums';
+export { PORTER } from './data/porter';
 export { contacts, marque, SITE_URL } from './data/infos';

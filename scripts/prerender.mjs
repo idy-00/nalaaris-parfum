@@ -16,9 +16,17 @@ const racine = resolve(import.meta.dirname, '..');
 const dist = resolve(racine, 'dist');
 const ssr = resolve(racine, 'dist-ssr');
 
-const { render, parfums, contacts, marque, SITE_URL } = await import(pathToFileURL(resolve(ssr, 'entry-server.js')).href);
+const { render, parfums, PORTER, contacts, marque, SITE_URL } = await import(pathToFileURL(resolve(ssr, 'entry-server.js')).href);
 
-const echapper = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// « Quand le porter » : avertit si un parfum n'a pas de conseil (src/data/porter.ts) ou si un conseil ne correspond à aucun parfum
+{
+  const sans = parfums.filter((p) => !p.porter).map((p) => p.slug);
+  const orphelins = Object.keys(PORTER).filter((s) => !parfums.some((p) => p.slug === s));
+  console.warn(`Quand le porter : ${sans.length} parfum(s) sans conseil${sans.length ? ` → ${sans.join(', ')}` : ''}`);
+  if (orphelins.length) console.warn(`Quand le porter : conseil(s) sans parfum (slug à corriger) → ${orphelins.join(', ')}`);
+}
+
+const echapper =(s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const absolue = (u) => (u.startsWith('http') ? u : `${SITE_URL}${u}`);
 const IMAGE_PARTAGE = '/brand/partage-1200x630.jpg';
 

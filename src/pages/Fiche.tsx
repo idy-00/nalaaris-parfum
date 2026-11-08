@@ -17,6 +17,7 @@ import { SceneParfum, VisuelParfum } from '../components/FlaconPlaceholder';
 import { PhotoHumeur } from '../components/Photo';
 import { BadgeDispo } from '../components/Dispo';
 import { CarteParfum } from '../components/CarteParfum';
+import { QuandLePorter } from '../components/QuandLePorter';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { useSelection } from '../hooks/useSelection';
 import { useSeo } from '../hooks/useSeo';
@@ -61,6 +62,18 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             .timeline({ defaults: { ease: 'expo.out' } })
             .from('.fiche-visuel', { scale: 0.94, duration: 1 }, 0)
             .from('.fiche-info > :first-child > :not(h1), .fiche-info > :not(:first-child)', { opacity: 0, y: 20, duration: 0.8, stagger: 0.05 }, 0.15);
+        }
+        // « Quand le porter » : les trois cartes montent doucement à leur arrivée à l'écran (une fois)
+        const cartes = gsap.utils.toArray<HTMLElement>('.porter-carte').filter((el) => !tardif || sousLaLigne(el));
+        if (cartes.length) {
+          gsap.from(cartes, {
+            opacity: 0,
+            y: 12,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: cartes[0], start: 'top 90%', once: true },
+          });
         }
         gsap.utils.toArray<HTMLElement>('.fiche-proches').filter((el) => !tardif || sousLaLigne(el)).forEach((el) =>
           gsap.from(el, { opacity: 0, y: 24, duration: 0.9, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }),
@@ -298,6 +311,8 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 </ul>
               </div>
             )}
+
+            {parfum.porter && <QuandLePorter porter={parfum.porter} />}
 
             <p className="text-sm text-sourdine">
               Un écran ne transmet pas une odeur. Pour un conseil, écris-nous sur WhatsApp : on te répond avec plaisir.

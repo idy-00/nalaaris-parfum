@@ -4,11 +4,18 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { CATEGORIES, STYLES, marques, type Style } from '../data/parfums';
 import { ecrireFiltres, filtrer, lireFiltres, nbFiltresActifs, type Filtres } from '../lib/catalogue';
 import { CarteParfum } from '../components/CarteParfum';
+import { IconePorter } from '../components/IconePorter';
 import { useHydrate } from '../hooks/useHydrate';
 import { Panneau } from '../components/Panneau';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageRecherche } from '../lib/whatsapp';
 import { Flip, gsap, gsapPret, useGSAP, ScrollTrigger, MQ, sousLaLigne } from '../lib/gsap';
+
+/** Filtre « Jour / Soir » (les parfums jour & soir sont dans les deux). */
+const MOMENTS = [
+  { id: 'jour', label: 'Jour', icone: 'soleil' },
+  { id: 'soir', label: 'Soir', icone: 'lune' },
+] as const;
 
 /** Cartes affichées par vague : 81 parfums = 81 images, on n'en charge pas tant d'un coup. */
 const PAR_PAGE = 24;
@@ -106,7 +113,7 @@ export function Catalogue() {
   const toutEffacer = () => {
     setSaisie('');
     derniereQ.current = '';
-    appliquer({ q: '', cat: null, styles: [], marque: null, dispo: false });
+    appliquer({ q: '', cat: null, styles: [], moment: null, marque: null, dispo: false });
   };
   const nbActifs = nbFiltresActifs(filtres);
 
@@ -144,6 +151,23 @@ export function Catalogue() {
             >
               <span className="h-2 w-2 rounded-full" style={{ background: s.teinte }} aria-hidden="true" />
               {s.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend className="label mb-3 text-sourdine">Moment</legend>
+        <div className="flex flex-wrap gap-2">
+          {MOMENTS.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className="puce"
+              aria-pressed={filtres.moment === m.id}
+              onClick={() => appliquer({ moment: filtres.moment === m.id ? null : m.id })}
+            >
+              <IconePorter nom={m.icone} className="h-[18px] w-[18px]" />
+              {m.label}
             </button>
           ))}
         </div>

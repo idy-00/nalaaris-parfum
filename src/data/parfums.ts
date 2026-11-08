@@ -4,13 +4,27 @@
  * - La liste vient de `catalogue.generated.ts`, produit par `npm run import-catalogue` (ne pas l'éditer à la main).
  * - Ce que choisit la cliente (prix, contenances, disponibilité, nouveautés, coups de cœur, description validée)
  *   se règle dans `reglages-parfums.ts`, jamais écrasé par l'import.
+ * - « Quand le porter » : `porter.ts`, écrit à la main, lui aussi hors de l'import.
  */
 import { catalogue } from './catalogue.generated';
 import { REGLAGES } from './reglages-parfums';
+import { PORTER } from './porter';
 
 export type Categorie = 'femme' | 'homme' | 'unisexe';
 export type Style = 'frais' | 'fleuri' | 'boise' | 'doux' | 'vanille' | 'oriental';
 export type Dispo = 'disponible' | 'limite' | 'epuise';
+export type Moment = 'jour' | 'soir' | 'jourSoir';
+export type Saison = 'fraiche' | 'chaude' | 'annee';
+export type Occasion = 'quotidien' | 'bureau' | 'sortie' | 'diner' | 'ceremonie';
+
+/** « Quand le porter » : moment, saison (climat de Dakar) et occasion, avec un détail court pour chacun. */
+export interface Porter {
+  moment: Moment;
+  momentDetail: string; // « Sorties, rendez-vous »
+  saison: Saison;
+  saisonDetail: string; // « déc. → avril »
+  occasion: { icone: Occasion; titre: string; detail: string };
+}
 
 export interface Contenance {
   ml: number;
@@ -49,11 +63,13 @@ export interface Parfum extends ParfumImporte, Omit<ReglageParfum, 'description'
   contenances: Contenance[];
   /** Disponibilité quand aucune contenance n'est renseignée (par défaut : disponible). */
   dispo: Dispo;
+  /** Absent = pas de bloc « Quand le porter » sur la fiche. */
+  porter?: Porter;
 }
 
 export const parfums: Parfum[] = catalogue.map((p) => {
   const r = REGLAGES[p.slug] ?? {};
-  return { ...p, ...r, contenances: r.contenances ?? [], dispo: r.dispo ?? 'disponible' };
+  return { ...p, ...r, contenances: r.contenances ?? [], dispo: r.dispo ?? 'disponible', porter: PORTER[p.slug] };
 });
 
 /* ---------- Libellés et méta-données d'affichage ---------- */
@@ -87,6 +103,12 @@ export const DISPO_LABEL: Record<Dispo, string> = {
 export const marques = (): string[] => [...new Set(parfums.map((p) => p.marque))].sort((a, b) => a.localeCompare(b, 'fr'));
 
 export const getParfum = (slug: string) => parfums.find((p) => p.slug === slug);
+
+/** Filtre « Jour / Soir » : un parfum jour & soir apparaît dans les deux. */
+export const seMetLe = (p: Parfum, m: 'jour' | 'soir') => p.porter?.moment === m || p.porter?.moment === 'jourSoir';
+
+/** Slugs sans conseil « Quand le porter » (avertissement au build). */
+export const sansConseil = () => parfums.filter((p) => !p.porter).map((p) => p.slug);
 
 export const styleLabel = (s: Style) => STYLES.find((x) => x.id === s)?.label ?? s;
 export const categorieLabel = (c: Categorie) => CATEGORIES.find((x) => x.id === c)?.label ?? c;

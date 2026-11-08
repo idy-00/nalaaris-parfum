@@ -8,7 +8,7 @@ import { useHydrate } from '../hooks/useHydrate';
 import { Panneau } from '../components/Panneau';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageRecherche } from '../lib/whatsapp';
-import { Flip, gsap, useGSAP, ScrollTrigger, MQ } from '../lib/gsap';
+import { Flip, gsap, gsapPret, useGSAP, ScrollTrigger, MQ, sousLaLigne } from '../lib/gsap';
 
 export function Catalogue() {
   const [params, setParams] = useSearchParams();
@@ -26,7 +26,7 @@ export function Catalogue() {
   /** Toute modification de filtre passe ici : on mémorise la grille avant le rendu pour l'animer avec Flip. */
   const appliquer = useCallback(
     (maj: Partial<Filtres>) => {
-      if (grille.current) etatFlip.current = Flip.getState(grille.current.querySelectorAll('.carte'));
+      if (grille.current && gsapPret()) etatFlip.current = Flip.getState(grille.current.querySelectorAll('.carte'));
       setParams(ecrireFiltres({ ...lireFiltres(params), ...maj }), { replace: true, preventScrollReset: true });
     },
     [params, setParams],
@@ -52,11 +52,14 @@ export function Catalogue() {
 
   // Entrée des cartes au défilement (une seule fois)
   useGSAP(
-    () => {
+    (_ctx, _safe, { tardif }) => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
-        gsap.set('.carte', { opacity: 0, y: 24 });
-        ScrollTrigger.batch('.carte', {
+        // Premier chargement : les cartes déjà à l'écran restent telles quelles, seules celles plus bas se révèlent
+        const cartes = gsap.utils.toArray<HTMLElement>('.carte').filter((el) => !tardif || sousLaLigne(el));
+        if (!cartes.length) return;
+        gsap.set(cartes, { opacity: 0, y: 24 });
+        ScrollTrigger.batch(cartes, {
           start: 'top 92%',
           once: true,
           onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: 'expo.out', overwrite: true }),
@@ -265,7 +268,7 @@ export function Catalogue() {
           ))}
         </ul>
       ) : (
-        <div className="verre-rose mx-auto max-w-lg rounded-card px-6 py-12 text-center">
+        <div className="verre-rose verre-plat-mobile mx-auto max-w-lg rounded-card px-6 py-12 text-center">
           <p className="font-serif text-2xl">Aucun parfum ne correspond…</p>
           <p className="mt-3 text-sourdine">
             Demande-nous directement sur WhatsApp, on te trouve ça.

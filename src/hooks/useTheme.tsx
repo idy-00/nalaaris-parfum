@@ -1,5 +1,5 @@
 import { createContext, startTransition, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
-import { gsap, prefersReducedMotion } from '../lib/gsap';
+import { gsap, gsapPret, prefersReducedMotion } from '../lib/gsap';
 import { appliquerTheme, lireTheme, type Theme } from '../lib/theme';
 
 /** `pret` : le thème réel est connu (après l'hydratation) — les photos étalonnées attendent ce moment pour charger la bonne version. */
@@ -27,7 +27,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       appliquerTheme(suivant);
       setTheme(suivant);
     };
-    if (prefersReducedMotion()) return changer();
+    // Sans animation si réduites, ou si GSAP n'est pas encore chargé (clic très tôt)
+    if (prefersReducedMotion() || !gsapPret()) return changer();
 
     // Fondu par la couleur du nouveau fond : un voile monte, le thème change dessous, le voile s'efface
     const voile = document.createElement('div');

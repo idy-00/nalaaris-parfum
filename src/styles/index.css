@@ -127,9 +127,6 @@
   color-scheme: dark;
 }
 
-/* Intro du hero : texte masqué au plus 900 ms (voir index.html et src/lib/intro.ts) */
-.intro [data-intro] { opacity: 0; }
-
 @layer base {
   html {
     background: rgb(var(--c-fond));
@@ -180,6 +177,19 @@
   }
   .verre-rose { background: var(--verre-rose); }
   .verre-fume { background: var(--verre-fume); }
+  /* Mobile : flou réduit (coût GPU), et les surfaces secondaires (.verre-plat-mobile) perdent leur flou :
+     seules la barre de navigation et la barre fixe de la page restent floutées à l'écran. */
+  @media (max-width: 767px) {
+    .verre-rose,
+    .verre-fume {
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      backdrop-filter: blur(10px) saturate(140%);
+    }
+    .verre-plat-mobile {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
   /* Verre « léger » pour les surfaces répétées (cartes, tuiles) : translucide, sans flou,
      pour respecter la limite de 3–4 surfaces floutées visibles et rester fluide sur mobile. */
   .verre-carte {

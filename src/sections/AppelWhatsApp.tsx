@@ -21,7 +21,7 @@ export function AppelWhatsApp({ titre = 'Une question, une envie ?', catalogue 
       <div
         ref={panneau}
         data-reveal
-        className="verre-rose relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-12 md:grid-cols-[1fr_auto] md:px-14 md:py-16"
+        className="verre-rose verre-plat-mobile relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-12 md:grid-cols-[1fr_auto] md:px-14 md:py-16"
       >
         <span className="reflet" aria-hidden="true" />
         <ImageTheme

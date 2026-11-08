@@ -26,21 +26,25 @@ export function EntetePage({
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
-    () => {
+    (_ctx, _safe, { tardif }) => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
-        const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-        tl.from('.entete-fond', { opacity: 0, scale: 1.08, duration: 1.6 }, 0).from(
-          '.entete-meta > *',
-          { opacity: 0, y: 16, duration: 0.8, stagger: 0.06 },
-          0.15,
-        );
-        SplitText.create('.entete-titre', {
-          type: 'lines',
-          mask: 'lines',
-          autoSplit: true,
-          onSplit: (self) => gsap.from(self.lines, { yPercent: 110, duration: 1, stagger: 0.1, ease: 'expo.out', delay: 0.2 }),
-        });
+        // Entrée seulement lors d'une navigation : au premier chargement, l'en-tête est déjà affiché par le HTML.
+        // Photo et titre (candidats LCP) : transform uniquement, jamais d'opacité.
+        if (!tardif) {
+          const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+          tl.from('.entete-fond', { scale: 1.08, duration: 1.6 }, 0).from(
+            '.entete-meta > *',
+            { opacity: 0, y: 16, duration: 0.8, stagger: 0.06 },
+            0.15,
+          );
+          SplitText.create('.entete-titre', {
+            type: 'lines',
+            mask: 'lines',
+            autoSplit: true,
+            onSplit: (self) => gsap.from(self.lines, { yPercent: 110, duration: 1, stagger: 0.1, ease: 'expo.out', delay: 0.2 }),
+          });
+        }
         gsap.to('.entete-fond', {
           yPercent: 12,
           ease: 'none',
@@ -63,8 +67,7 @@ export function EntetePage({
             alt=""
             width={1600}
             height={900}
-            // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
-            fetchpriority="high"
+            priorite
             className="entete-fond h-[115%] w-full object-cover opacity-60"
             style={{ objectPosition: photo.position ?? 'center' }}
           />

@@ -20,7 +20,7 @@ import { IconeWhatsApp } from '../components/IconesReseaux';
 import { useSelection } from '../hooks/useSelection';
 import { useSeo } from '../hooks/useSeo';
 import { buildWhatsAppLink, messageAlerte, messageFiche } from '../lib/whatsapp';
-import { gsap, useGSAP, MQ } from '../lib/gsap';
+import { gsap, useGSAP, MQ, sousLaLigne } from '../lib/gsap';
 import { ROUTES, catalogueStyle } from '../lib/routes';
 import { NotFound } from './NotFound';
 
@@ -50,18 +50,22 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
 
   // Arrivée sur la fiche : fondu + léger zoom du flacon, puis le texte
   useGSAP(
-    () => {
+    (_ctx, _safe, { tardif }) => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
-        gsap
-          .timeline({ defaults: { ease: 'expo.out' } })
-          .from('.fiche-visuel', { opacity: 0, scale: 0.94, duration: 1 }, 0)
-          .from('.fiche-info > *', { opacity: 0, y: 20, duration: 0.8, stagger: 0.05 }, 0.15);
-        gsap.utils.toArray<HTMLElement>('.fiche-proches').forEach((el) =>
+        // Entrée seulement lors d'une navigation (au premier chargement, la fiche est déjà affichée par le HTML).
+        // Le flacon (élément LCP) : transform uniquement, jamais d'opacité.
+        if (!tardif) {
+          gsap
+            .timeline({ defaults: { ease: 'expo.out' } })
+            .from('.fiche-visuel', { scale: 0.94, duration: 1 }, 0)
+            .from('.fiche-info > :first-child > :not(h1), .fiche-info > :not(:first-child)', { opacity: 0, y: 20, duration: 0.8, stagger: 0.05 }, 0.15);
+        }
+        gsap.utils.toArray<HTMLElement>('.fiche-proches').filter((el) => !tardif || sousLaLigne(el)).forEach((el) =>
           gsap.from(el, { opacity: 0, y: 24, duration: 0.9, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }),
         );
       });
-      mm.add(MQ.reduce, () => gsap.from('.fiche-visuel, .fiche-info', { opacity: 0, duration: 0.3 }));
+      if (!tardif) mm.add(MQ.reduce, () => gsap.from('.fiche-info > :first-child > :not(h1), .fiche-info > :not(:first-child)', { opacity: 0, duration: 0.3 }));
     },
     { scope: root },
   );
@@ -157,7 +161,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           {/* Visuel */}
           <div className="lg:sticky lg:top-28 lg:self-start">
             <div className="fiche-visuel relative aspect-[4/3] overflow-hidden rounded-[28px] ring-1 ring-encre/10 sm:aspect-[4/5]">
-              <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" />
+              <SceneParfum parfum={parfum} sizes="(min-width: 1024px) 600px, 100vw" priorite />
               <span className="reflet" aria-hidden="true" />
               <div className="absolute inset-0 px-16 pb-4 pt-6 sm:px-12 sm:pb-8 sm:pt-14 md:px-20 md:pb-12 md:pt-20">
                 <VisuelParfum parfum={parfum} index={image} priority />

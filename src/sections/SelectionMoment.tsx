@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { parfums } from '../data/parfums';
 import { CarteParfum } from '../components/CarteParfum';
-import { gsap, useGSAP, ScrollTrigger, MQ } from '../lib/gsap';
+import { gsap, useGSAP, ScrollTrigger, MQ, sousLaLigne } from '../lib/gsap';
 import { ROUTES } from '../lib/routes';
 
 /** Accueil : coups de cœur et nouveautés, puis renvoi vers le catalogue complet. */
@@ -15,7 +15,7 @@ export function SelectionMoment({ numero }: { numero?: string }) {
   const liste = coeur.flatMap((p, i) => [p, nouveaux[i]]).filter(Boolean).slice(0, 4);
 
   useGSAP(
-    () => {
+    (_ctx, _safe, { tardif }) => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
         gsap.from('.moment-entete > *', {
@@ -24,8 +24,10 @@ export function SelectionMoment({ numero }: { numero?: string }) {
           stagger: 0.08,
           scrollTrigger: { trigger: '.moment-entete', start: 'top 85%', once: true },
         });
-        gsap.set('.carte', { opacity: 0, y: 24 });
-        ScrollTrigger.batch('.carte', {
+        const cartes = gsap.utils.toArray<HTMLElement>('.carte').filter((el) => !tardif || sousLaLigne(el));
+        if (!cartes.length) return;
+        gsap.set(cartes, { opacity: 0, y: 24 });
+        ScrollTrigger.batch(cartes, {
           start: 'top 92%',
           once: true,
           onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'expo.out', overwrite: true }),

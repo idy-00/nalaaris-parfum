@@ -39,14 +39,6 @@
         if (t === 'sombre') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0B0A0C');
       })(document.documentElement);
     </script>
-    <script>
-      // Intro du hero : le texte [data-intro] peut rester masqué au plus 900 ms, puis s'affiche
-      // de lui-même si le JavaScript n'a pas encore pris le relais (voir src/lib/intro.ts).
-      (function (h) {
-        h.classList.add('intro');
-        setTimeout(function () { h.classList.remove('intro'); }, 900);
-      })(document.documentElement);
-    </script>
   </head>
   <body>
     <div id="root"><!--app--></div>

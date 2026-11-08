@@ -212,7 +212,9 @@ export function VisuelParfum({
         width={800}
         height={1000}
         loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
+        // @ts-expect-error — fetchpriority est valide en HTML, pas encore typé dans React 18
+        fetchpriority={priority ? 'high' : undefined}
+        decoding={priority ? undefined : 'async'}
         className={`h-full w-full object-contain ${className}`}
       />
     );
@@ -231,7 +233,16 @@ export function VisuelParfum({
  * Scène derrière le flacon : photo d'ambiance de l'humeur, assombrie, + halo.
  * Masquée automatiquement quand une vraie photo produit est fournie (elle a son propre fond).
  */
-export function SceneParfum({ parfum, sizes = '(min-width: 1024px) 25vw, 50vw' }: { parfum: Parfum; sizes?: string }) {
+export function SceneParfum({
+  parfum,
+  sizes = '(min-width: 1024px) 25vw, 50vw',
+  priorite = false,
+}: {
+  parfum: Parfum;
+  sizes?: string;
+  /** Fiche : image principale (LCP), dans le HTML et chargée tout de suite */
+  priorite?: boolean;
+}) {
   if (parfum.images.length) return null;
   const photo = styleInfo(parfum.styles[0]).photo;
   return (
@@ -243,8 +254,8 @@ export function SceneParfum({ parfum, sizes = '(min-width: 1024px) 25vw, 50vw' }
         width={480}
         height={600}
         alt=""
-        loading="lazy"
-        decoding="async"
+        priorite={priorite}
+        {...(priorite ? {} : { loading: 'lazy' as const, decoding: 'async' as const })}
         className="scene-photo h-full w-full scale-110 object-cover opacity-50"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-fond/30 via-fond/10 to-fond/85" />

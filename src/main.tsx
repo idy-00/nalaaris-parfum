@@ -6,6 +6,7 @@ import '@fontsource-variable/bodoni-moda/opsz-italic.css';
 import '@fontsource-variable/manrope/wght.css';
 import './styles/index.css';
 import { Coquille, rechargerUneFois, type Pages } from './App';
+import { planifierGsap } from './lib/gsap';
 import { Accueil } from './pages/Accueil';
 import { NotFound } from './pages/NotFound';
 
@@ -52,4 +53,6 @@ prechargement(window.location.pathname)
         </BrowserRouter>
       </StrictMode>,
     );
+    // Les animations arrivent après le premier affichage (voir lib/gsap.ts)
+    planifierGsap();
   });

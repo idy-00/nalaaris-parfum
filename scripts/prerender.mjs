@@ -8,7 +8,7 @@
  * Cloudflare Pages sert /catalogue depuis catalogue.html, /parfum/x depuis parfum/x.html, etc.
  * Une adresse inconnue reçoit 404.html avec le statut 404.
  */
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { readFile, readdir, writeFile, mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -27,7 +27,43 @@ for (const m of ['<!--app-->', '<!--og:start-->', '<!--jsonld-->']) {
   if (!gabarit.includes(m)) throw new Error(`Marqueur ${m} absent de index.html`);
 }
 
-const DISPO_SCHEMA = { disponible: 'InStock', limite: 'LimitedAvailability', epuise: 'OutOfStock' };
+/**
+ * Preload de l'image principale (élément LCP) : chaque <img fetchpriority="high"> du rendu, avec ses variantes
+ * responsive. Une <source media> qui la précède (affiche mobile du hero) donne un preload par format d'écran.
+ */
+function preloads(app) {
+  const attr = (tag, nom) => tag.match(new RegExp(`\\s${nom}="([^"]*)"`, 'i'))?.[1];
+  const liens = [];
+  for (const m of app.matchAll(/(?:<source media="([^"]+)" srcSet="([^"]+)"\/>)?(<img [^>]*fetchpriority="high"[^>]*>)/g)) {
+    const [, media, sourceSrcset, img] = m;
+    const src = attr(img, 'src');
+    const srcset = attr(img, 'srcSet');
+    const sizes = attr(img, 'sizes');
+    if (!src && !srcset) continue;
+    const lien = (href, ens, med) =>
+      `<link rel="preload" as="image" fetchpriority="high"${href ? ` href="${href}"` : ''}${ens ? ` imagesrcset="${ens}"` : ''}${ens && sizes ? ` imagesizes="${sizes}"` : ''}${med ? ` media="${med}"` : ''} />`;
+    if (media) {
+      // Écran étroit : la source ; sinon l'image par défaut
+      liens.push(lien(null, sourceSrcset, media), lien(src, srcset, `not all and ${media}`));
+    } else {
+      liens.push(lien(src, srcset));
+    }
+  }
+  return [...new Set(liens)].join('\n    ');
+}
+
+/**
+ * Polices du premier écran : Bodoni (droit) et Manrope, sous-ensemble latin, préchargées.
+ * Bodoni italique : chargé normalement, sans preload. Toutes en font-display: swap (Fontsource).
+ */
+const fichiers = await readdir(resolve(dist, 'assets'));
+const POLICES = [/^bodoni-moda-latin-opsz-normal-.*\.woff2$/, /^manrope-latin-wght-normal-.*\.woff2$/].map((re) => {
+  const f = fichiers.find((n) => re.test(n));
+  if (!f) throw new Error(`Police introuvable dans dist/assets : ${re}`);
+  return `<link rel="preload" as="font" type="font/woff2" href="/assets/${f}" crossorigin />`;
+});
+
+const DISPO_SCHEMA = {disponible: 'InStock', limite: 'LimitedAvailability', epuise: 'OutOfStock' };
 
 const magasin = {
   '@context': 'https://schema.org',
@@ -131,10 +167,11 @@ for (const pg of PAGES) {
     <!--og:end-->`;
   const jsonld = (pg.jsonld ?? []).map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n    ');
 
+  const app = render(pg.url);
   let html = gabarit
     .replace(/<!--og:start-->[\s\S]*?<!--og:end-->/, meta)
-    .replace('<!--jsonld-->', jsonld)
-    .replace('<!--app-->', render(pg.url));
+    .replace('<!--jsonld-->', [...POLICES, preloads(app), jsonld].filter(Boolean).join('\n    '))
+    .replace('<!--app-->', app);
   if (!html.includes('<h1')) throw new Error(`Rendu vide pour ${pg.url}`);
 
   const cible = resolve(dist, pg.fichier);

@@ -107,7 +107,7 @@ export function MaSelection({ page }: { page: string }) {
           onClick={ouvrir}
           aria-haspopup="dialog"
           aria-label={`Ma sélection : ${count} parfum${count > 1 ? 's' : ''}`}
-          className="verre-rose flex h-14 items-center gap-3 rounded-full pl-5 pr-2 text-sm font-semibold text-encre"
+          className="verre-rose verre-plat-mobile flex h-14 items-center gap-3 rounded-full pl-5 pr-2 text-sm font-semibold text-encre"
         >
           <span className="halo-pastille pointer-events-none absolute inset-0 rounded-full border border-rose-logo opacity-0" aria-hidden="true" />
           <span className="label text-[0.75rem]">Ma sélection</span>

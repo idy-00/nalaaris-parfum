@@ -189,7 +189,7 @@ export function MaSelection({ page }: { page: string }) {
                         </button>
                       </div>
                       {/* Contenance : puces, comme sur la fiche ; sinon à préciser sur WhatsApp */}
-                      {!parfum.contenances.length && <p className="mt-2 text-sm text-sourdine">Contenance et prix sur demande</p>}
+                      {!parfum.contenances.length && <p className="mt-2 text-sm text-sourdine">Prix et format donnés sur WhatsApp</p>}
                       {parfum.contenances.length > 0 && (
                       <div role="radiogroup" aria-label={`Contenance pour ${parfum.nom}`} className="mt-2 flex flex-wrap gap-1.5">
                         {parfum.contenances.map((x) => (

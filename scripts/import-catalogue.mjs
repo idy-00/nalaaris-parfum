@@ -4,9 +4,9 @@
  *   npm run import-catalogue -- "C:\Users\RYZEN  5\Downloads\img-nal\visuels"
  *
  * 1. lit catalogue.json (fiches au statut « valide » uniquement) ;
- * 2. génère public/parfums/<slug>/480.webp, 800.webp, 1122.webp (qualité 80, jamais agrandi) ;
+ * 2. génère public/parfums/<slug>/360.webp (grille mobile, q75), 480, 800, 1122.webp (q80), jamais agrandi ;
  * 3. écrit src/data/catalogue.generated.ts (format Parfum du site) ;
- * 4. écrit docs/descriptions-a-valider.md.
+ * 4. régénère docs/descriptions-a-valider.md (scripts/docs-a-valider.mjs, données finales du site).
  *
  * Idempotent : relancé, il réécrit les mêmes fichiers (rien n'est dupliqué) et ne régénère une image que si
  * le visuel source est plus récent. Un parfum ajouté au catalogue apparaît au prochain import.
@@ -158,10 +158,11 @@ for (const f of fiches) {
 
   const dossier = resolve(racine, 'public/parfums', f.slug);
   await mkdir(dossier, { recursive: true });
-  for (const largeur of [480, 800, 1122]) {
+  // 360 : grille mobile (2 colonnes) ; qualité 75 pour cette petite taille, 80 au-delà
+  for (const largeur of [360, 480, 800, 1122]) {
     const cible = join(dossier, `${largeur}.webp`);
     if (!(await plusRecent(visuel, cible))) continue;
-    await sharp(visuel).resize({ width: largeur, withoutEnlargement: true }).webp({ quality: 80 }).toFile(cible);
+    await sharp(visuel).resize({ width: largeur, withoutEnlargement: true }).webp({ quality: largeur === 360 ? 75 : 80 }).toFile(cible);
     images++;
   }
 
@@ -193,21 +194,7 @@ export const catalogue: ParfumImporte[] = ${JSON.stringify(parfums, null, 2)};
 `,
 );
 
-await mkdir(resolve(racine, 'docs'), { recursive: true });
-await writeFile(
-  resolve(racine, 'docs/descriptions-a-valider.md'),
-  `# Descriptions à valider (${parfums.length} parfums)
-
-Rédigées automatiquement **à partir des notes uniquement** (aucune année, aucun parfumeur, aucune tenue).
-Pour corriger une description : l'écrire dans \`src/data/reglages-parfums.ts\` (champ \`description\`) ; l'import ne l'écrasera pas.
-Les styles sont déduits des notes par la table \`STYLES_PAR_NOTE\` de \`scripts/import-catalogue.mjs\`.
-
-| # | Parfum | Styles | Description |
-|---|---|---|---|
-${parfums
-  .map((p, i) => `| ${i + 1} | **${p.marque} — ${p.nom}**${p.concentration ? ` (${p.concentration})` : ''} <br>\`${p.slug}\` | ${p.styles.join(', ') || '—'} | ${p.description} |`)
-  .join('\n')}
-`,
-);
+// Les descriptions finales (écrites à la main + réglages) : docs/descriptions-a-valider.md
+await import('./docs-a-valider.mjs');
 
 console.log(`Import : ${parfums.length} parfums, ${images} image(s) générée(s), ${parfums.filter((p) => !p.styles.length).length} sans style.`);

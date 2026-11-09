@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { CATEGORIES, STYLES, marques, type Style } from '../data/parfums';
+import { CATEGORIES, STYLES, marques, stockRenseigne, type Style } from '../data/parfums';
 import { ecrireFiltres, filtrer, lireFiltres, nbFiltresActifs, type Filtres } from '../lib/catalogue';
 import { CarteParfum } from '../components/CarteParfum';
 import { IconePorter } from '../components/IconePorter';
@@ -191,6 +191,8 @@ export function Catalogue() {
             ))}
           </select>
         </div>
+        {/* Stock pas encore validé par la boutique : pas de filtre de disponibilité */}
+        {stockRenseigne() && (
         <button
           type="button"
           role="switch"
@@ -210,15 +212,16 @@ export function Catalogue() {
             />
           </span>
         </button>
+        )}
       </div>
     </div>
   );
 
   return (
-    <section ref={root} id="catalogue" aria-label="Recherche et filtres du catalogue" className="shell relative pb-20 pt-2 md:pb-28">
+    <section ref={root} id="catalogue" aria-label="Recherche et filtres du catalogue" className="shell relative pb-20 pt-1 md:pb-28 md:pt-2">
 
       {/* Barre de recherche + accès filtres */}
-      <div className="verre-fume sticky top-[calc(var(--nav-h)+20px)] z-contenu mb-6 flex items-center gap-2 rounded-full p-1.5">
+      <div className="verre-fume sticky top-[calc(var(--nav-reel,var(--nav-h))+20px)] z-contenu mb-4 flex items-center gap-2 rounded-full p-1.5 has-[input:focus-visible]:outline has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-rose-doux md:mb-6">
         <label htmlFor="recherche" className="sr-only">
           Rechercher un parfum ou une marque
         </label>
@@ -262,7 +265,7 @@ export function Catalogue() {
       <div className="verre-carte mb-8 hidden rounded-card px-6 py-5 lg:block">{controles('filtre-marque')}</div>
 
       {/* Mobile : catégories en accès direct */}
-      <div className="no-scrollbar -mx-5 mb-6 flex gap-2 overflow-x-auto px-5 lg:hidden">
+      <div className="no-scrollbar -mx-5 mb-3 flex gap-2 overflow-x-auto px-5 md:mb-6 lg:hidden">
         <button type="button" className="puce shrink-0" aria-pressed={!filtres.cat} onClick={() => appliquer({ cat: null })}>
           Tous
         </button>
@@ -279,7 +282,7 @@ export function Catalogue() {
         ))}
       </div>
 
-      <div className="mb-5 flex min-h-[44px] items-center justify-between gap-4">
+      <div className="mb-3 flex min-h-[44px] items-center justify-between gap-4 md:mb-5">
         <p className="text-sm text-sourdine" aria-live="polite">
           <span className="font-semibold text-encre">{resultats.length}</span> parfum{resultats.length > 1 ? 's' : ''}
         </p>

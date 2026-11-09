@@ -10,7 +10,7 @@ import {
   styleInfo,
   styleLabel,
   suggestions,
-  type Contenance,
+  type ChoixContenance,
   type Parfum,
 } from '../data/parfums';
 import { SceneParfum, VisuelParfum } from '../components/FlaconPlaceholder';
@@ -38,7 +38,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   const root = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const [contenance, setContenance] = useState<Contenance>(() => contenanceParDefaut(parfum));
+  const [contenance, setContenance] = useState<ChoixContenance>(() => contenanceParDefaut(parfum));
   const [image, setImage] = useState(0);
   const { ajouter, contient, ouvrir, count } = useSelection();
   const proches = useMemo(() => suggestions(parfum), [parfum]);
@@ -85,6 +85,8 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   );
 
   const epuise = contenance.dispo === 'epuise';
+  // Pas encore de prix : l'action principale devient « Demander le prix »
+  const sansPrix = contenance.prix == null;
   const dejaLa = contient(parfum.slug, contenance.ml);
   const lienWa = buildWhatsAppLink(epuise ? messageAlerte(parfum, contenance.ml) : messageFiche(parfum, contenance.ml));
   const retour = () => (location.key !== 'default' ? navigate(-1) : navigate(ROUTES.catalogue));
@@ -103,10 +105,16 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         </span>
         <span className="truncate">
           {barre
-            ? [epuise ? 'Me prévenir' : 'Commander', libelleMl(contenance.ml)].filter(Boolean).join(' · ')
+            ? epuise
+              ? ['Me prévenir', libelleMl(contenance.ml)].filter(Boolean).join(' · ')
+              : sansPrix
+                ? 'Demander le prix'
+                : ['Commander', libelleMl(contenance.ml)].filter(Boolean).join(' · ')
             : epuise
               ? 'Me prévenir quand il revient'
-              : 'Commander sur WhatsApp'}
+              : sansPrix
+                ? 'Demander le prix sur WhatsApp'
+                : 'Commander sur WhatsApp'}
         </span>
       </a>
       {!epuise && (
@@ -224,7 +232,12 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 {categorieLabel(parfum.categorie)} · {parfum.marque}
               </p>
               <h1 className="mt-2 text-[2.25rem] leading-[1.02] sm:mt-3 sm:text-[2.75rem] md:text-5xl">{parfum.nom}</h1>
-              {parfum.concentration && <p className="mt-2 text-lg text-sourdine">{parfum.concentration}</p>}
+              {parfum.concentration ? (
+                <p className="mt-2 text-lg text-sourdine">{parfum.concentration}</p>
+              ) : (
+                // Concentration non confirmée : on le dit, on ne devine pas
+                <p className="mt-2 text-sm text-sourdine">Concentration à confirmer</p>
+              )}
               <ul className="mt-4 flex flex-wrap gap-2" aria-label="Style d’odeur">
                 {parfum.styles.map((s) => (
                   <li key={s}>
@@ -264,7 +277,14 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             </fieldset>
             ) : (
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="font-serif text-2xl">Prix et contenances sur demande</p>
+                <a
+                  href={lienWa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-[44px] items-center font-serif text-2xl underline decoration-rose-doux/40 underline-offset-[6px] transition-colors hover:text-rose-doux"
+                >
+                  Demander le prix
+                </a>
                 <BadgeDispo dispo={parfum.dispo} long className="text-base" />
               </div>
             )}
@@ -306,7 +326,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
 
             {parfum.ingredients.length > 0 && (
               <div>
-                <h2 className="label mb-3 text-sourdine">Ce qu’on retrouve dans ce parfum</h2>
+                <h2 className="label mb-3 text-sourdine">Ses notes en images</h2>
                 <ul className="flex flex-wrap gap-x-2 gap-y-1 text-lg text-encre/90">
                   {parfum.ingredients.map((n, i) => (
                     <li key={n}>

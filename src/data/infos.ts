@@ -71,7 +71,7 @@ export const faq: { q: string; r: string }[] = [
   },
   {
     q: 'Comment connaître le prix ?',
-    r: 'Quand le prix est affiché sur la fiche, c’est celui-là. Sinon, il est indiqué « Prix sur demande » : on te le donne tout de suite sur WhatsApp, selon la contenance choisie.',
+    r: 'Quand le prix est affiché sur la fiche, c’est celui-là. Sinon, appuie sur « Demander le prix » : on te le donne sur WhatsApp, avec les formats disponibles.',
   },
   {
     q: 'Et la livraison ?',
@@ -91,8 +91,13 @@ export const faq: { q: string; r: string }[] = [
   },
 ];
 
-export const etapesCommande = [
-  { n: '01', titre: 'Choisis', texte: 'Choisis ton parfum et sa contenance.' },
+/** Étape 1 : la contenance n'est proposée que si des formats sont renseignés (reglages-parfums.ts). */
+export const etapesCommande = (formats: boolean) => [
+  {
+    n: '01',
+    titre: 'Choisis',
+    texte: formats ? 'Choisis ton parfum et sa contenance.' : 'Choisis ton parfum, on te donne le prix et les formats sur WhatsApp.',
+  },
   { n: '02', titre: 'Envoie sur WhatsApp', texte: 'Envoie ta sélection sur WhatsApp, le message est déjà prêt.' },
   { n: '03', titre: 'On confirme', texte: 'On confirme avec toi la livraison et le paiement.' },
 ];

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { etapesCommande } from '../data/infos';
+import { formatsRenseignes } from '../data/parfums';
 import { useReveal } from '../hooks/useReveal';
 import { ROUTES } from '../lib/routes';
 
@@ -9,6 +10,7 @@ import { ROUTES } from '../lib/routes';
 export function Commander({ numero, lienInfos = false, enPage = false }: { numero?: string; lienInfos?: boolean; enPage?: boolean }) {
   const root = useRef<HTMLElement>(null);
   useReveal(root);
+  const etapes = etapesCommande(formatsRenseignes());
 
   return (
     <section ref={root} id="comment-commander" aria-labelledby="commander-titre" className="shell py-16 md:py-24">
@@ -37,7 +39,7 @@ export function Commander({ numero, lienInfos = false, enPage = false }: { numer
         )}
       </div>
       <ol className="grid gap-4 md:grid-cols-3 md:gap-5">
-        {etapesCommande.map((e, i) => (
+        {etapes.map((e, i) => (
           <li key={e.n} data-reveal className="verre-carte rounded-card p-6 md:p-8">
             <span className="font-serif text-5xl italic text-rose-doux md:text-[4rem]" aria-hidden="true">
               {e.n}
@@ -47,7 +49,7 @@ export function Commander({ numero, lienInfos = false, enPage = false }: { numer
               {e.titre}
             </h3>
             <p className="mt-2 text-encre/80">{e.texte}</p>
-            {i < etapesCommande.length - 1 && (
+            {i < etapes.length - 1 && (
               <span className="filet absolute -right-4 top-1/2 hidden w-8 md:block" aria-hidden="true" />
             )}
           </li>

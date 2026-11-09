@@ -22,7 +22,9 @@ const { render, parfums, PORTER, contacts, marque, SITE_URL } = await import(pat
 {
   const sans = parfums.filter((p) => !p.porter).map((p) => p.slug);
   const orphelins = Object.keys(PORTER).filter((s) => !parfums.some((p) => p.slug === s));
-  console.warn(`Quand le porter : ${sans.length} parfum(s) sans conseil${sans.length ? ` → ${sans.join(', ')}` : ''}`);
+  // Avertissement seulement s'il manque quelque chose (un build propre n'affiche aucun avertissement)
+  if (sans.length) console.warn(`Quand le porter : ${sans.length} parfum(s) sans conseil → ${sans.join(', ')}`);
+  else console.log('Quand le porter : les 81 parfums ont un conseil.'.replace('81', String(parfums.length)));
   if (orphelins.length) console.warn(`Quand le porter : conseil(s) sans parfum (slug à corriger) → ${orphelins.join(', ')}`);
 }
 

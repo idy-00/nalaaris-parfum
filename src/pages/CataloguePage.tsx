@@ -21,7 +21,8 @@ export function CataloguePage() {
             La <em className="text-rose-doux">sélection</em>
           </>
         }
-        intro="Cherche par nom ou par marque, ou laisse-toi guider par ton humeur. Un écran ne transmet pas une odeur : si tu hésites, écris-nous."
+        compact
+        intro="Cherche par nom, par marque ou par humeur. Un doute ? Écris-nous."
         photo={{
           src: '/media/humeur-oriental-900.webp',
           srcSet: '/media/humeur-oriental-480.webp 480w, /media/humeur-oriental-900.webp 900w',

@@ -12,3 +12,7 @@ dist-ssr
 
 # Photos sources téléchargées par scripts/photos/telecharger.py (27 Mo, CC0)
 scripts/photos/sources/
+
+# Fichiers locaux de travail (cache Python, contrôle photo) : jamais versionnés
+scripts/__pycache__/
+scripts/photos-brutes/

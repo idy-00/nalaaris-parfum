@@ -3,7 +3,7 @@
  *
  * Pour chaque URL : HTML rendu par React (texte visible avant le JS), balises Open Graph,
  * données structurées JSON-LD. Écrit aussi 404.html (vraie 404 sur
- * Cloudflare Pages), sitemap.xml et robots.txt.
+ * Cloudflare Pages), sitemap.xml et robots.txt, et complète _headers (hash CSP des scripts inline).
  *
  * Cloudflare Pages sert /catalogue depuis catalogue.html, /parfum/x depuis parfum/x.html, etc.
  * Une adresse inconnue reçoit 404.html avec le statut 404.
@@ -11,6 +11,7 @@
 import { readFile, readdir, writeFile, mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const racine = resolve(import.meta.dirname, '..');
 const dist = resolve(racine, 'dist');
@@ -205,6 +206,19 @@ await writeFile(
     .join('\n')}\n</urlset>\n`,
 );
 await writeFile(resolve(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+
+// En-têtes de sécurité : hash sha256 des scripts inline exécutables du gabarit (script de thème) dans la CSP
+{
+  // Le navigateur hache le script après normalisation des fins de ligne (CRLF → LF) : on fait pareil,
+  // sinon le hash d'un fichier enregistré en CRLF (Windows) ne correspond jamais.
+  const inline = [...gabarit.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
+    (m) => `'sha256-${createHash('sha256').update(m[1].replace(/\r\n?/g, '\n')).digest('base64')}'`,
+  );
+  const fichier = resolve(dist, '_headers');
+  const entetes = await readFile(fichier, 'utf8');
+  if (!entetes.includes('{{HASH_SCRIPTS}}')) throw new Error('public/_headers : marqueur {{HASH_SCRIPTS}} absent');
+  await writeFile(fichier, entetes.replaceAll('{{HASH_SCRIPTS}}', inline.join(' ')));
+}
 
 await rm(ssr, { recursive: true, force: true });
 console.log(`Pré-rendu : ${PAGES.length} pages (dont 404.html), sitemap.xml, robots.txt — base ${SITE_URL}`);

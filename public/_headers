@@ -1,0 +1,16 @@
+# En-têtes HTTP (Cloudflare Pages). Le pré-rendu (scripts/prerender.mjs) remplace {{HASH_SCRIPTS}} par le hash
+# sha256 des scripts inline du gabarit (script de thème) : pas de valeur en dur qui casserait si le script change.
+#
+# - CSP en Report-Only d'abord : les violations s'affichent dans la console sans rien bloquer. Une fois vérifiée
+#   sur les pages principales, renommer l'en-tête en Content-Security-Policy pour l'appliquer.
+# - frame-ancestors et upgrade-insecure-requests sont ignorés en Report-Only : ils sont donc appliqués dans un
+#   en-tête CSP séparé (anti-encadrement ; le site est déjà tout en https, l'upgrade ne change rien d'autre).
+# - Les <script type="application/ld+json"> (données structurées) ne sont pas exécutés : la CSP ne les concerne pas.
+# - style-src 'unsafe-inline' : nécessaire aux attributs style du HTML pré-rendu (React) et au <style> du gabarit.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+  Content-Security-Policy: frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' {{HASH_SCRIPTS}}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; media-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'

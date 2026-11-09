@@ -1,11 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Truck } from 'lucide-react';
+import { ArrowRight, Pause, Play, ShieldCheck, Truck } from 'lucide-react';
 import { Monogramme } from '../components/Monogramme';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { VideoFond } from '../components/VideoFond';
 import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
-import { gsap, useGSAP, SplitText, MQ } from '../lib/gsap';
+import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { useReflet } from '../hooks/useReflet';
 import { marque } from '../data/infos';
 import { ROUTES } from '../lib/routes';
@@ -20,6 +20,9 @@ export function Hero() {
   const root = useRef<HTMLElement>(null);
   const panneau = useRef<HTMLDivElement>(null);
   useReflet(panneau, 18);
+  // Vidéo : bouton lecture / pause (WCAG 2.2.2), affiché seulement quand la vidéo est réellement chargée
+  const [videoLa, setVideoLa] = useState(false);
+  const [enPause, setEnPause] = useState(false);
 
   useGSAP(
     (_ctx, _safe, { tardif }) => {
@@ -36,13 +39,8 @@ export function Hero() {
             .from('.hero-sous', { opacity: 0, y: 10, duration: 0.55 }, 0.35)
             .from('.hero-cta > *', { opacity: 0, y: 12, duration: 0.55, stagger: 0.06 }, 0.45)
             .from('.assurance', { opacity: 0, y: 10, duration: 0.5, stagger: 0.05 }, 0.55);
-          SplitText.create('.hero-titre', {
-            type: 'lines',
-          aria: 'none', // découpe en lignes seulement : le texte reste lu tel quel (pas d'aria-label sur un <p>)
-            mask: 'lines',
-            autoSplit: true,
-            onSplit: (self) => gsap.from(self.lines, { yPercent: 110, duration: 0.8, stagger: 0.08, ease: 'expo.out', delay: 0.05 }),
-          });
+          // Titre (élément LCP) : pas de SplitText, un simple glissement (transform seul, jamais d'opacité)
+          tl.from('.hero-titre', { y: 18, duration: 0.7 }, 0.05);
           // Décor : le monogramme se trace
           gsap.from('.np-trait', { drawSVG: 0, duration: 1.2, stagger: 0.08, ease: 'power2.inOut' });
           gsap.from('.np-remplissage', { opacity: 0, duration: 0.6, delay: 0.8 });
@@ -65,7 +63,7 @@ export function Hero() {
       className="relative isolate flex min-h-[100svh] flex-col overflow-hidden"
     >
       {/* Fond plein écran : le geste du parfum + voile de lisibilité léger (la vidéo reste visible partout) */}
-      <VideoFond />
+      <VideoFond enPause={enPause} onDisponible={setVideoLa} />
       {/* Desktop : voile de gauche à droite derrière le panneau. Mobile : voile qui s'épaissit sous le texte, sans masquer la vidéo */}
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.25)_35%,rgba(255,255,255,0.55)_65%,rgba(255,255,255,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.8)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,rgba(11,10,12,0.3)_0%,rgba(11,10,12,0.3)_35%,rgba(11,10,12,0.6)_65%,rgba(11,10,12,0.7)_100%)] dark:md:bg-[linear-gradient(90deg,rgba(11,10,12,0.85)_0%,rgba(11,10,12,0.5)_50%,rgba(11,10,12,0.12)_100%)]"
@@ -121,6 +119,17 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {videoLa && (
+        <button
+          type="button"
+          onClick={() => setEnPause((p) => !p)}
+          aria-label={enPause ? 'Relancer la vidéo d’ambiance' : 'Mettre en pause la vidéo d’ambiance'}
+          className="absolute right-5 top-[calc(var(--nav-reel,var(--nav-h))+28px)] z-10 grid h-11 w-11 place-items-center rounded-full border border-encre/20 bg-fond/70 text-encre transition-colors hover:border-rose-doux hover:text-rose-doux md:right-12"
+        >
+          {enPause ? <Play size={16} strokeWidth={1.75} aria-hidden="true" /> : <Pause size={16} strokeWidth={1.75} aria-hidden="true" />}
+        </button>
+      )}
 
       {/* Assurances */}
       <div className="shell relative pb-5 md:pb-10">

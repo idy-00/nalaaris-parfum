@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Heart, Menu, X } from 'lucide-react';
 import { PAGES } from '../lib/routes';
@@ -26,7 +26,27 @@ export function Nav() {
   const { count, ouvrir } = useSelection();
   const fermer = useCallback(() => setMenu(false), []);
   const menuRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   useFocusTrap(menuRef, menu, fermer);
+
+  // Hauteur réelle de la barre : avec un texte agrandi, elle passe sur deux lignes et dépasse --nav-h.
+  // --nav-reel sert aux décalages (barre de recherche collante, bouton vidéo, ancres) pour ne pas finir dessous.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || typeof ResizeObserver === 'undefined') return;
+    const racine = document.documentElement.style;
+    const ro = new ResizeObserver(() => {
+      const h = nav.offsetHeight;
+      // Les décalages supposent 12 px au-dessus de la barre (pt-3) : on ajoute l'écart si cette marge a grandi aussi
+      if (h > 66) racine.setProperty('--nav-reel', `${h + Math.max(0, nav.offsetTop - 12)}px`);
+      else racine.removeProperty('--nav-reel');
+    });
+    ro.observe(nav);
+    return () => {
+      ro.disconnect();
+      racine.removeProperty('--nav-reel');
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -56,8 +76,10 @@ export function Nav() {
       </a>
       <header className="fixed inset-x-0 top-0 z-nav px-3 pt-3 md:px-6">
         <nav
+          ref={navRef}
           aria-label="Navigation principale"
-          className="verre-fume mx-auto flex h-[var(--nav-h)] max-w-site items-center justify-between rounded-full pl-4 pr-2 md:pl-6"
+          // min-h + flex-wrap : avec un texte agrandi (200 %), les boutons passent à la ligne au lieu de déborder
+          className="verre-fume mx-auto flex min-h-[var(--nav-h)] max-w-site flex-wrap items-center justify-between rounded-[32px] pl-4 pr-2 md:pl-6"
         >
           <Link to="/" className="flex items-center gap-3 rounded-full py-1 pr-2" aria-label="Nal’Aaris Perfumes — accueil">
             <Monogramme className="h-9 w-auto text-rose-logo" title="" />

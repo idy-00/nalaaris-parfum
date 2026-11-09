@@ -5,7 +5,8 @@ import type { Parfum } from '../data/parfums';
 export const designation = (p: Parfum) => `${p.marque} ${p.nom}${p.concentration ? ` (${p.concentration})` : ''}`;
 const enMl = (ml: number) => (ml > 0 ? ` en ${ml} ml` : '');
 
-const SALUT = 'Bonjour Nal’Aaris Perfumes 🌸';
+// Pas d'emoji : la page de redirection de WhatsApp l'affiche « � » (audit du 9 nov. 2026). Accents conservés.
+const SALUT = 'Bonjour Nal’Aaris Perfumes';
 
 /** Seul point de construction des liens WhatsApp du site. */
 export function buildWhatsAppLink(message: string): string {

@@ -35,7 +35,7 @@ export function QuandLePorter({ porter }: { porter: Porter }) {
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-rose-doux/30 text-rose-doux">
               <IconePorter nom={c.icone} />
             </span>
-            <span className="min-w-0">
+            <span className="min-w-0 [overflow-wrap:anywhere]">
               <span className="block font-medium leading-snug text-encre">{c.titre}</span>
               <span className="mt-0.5 block text-sm text-encre/75">{c.detail}</span>
             </span>

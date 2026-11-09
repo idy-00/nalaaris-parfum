@@ -235,7 +235,7 @@ export function Catalogue() {
           placeholder="Nom ou marque…"
           value={saisie}
           onChange={(e) => setSaisie(e.target.value)}
-          className="min-h-[44px] w-full min-w-0 bg-transparent text-base text-encre placeholder:text-sourdine/80 focus:outline-none"
+          className="min-h-[44px] w-full min-w-0 bg-transparent text-base text-encre placeholder:text-sourdine/80 focus-visible:outline-none"
         />
         {saisie && (
           <button
@@ -343,7 +343,7 @@ export function Catalogue() {
         ouvert={panneau}
         onClose={() => setPanneau(false)}
         pied={
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button type="button" className="btn btn-verre flex-1" onClick={toutEffacer}>
               Effacer
             </button>

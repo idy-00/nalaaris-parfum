@@ -22,7 +22,7 @@ export function Faq() {
           {faq.map((f) => (
             <li key={f.q} data-reveal className="border-b border-encre/10">
               <details className="group">
-                <summary className="flex min-h-[64px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-left font-serif text-xl leading-snug text-encre transition-colors hover:text-rose-brume md:text-2xl [&::-webkit-details-marker]:hidden">
+                <summary className="flex min-h-[64px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-left font-serif text-xl leading-snug text-encre [overflow-wrap:anywhere] transition-colors hover:text-rose-brume md:text-2xl [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <span
                     className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-encre/20 text-rose-doux transition-transform duration-300 group-open:rotate-45"

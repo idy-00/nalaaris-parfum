@@ -221,7 +221,8 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
           </div>
 
           {/* Informations */}
-          <div className="fiche-info flex flex-col gap-5 sm:gap-6">
+          {/* min-w-0 : avec un texte agrandi, la colonne ne s'élargit pas au-delà de l'écran */}
+          <div className="fiche-info flex min-w-0 flex-col gap-5 sm:gap-6">
             <div>
               {(parfum.nouveau || parfum.coupDeCoeur) && (
                 <p className="label mb-3 inline-flex rounded-full border border-rose-doux/30 px-3 py-1.5 text-xs text-rose-brume">
@@ -314,7 +315,7 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                     </dt>
                     <dd className="flex flex-wrap items-center gap-1.5">
                       {notes.map((n) => (
-                        <span key={n} className="rounded-full border border-encre/10 bg-encre/[0.04] px-3 py-1 text-sm text-encre/90">
+                        <span key={n} className="max-w-full rounded-full border border-encre/10 bg-encre/[0.04] px-3 py-1 text-sm text-encre/90 [overflow-wrap:anywhere]">
                           {n}
                         </span>
                       ))}

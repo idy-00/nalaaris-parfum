@@ -3,6 +3,49 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------
+   Polices de repli calées sur Manrope et Bodoni Moda (font-display: swap) : pendant le chargement,
+   le texte s'affiche en Arial / Times New Roman (ou Liberation Sans / Serif, mêmes métriques sous Linux
+   et Android) redimensionnées pour occuper la même place → pas de décalage (CLS) quand la vraie police arrive.
+   Valeurs mesurées dans Chromium (largeur moyenne d'un texte du site + ascent/descent de la police).
+------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Manrope Repli';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Helvetica');
+  font-weight: 100 500;
+  size-adjust: 101.22%;
+  ascent-override: 105.71%;
+  descent-override: 29.64%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Manrope Repli';
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Helvetica Bold');
+  font-weight: 600 900;
+  size-adjust: 98.3%;
+  ascent-override: 108.85%;
+  descent-override: 30.52%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bodoni Repli';
+  src: local('Times New Roman'), local('TimesNewRomanPSMT'), local('Liberation Serif'), local('Times');
+  font-style: normal;
+  size-adjust: 111.32%;
+  ascent-override: 101.51%;
+  descent-override: 35.93%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bodoni Repli';
+  src: local('Times New Roman Italic'), local('TimesNewRomanPS-ItalicMT'), local('Liberation Serif Italic'), local('Times Italic');
+  font-style: italic;
+  size-adjust: 105.86%;
+  ascent-override: 106.75%;
+  descent-override: 37.79%;
+  line-gap-override: 0%;
+}
+
+/* ------------------------------------------------------------------
    Design system « Le Sillage » — deux versions, mêmes rôles
    Rose & blanc (défaut) : le blanc domine, le rose poudré enveloppe, le magenta reste précieux.
    Noir & rose ([data-theme='sombre']) : le noir domine, le rose est précieux, le verre laisse deviner la brume.

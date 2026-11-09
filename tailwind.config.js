@@ -44,8 +44,8 @@ export default {
         dispo: { ok: v('dispo-ok'), limite: v('dispo-limite'), epuise: v('dispo-epuise') },
       },
       fontFamily: {
-        serif: ['"Bodoni Moda Variable"', '"Bodoni Moda"', 'Didot', 'Georgia', 'serif'],
-        sans: ['"Manrope Variable"', 'Manrope', 'system-ui', 'sans-serif'],
+        serif: ['"Bodoni Moda Variable"', '"Bodoni Repli"', '"Bodoni Moda"', 'Didot', 'Georgia', 'serif'],
+        sans: ['"Manrope Variable"', '"Manrope Repli"', 'Manrope', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         label: ['0.8125rem', { lineHeight: '1.2', letterSpacing: '0.2em' }],

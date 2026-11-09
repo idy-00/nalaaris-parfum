@@ -3,6 +3,7 @@ import { contacts, marque } from '../data/infos';
 import { IconeWhatsApp, ICONES_RESEAUX } from './IconesReseaux';
 import { buildWhatsAppLink, messageConseil } from '../lib/whatsapp';
 import { PAGES, ROUTES } from '../lib/routes';
+import { Monogramme } from './Monogramme';
 
 export function Footer() {
   return (
@@ -15,15 +16,9 @@ export function Footer() {
       />
 
       <div className="shell relative grid gap-12 md:grid-cols-[auto_1fr_auto] md:items-start md:gap-16">
-        <img
-          src="/brand/logo-nalaaris-transparent-240.webp"
-          alt="Nal’Aaris Perfumes — by Yannick et Laetitia"
-          width={120}
-          height={120}
-          loading="lazy"
-          decoding="async"
-          className="h-32 w-32"
-        />
+        {/* Même monogramme que la nav et le hero : une seule identité dans l'interface.
+            Le médaillon détaillé reste réservé à l'image de partage et à l'icône d'écran d'accueil. */}
+        <Monogramme className="h-24 w-auto text-rose-logo" title="Nal’Aaris Perfumes — by Yannick et Laetitia" />
         <div>
           <p className="label text-encre">{marque.nom}</p>
           <p className="mt-3 max-w-sm font-serif text-xl italic text-rose-brume">« {marque.devise} »</p>

@@ -296,8 +296,8 @@ export function Catalogue() {
           <ul ref={grille} className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
             {visibles.map((p, i) => (
               <li key={p.slug} className="flex">
-                {/* Les 4 premières images (premier écran) partent tout de suite, les autres en lazy */}
-                <CarteParfum parfum={p} priorite={i < 4} />
+                {/* Les 2 premières images (élément LCP sur mobile) : eager + fetchpriority high ; les autres en lazy */}
+                <CarteParfum parfum={p} priorite={i < 2} />
               </li>
             ))}
           </ul>

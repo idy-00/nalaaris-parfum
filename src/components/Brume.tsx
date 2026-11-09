@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { STYLES, type Style } from '../data/parfums';
 
@@ -29,6 +29,12 @@ const HALOS = [
 
 function Brume({ teinte }: { teinte: Style | null }) {
   const root = useRef<HTMLDivElement>(null);
+  // Les 6 calques de teinte (110vmax chacun) ne sont montés qu'à la première humeur choisie :
+  // au chargement, ils ne coûtent rien au GPU (ils étaient invisibles, à opacité 0)
+  const [teintesMontees, setTeintesMontees] = useState(false);
+  useEffect(() => {
+    if (teinte) setTeintesMontees(true);
+  }, [teinte]);
 
   // Dérive lente (20–30 s), figée si « réduire les animations »
   useGSAP(
@@ -54,6 +60,7 @@ function Brume({ teinte }: { teinte: Style | null }) {
   // Teinte d'humeur : fondu d'opacité (on n'anime jamais le flou ni la couleur)
   useGSAP(
     () => {
+      if (!teintesMontees) return; // calques pas encore montés : rien à animer (évite l'avertissement GSAP)
       gsap.to('.teinte', {
         opacity: (_i, el: HTMLElement) => (el.dataset.style === teinte ? 1 : 0),
         duration: 0.9,
@@ -61,7 +68,7 @@ function Brume({ teinte }: { teinte: Style | null }) {
         overwrite: true,
       });
     },
-    { scope: root, dependencies: [teinte] },
+    { scope: root, dependencies: [teinte, teintesMontees] },
   );
 
   return (
@@ -73,7 +80,7 @@ function Brume({ teinte }: { teinte: Style | null }) {
           style={{ background: `radial-gradient(closest-side, ${h.color}, transparent)` }}
         />
       ))}
-      {STYLES.map((s) => (
+      {teintesMontees && STYLES.map((s) => (
         <div
           key={s.id}
           data-style={s.id}
@@ -81,14 +88,10 @@ function Brume({ teinte }: { teinte: Style | null }) {
           style={{ background: `radial-gradient(closest-side, ${s.teinte}1f, transparent 70%)` }}
         />
       ))}
-      {/* Grain très léger pour éviter le banding des dégradés sur écrans 8 bits */}
-      <div
-        className="absolute inset-0 opacity-[0.035] mix-blend-multiply dark:opacity-[0.06] dark:mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-      />
+      {/* Grain très léger pour éviter le banding des dégradés sur écrans 8 bits.
+          Tuile d'image (scripts/derives-medias.mjs) : ni filtre SVG ni mode de fusion, qui faisaient attendre
+          le GPU au premier affichage (plus longue tâche du chargement mobile). Même rendu qu'un « multiply ». */}
+      <div className="absolute inset-0 bg-[url('/media/grain.webp')] bg-[length:128px] opacity-[0.035] dark:opacity-[0.06]" />
       {/* Voile bas : assure la lisibilité du texte en bas de page */}
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-fond/70 to-transparent" />
     </div>

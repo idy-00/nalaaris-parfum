@@ -177,7 +177,13 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
             {parfum.images.length ? (
               // Le visuel a son propre décor (mur, table) : aucun fond, cadre, ombre ni verre par-dessus
               <div className="fiche-visuel relative mx-auto aspect-[4/5] max-w-[560px] overflow-hidden rounded-[20px]">
-                <VisuelParfum parfum={parfum} index={image} priority sizes="(min-width: 1024px) 560px, 100vw" />
+                {/* sizes = largeur réelle : 560 px max, sinon l'écran moins les marges (40 px mobile, 96 px tablette) */}
+                <VisuelParfum
+                  parfum={parfum}
+                  index={image}
+                  priority
+                  sizes="(min-width: 1024px) 560px, (min-width: 768px) min(560px, calc(100vw - 96px)), calc(100vw - 40px)"
+                />
               </div>
             ) : (
               // Repli si le visuel manque : flacon dessiné sur la photo d'humeur

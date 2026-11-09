@@ -22,6 +22,6 @@ export function useReveal(ref: RefObject<HTMLElement>) {
         });
       });
     },
-    { scope: ref },
+    { scope: ref, differe: true },
   );
 }

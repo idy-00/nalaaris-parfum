@@ -25,7 +25,9 @@ export function AppelWhatsApp({ titre = 'Une question, une envie ?', catalogue 
       >
         <span className="reflet" aria-hidden="true" />
         <ImageTheme
-          src="/media/gravure-vaporisateur.webp"
+          src="/media/gravure-vaporisateur-480.webp"
+          srcSet="/media/gravure-vaporisateur-480.webp 480w, /media/gravure-vaporisateur-800.webp 800w"
+          sizes="480px"
           alt=""
           width={900}
           height={960}

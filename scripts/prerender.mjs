@@ -50,7 +50,10 @@ function preloads(app) {
     if (!src && !srcset) continue;
     const lien = (href, ens, med) =>
       `<link rel="preload" as="image" fetchpriority="high"${href ? ` href="${href}"` : ''}${ens ? ` imagesrcset="${ens}"` : ''}${ens && sizes ? ` imagesizes="${sizes}"` : ''}${med ? ` media="${med}"` : ''} />`;
-    if (media) {
+    if (media && sourceSrcset.startsWith('data:')) {
+      // Écran étroit sans image (en-tête compact du catalogue) : preload seulement pour les grands écrans
+      liens.push(lien(src, srcset, `not all and ${media}`));
+    } else if (media) {
       // Écran étroit : la source ; sinon l'image par défaut
       liens.push(lien(null, sourceSrcset, media), lien(src, srcset, `not all and ${media}`));
     } else {
@@ -61,11 +64,11 @@ function preloads(app) {
 }
 
 /**
- * Polices du premier écran : Bodoni (droit) et Manrope, sous-ensemble latin, préchargées.
- * Bodoni italique : chargé normalement, sans preload. Toutes en font-display: swap (Fontsource).
+ * Police préchargée : seulement celle du H1 (Bodoni droit, sous-ensemble latin) — la bande passante du premier
+ * écran reste à l'image principale. Manrope et Bodoni italique : chargés normalement. Toutes en font-display: swap (Fontsource).
  */
 const fichiers = await readdir(resolve(dist, 'assets'));
-const POLICES = [/^bodoni-moda-latin-opsz-normal-.*\.woff2$/, /^manrope-latin-wght-normal-.*\.woff2$/].map((re) => {
+const POLICES = [/^bodoni-moda-latin-opsz-normal-.*\.woff2$/].map((re) => {
   const f = fichiers.find((n) => re.test(n));
   if (!f) throw new Error(`Police introuvable dans dist/assets : ${re}`);
   return `<link rel="preload" as="font" type="font/woff2" href="/assets/${f}" crossorigin />`;

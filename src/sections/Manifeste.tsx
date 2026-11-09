@@ -48,7 +48,7 @@ export function Manifeste() {
         });
       });
     },
-    { scope: root },
+    { scope: root, differe: true },
   );
 
   return (
@@ -59,7 +59,7 @@ export function Manifeste() {
           {pret && <source media="(max-width: 767px)" srcSet={`${d}/manifeste-roses-portrait-720.webp`} />}
           <img
             src={pret ? `${d}/manifeste-roses-1920.webp` : undefined}
-            srcSet={pret ? `${d}/manifeste-roses-960.webp 960w, ${d}/manifeste-roses-1920.webp 1920w` : undefined}
+            srcSet={pret ? `${d}/manifeste-roses-960.webp 960w, ${d}/manifeste-roses-1440.webp 1440w, ${d}/manifeste-roses-1920.webp 1920w` : undefined}
             sizes="100vw"
             alt=""
             width={1920}

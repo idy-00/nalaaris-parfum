@@ -10,8 +10,10 @@
  * - `useGSAP` reprend l'API de @gsap/react, mais n'exécute son effet qu'une fois le moteur prêt.
  *   Il passe en 3e argument `{ tardif }` : true si le composant était déjà affiché avant l'arrivée
  *   de GSAP (premier chargement). Dans ce cas, on ne rejoue pas d'entrée sur le contenu déjà visible.
+ * - `differe: true` (sections sous la ligne de flottaison) : le rappel n'est exécuté qu'à l'approche de la section
+ *   (IntersectionObserver, une demi-hauteur d'écran avant). Ses ScrollTrigger / SplitText ne coûtent rien au chargement.
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useSyncExternalStore, type RefObject } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
 import type { gsap as GsapMoteur } from 'gsap';
 import type * as Moteur from './gsap-moteur';
 
@@ -97,6 +99,30 @@ type Rappel = (context: gsap.Context, contextSafe: ContextSafe, etat: { tardif: 
 interface Config {
   scope?: RefObject<Element | null>;
   dependencies?: unknown[];
+  /** N'initialiser qu'à l'approche du `scope` (sections sous la ligne de flottaison). Jamais pour un élément masqué (display: none). */
+  differe?: boolean;
+}
+
+/** Vrai dès que l'élément approche de l'écran (une demi-hauteur avant), puis reste vrai. */
+function useApproche(ref: RefObject<Element | null> | undefined, actif: boolean) {
+  const [vu, setVu] = useState(!actif);
+  useEffect(() => {
+    const el = ref?.current;
+    if (vu || !el) return;
+    if (!('IntersectionObserver' in window)) return setVu(true);
+    const io = new IntersectionObserver(
+      (entrees) => {
+        if (entrees.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          setVu(true);
+        }
+      },
+      { rootMargin: '0px 0px 50% 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [vu, ref]);
+  return vu;
 }
 
 const useEffetIso = typeof document === 'undefined' ? useEffect : useLayoutEffect;
@@ -107,6 +133,7 @@ export function useGSAP(a?: Rappel | Config, b?: Config) {
   const dependances = config.dependencies ?? [];
 
   const moteurPret = usePret();
+  const proche = useApproche(config.scope, Boolean(config.differe && rappel));
   const tardif = useRef(!pret); // lu au premier rendu
   const ctx = useRef<gsap.Context | null>(null);
   const rappelCourant = useRef(rappel);
@@ -136,12 +163,12 @@ export function useGSAP(a?: Rappel | Config, b?: Config) {
     };
   }, [moteurPret]);
 
-  // Le rappel : au chargement du moteur, puis à chaque changement de dépendance (dans le même contexte)
+  // Le rappel : au chargement du moteur (et à l'approche si `differe`), puis à chaque changement de dépendance
   useEffetIso(() => {
     const c = ctx.current;
-    if (!moteurPret || !c || !rappelCourant.current) return;
+    if (!moteurPret || !proche || !c || !rappelCourant.current) return;
     c.add(() => rappelCourant.current!(c, contextSafe, { tardif: tardif.current }));
-  }, [moteurPret, ...dependances]);
+  }, [moteurPret, proche, ...dependances]);
 
   return { context: ctx.current, contextSafe };
 }

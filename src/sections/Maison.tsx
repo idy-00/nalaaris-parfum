@@ -51,7 +51,7 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
         );
       });
     },
-    { scope: root },
+    { scope: root, differe: true },
   );
 
   return (
@@ -85,7 +85,9 @@ export function Maison({ numero, apercu = false }: { numero?: string; apercu?: b
           </div>
           <div className="maison-gravure verre-carte absolute -bottom-2 right-0 w-[52%] overflow-hidden rounded-[22px] bg-fond/90 p-4 shadow-douce sm:p-5">
             <ImageTheme
-              src="/media/gravure-vaporisateur.webp"
+              src="/media/gravure-vaporisateur-480.webp"
+              srcSet="/media/gravure-vaporisateur-360.webp 360w, /media/gravure-vaporisateur-480.webp 480w, /media/gravure-vaporisateur-800.webp 800w"
+              sizes="(min-width: 640px) 270px, 52vw"
               alt="Gravure ancienne : une femme se parfume avec un vaporisateur"
               width={900}
               height={960}

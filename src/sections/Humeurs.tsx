@@ -36,7 +36,7 @@ export function Humeurs({ numero }: { numero?: string }) {
         });
       });
     },
-    { scope: root },
+    { scope: root, differe: true },
   );
 
   const choisir = (s: Style) => {

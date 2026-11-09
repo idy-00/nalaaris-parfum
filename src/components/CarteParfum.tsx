@@ -14,7 +14,7 @@ import { useSelection } from '../hooks/useSelection';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { useReflet } from '../hooks/useReflet';
 
-/** `priorite` : l'une des premières cartes visibles (image chargée tout de suite, pas en lazy). */
+/** `priorite` : l'une des 2 premières cartes (image LCP : chargée tout de suite, fetchpriority high, préchargée). */
 export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; priorite?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const { ajouter, contient, ouvrir } = useSelection();
@@ -65,7 +65,12 @@ export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; prio
             className={`flacon absolute inset-0 will-change-transform ${parfum.images.length ? '' : 'px-5 pb-3 pt-6'}`}
             data-flip-flacon={parfum.slug}
           >
-            <VisuelParfum parfum={parfum} priority={priorite} urgente={false} sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw" />
+            {/* sizes = largeur réelle de la carte : 4 colonnes dans 1240 px max, 3 colonnes, 2 colonnes (marges + écart déduits) */}
+            <VisuelParfum
+              parfum={parfum}
+              priority={priorite}
+              sizes="(min-width: 1280px) 280px, (min-width: 768px) calc(33vw - 45px), calc(50vw - 26px)"
+            />
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-1 px-3.5 pb-4 pt-2.5 md:px-4">

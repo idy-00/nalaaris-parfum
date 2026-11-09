@@ -119,7 +119,7 @@ export function Ombre() {
         gsap.ticker.add(tick);
       }
     },
-    { scope: root },
+    { scope: root, differe: true },
   );
 
   return (

@@ -37,7 +37,7 @@ export function SelectionMoment({ numero }: { numero?: string }) {
         });
       });
     },
-    { scope: root },
+    { scope: root, differe: true },
   );
 
   return (

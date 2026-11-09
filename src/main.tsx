@@ -1,4 +1,4 @@
-import { StrictMode, lazy } from 'react';
+import { StrictMode, lazy, startTransition } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import '@fontsource-variable/bodoni-moda/opsz.css';
@@ -42,17 +42,41 @@ function prechargement(chemin: string) {
   return Promise.resolve();
 }
 
-prechargement(window.location.pathname)
-  .catch(() => undefined)
+/**
+ * Laisse le navigateur peindre l'image principale (LCP) avant d'hydrater : sinon l'image, déjà téléchargée,
+ * attend la fin de l'hydratation pour apparaître. Image décodée → deux frames → on continue. Plafond 1,5 s
+ * (réseau lent : on n'attend pas l'image indéfiniment). Aucun changement visible : le HTML pré-rendu est déjà là.
+ */
+function imagePrincipalePeinte(): Promise<void> {
+  // Première image prioritaire réellement affichée (l'en-tête du catalogue est masqué sur mobile)
+  const img = [...document.querySelectorAll<HTMLImageElement>('#root img[fetchpriority="high"]')].find(
+    (i) => i.getClientRects().length > 0,
+  );
+  if (!img) return Promise.resolve();
+  const prete = img.complete ? Promise.resolve() : new Promise<void>((ok) => {
+    img.addEventListener('load', () => ok(), { once: true });
+    img.addEventListener('error', () => ok(), { once: true });
+  });
+  const peinte = prete
+    .then(() => img.decode().catch(() => undefined))
+    .then(() => new Promise<void>((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok()))));
+  return Promise.race([peinte, new Promise<void>((ok) => setTimeout(ok, 1500))]);
+}
+
+Promise.all([prechargement(window.location.pathname).catch(() => undefined), imagePrincipalePeinte()])
   .then(() => {
-    hydrateRoot(
-      document.getElementById('root')!,
-      <StrictMode>
-        <BrowserRouter>
-          <Coquille pages={pages} />
-        </BrowserRouter>
-      </StrictMode>,
-    );
+    // Hydratation en transition : React la découpe en tranches de quelques ms (pas de longue tâche au chargement).
+    // Le HTML pré-rendu reste affiché et cliquable (liens) pendant ce temps.
+    startTransition(() => {
+      hydrateRoot(
+        document.getElementById('root')!,
+        <StrictMode>
+          <BrowserRouter>
+            <Coquille pages={pages} />
+          </BrowserRouter>
+        </StrictMode>,
+      );
+    });
     // Les animations arrivent après le premier affichage (voir lib/gsap.ts)
     planifierGsap();
   });

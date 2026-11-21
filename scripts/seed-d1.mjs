@@ -61,6 +61,14 @@ catalogue.forEach((p, i) => {
   }
 });
 
+// Export pour une installation via la console D1, sans accès Wrangler distant.
+const exportSql = process.argv.find((a) => a.startsWith('--export='))?.slice('--export='.length);
+if (exportSql) {
+  await writeFile(resolve(racine, exportSql), sql.join('\n') + '\n');
+  console.log(`SQL exporté : ${catalogue.length} parfums (${exportSql}).`);
+  process.exit(0);
+}
+
 const env = cible === 'prod' ? ['--env', 'production'] : [];
 const lieu = cible === 'local' ? ['--local'] : ['--remote'];
 const wrangler = (args) => d1(['execute', 'DB', ...lieu, ...env, '-y', ...args]);

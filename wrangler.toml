@@ -13,21 +13,17 @@ compatibility_date = "2026-10-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "nalaaris-test"
-database_id = "a-remplacer-test"
+database_id = "7deb3c58-cc88-46f9-985e-b01ba764585b"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "PHOTOS"
-bucket_name = "nalaaris-photos-test"
+# PHOTOS sera ajouté après activation explicite de R2 sur le compte.
+# Les visuels existants restent servis depuis les fichiers publics.
 
 [env.production]
 
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "nalaaris-prod"
-database_id = "a-remplacer-prod"
+database_id = "d72ae3b9-0cbb-464d-9e2b-6c75ad5bb467"
 migrations_dir = "migrations"
 
-[[env.production.r2_buckets]]
-binding = "PHOTOS"
-bucket_name = "nalaaris-photos"

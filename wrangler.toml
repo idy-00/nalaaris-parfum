@@ -21,6 +21,13 @@ migrations_dir = "migrations"
 
 [env.production]
 
+[env.production.vars]
+VITE_SITE_URL = "https://nalaaris-parfum.pages.dev"
+ADMIN_USERNAME = "admin"
+ADMIN_NAME = "Admin"
+# Installation initiale uniquement : retirer dès que l'API publique est disponible.
+DONNEES_URL = "aucune"
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "nalaaris-prod"

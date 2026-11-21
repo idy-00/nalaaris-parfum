@@ -1,10 +1,6 @@
-# Cloudflare Pages — liaisons D1 / R2 de l'espace admin.
-# Ce fichier est la source des liaisons : elles ne se modifient plus dans le tableau de bord.
-# Les secrets (ACCESS_AUD, ACCESS_TEAM_DOMAIN, ADMIN_EMAILS, DEPLOY_HOOK_URL) restent dans le tableau de bord
-# (Settings → Variables and secrets, type « Secret ») : jamais dans le dépôt.
-#
-# Les database_id « a-remplacer » sont créés par `npm run cf:creer` (après `npx wrangler login`).
-# Haut du fichier = développement local + aperçus (bases de TEST). [env.production] = site en ligne.
+# Cloudflare Pages : D1 de test pour les aperçus, D1 de production pour main.
+# Les secrets ADMIN_PASSWORD_HASH et ADMIN_SESSION_SECRET restent dans Cloudflare.
+# R2 est facultatif et attend son activation sur le compte.
 
 name = "nalaaris-parfum"
 pages_build_output_dir = "dist"
@@ -25,8 +21,6 @@ migrations_dir = "migrations"
 VITE_SITE_URL = "https://nalaaris-parfum.pages.dev"
 ADMIN_USERNAME = "admin"
 ADMIN_NAME = "Admin"
-# Installation initiale uniquement : retirer dès que l'API publique est disponible.
-DONNEES_URL = "aucune"
 
 [[env.production.d1_databases]]
 binding = "DB"

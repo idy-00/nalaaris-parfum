@@ -1,5 +1,19 @@
 # Raccordement Cloudflare et vérification avant production
 
+## État du raccordement au 21 novembre 2026
+
+Les bases `nalaaris-prod` et `nalaaris-test` sont créées et leurs véritables identifiants sont dans `wrangler.toml`. Les deux migrations et les 81 parfums sont installés sur les deux bases. La production contient 81 parfums, deux migrations et six déclencheurs de stock. Le déploiement initial a réussi et l'API publique retourne les 81 parfums.
+
+Le fichier `.node-version` impose Node.js 24. Les variables texte de production sont déclarées dans `wrangler.toml`, car elles remplacent celles du tableau de bord. Le mode temporaire `DONNEES_URL=aucune` a servi uniquement à publier la première API ; il est ensuite retiré pour reprendre le catalogue D1 aux prochains builds.
+
+Les deux secrets de connexion, `ADMIN_PASSWORD_HASH` et `ADMIN_SESSION_SECRET`, doivent être enregistrés comme **Secret** dans Cloudflare, puis un déploiement doit suivre. Ils ne sont jamais versionnés. Le formulaire reste fermé tant qu'ils manquent.
+
+R2 n'est pas activé sur ce compte : son activation demande un abonnement avec facturation possible. Aucun abonnement n'a été souscrit. Le binding optionnel `PHOTOS` est donc absent ; les visuels du catalogue existant fonctionnent, mais l'envoi de nouvelles photos nécessite cette activation.
+
+`docs/installation-initiale.sql` permet une installation via le Studio D1 sur une **base vide uniquement**. Il contient les deux migrations, le catalogue public et les entrées de suivi Wrangler. `node scripts/seed-d1.mjs --export=<fichier.sql>` exporte le catalogue seul pour préparer une installation ; cette option n'exécute aucune requête distante. Pour une base déjà utilisée, appliquer les migrations et le seed habituels afin de préserver les données.
+
+Les instructions historiques ci-dessous décrivent également les étapes d'une installation à partir de zéro.
+
 ## Mise à jour : connexion par mot de passe
 
 L’accès demandé est désormais **identifiant + mot de passe**, sans e-mail. Cloudflare Access n’est pas nécessaire pour ce mode. La configuration Access décrite plus bas appartient au plan initial.

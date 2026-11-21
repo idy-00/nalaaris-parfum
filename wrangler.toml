@@ -1,0 +1,33 @@
+# Cloudflare Pages — liaisons D1 / R2 de l'espace admin.
+# Ce fichier est la source des liaisons : elles ne se modifient plus dans le tableau de bord.
+# Les secrets (ACCESS_AUD, ACCESS_TEAM_DOMAIN, ADMIN_EMAILS, DEPLOY_HOOK_URL) restent dans le tableau de bord
+# (Settings → Variables and secrets, type « Secret ») : jamais dans le dépôt.
+#
+# Les database_id « a-remplacer » sont créés par `npm run cf:creer` (après `npx wrangler login`).
+# Haut du fichier = développement local + aperçus (bases de TEST). [env.production] = site en ligne.
+
+name = "nalaaris-parfum"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nalaaris-test"
+database_id = "a-remplacer-test"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "nalaaris-photos-test"
+
+[env.production]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "nalaaris-prod"
+database_id = "a-remplacer-prod"
+migrations_dir = "migrations"
+
+[[env.production.r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "nalaaris-photos"

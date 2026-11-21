@@ -3,9 +3,17 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": { "node": ">=24" },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build": "node scripts/donnees-d1.mjs && npm run typecheck && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs && vite build --config vite.admin.config.ts",
+    "typecheck": "tsc --noEmit --incremental false && tsc -p tsconfig.admin.json && tsc -p tsconfig.server.json",
+    "dev:admin": "vite --config vite.admin.config.ts",
+    "dev:api": "wrangler pages dev dist --port 8788",
+    "seed-d1": "node scripts/seed-d1.mjs",
+    "db:migrate": "wrangler d1 migrations apply DB --local",
+    "test": "node --test tests/*.test.mjs",
+    "check:dist": "node scripts/verifier-dist.mjs",
     "preview": "vite preview",
     "import-catalogue": "node scripts/import-catalogue.mjs",
     "docs-a-valider": "node scripts/docs-a-valider.mjs"
@@ -20,6 +28,7 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261114.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
@@ -28,7 +37,8 @@
     "sharp": "^0.34.4",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",
-    "vite": "^6.4.4"
+    "vite": "^6.4.4",
+    "wrangler": "^4.162.0"
   },
   "overrides": {
     "postcss-selector-parser": "^7.1.6"

@@ -7,6 +7,8 @@ import '@fontsource-variable/manrope/wght.css';
 import './styles/index.css';
 import { Coquille, rechargerUneFois, type Pages } from './App';
 import { planifierGsap } from './lib/gsap';
+import { ecouterLiensWhatsApp } from './lib/stats';
+import { chargerCatalogueVivant } from './lib/vivant';
 import { Accueil } from './pages/Accueil';
 import { NotFound } from './pages/NotFound';
 
@@ -79,4 +81,11 @@ Promise.all([prechargement(window.location.pathname).catch(() => undefined), ima
     });
     // Les animations arrivent après le premier affichage (voir lib/gsap.ts)
     planifierGsap();
+    // Statistiques et prix en direct : hors du chargement critique, quand le navigateur est libre
+    ecouterLiensWhatsApp();
+    const plusTard = (f: () => void) =>
+      'requestIdleCallback' in window ? requestIdleCallback(f, { timeout: 4000 }) : setTimeout(f, 2500);
+    const apresChargement = () => plusTard(() => void chargerCatalogueVivant());
+    if (document.readyState === 'complete') apresChargement();
+    else window.addEventListener('load', apresChargement, { once: true });
   });

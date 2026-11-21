@@ -1,7 +1,13 @@
 # NAL’AARIS PERFUMES — catalogue avec commande WhatsApp
 
 Site catalogue de parfums authentiques à Dakar, *by Yannick & Laetitia*.
-React + Vite + TypeScript, Tailwind CSS, React Router, GSAP (+ @gsap/react). Hébergement : Cloudflare Pages.
+React + Vite + TypeScript, Tailwind CSS, React Router, GSAP. Hébergement : Cloudflare Pages.
+
+Node.js 24 requis. L’espace de gestion séparé se trouve sur `/admin` : D1, Pages Functions, Cloudflare Access et photos R2.
+
+- [Guide d’utilisation](docs/guide-admin.md)
+- [Installation et raccordement Cloudflare](docs/raccordement-cloudflare.md)
+- [Rapport de reprise et contrôles](docs/rapport-reprise-admin.md)
 
 ## Lancer le projet
 
@@ -10,6 +16,10 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # build de production dans dist/ (+ pages Open Graph des fiches)
 npm run preview    # prévisualiser le build
+npm run dev:admin  # interface admin Vite ; nécessite l’API sur le port 8788
+npm run dev:api    # build complet avec les Functions, http://localhost:8788/admin
+npm test           # tests API, sécurité et mouvements de stock sur SQLite isolé
+npm run check:dist # contrôle des pages et fichiers après build
 ```
 
 Variable optionnelle au build : `VITE_SITE_URL=https://www.mon-domaine.com` (URL utilisée dans les messages WhatsApp et les aperçus de partage).
@@ -35,7 +45,7 @@ Contacts, zones de livraison, retrait et paiement : **`src/data/infos.ts`** (les
 ## Déploiement Cloudflare Pages
 
 - Commande de build : `npm run build` — dossier de sortie : `dist`.
-- Pas de règle catch-all dans `public/_redirects` : Cloudflare Pages sert déjà `index.html` pour toute route inconnue (pas de `404.html` = mode SPA), et une règle `/* /index.html 200` masquerait les pages `dist/parfum/<slug>.html` qui portent les aperçus WhatsApp / Instagram.
+- Une vraie `404.html` est pré-rendue. La seule réécriture concerne `/admin/*` vers `admin.html` ; une règle globale `/* /index.html 200` masquerait les pages pré-rendues et leurs aperçus WhatsApp / Instagram.
 
 ## Pages
 

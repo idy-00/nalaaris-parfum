@@ -1,7 +1,20 @@
 /**
  * INFOS PRATIQUES & CONTACTS
- * Livraison et paiement se règlent sur WhatsApp : le site ne promet ni zones, ni tarifs, ni délais.
+ * Par défaut, livraison et paiement se règlent sur WhatsApp : le site ne promet ni zones, ni tarifs, ni délais.
+ * Quand la boutique remplit « Boutique » dans l'admin (D1, lu au build), ces informations remplacent les textes
+ * par défaut — seulement celles qui sont remplies.
  */
+import type { DonneesD1 } from './parfums';
+
+const boutique: DonneesD1['boutique'] =
+  Object.values(import.meta.glob<DonneesD1>('./d1.generated.json', { eager: true, import: 'default' }))[0]?.boutique ?? {};
+const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
+const LIB_PAIEMENT: Record<string, string> = { wave: 'Wave', orange_money: 'Orange Money', especes: 'espèces', autre: 'un autre moyen à convenir' };
+const enListe = (l: string[]) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} ou ${l[l.length - 1]}` : (l[0] ?? ''));
+const zones = boutique.zones ?? [];
+const paiements = (boutique.paiements ?? []).map((p) => LIB_PAIEMENT[p]).filter(Boolean);
+const zoneTexte = (z: { nom: string; frais: number; delai: string }) =>
+  `${z.nom} : ${z.frais ? fcfa(z.frais) : 'offerte'}${z.delai ? ` (${z.delai})` : ''}`;
 
 export const marque = {
   nom: 'NAL’AARIS PERFUMES',
@@ -17,8 +30,8 @@ export const marque = {
 export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nalaaris-parfum.pages.dev').replace(/\/$/, '');
 
 export const contacts = {
-  whatsappNumero: '221770331313',
-  telephoneAffiche: '77 033 13 13',
+  whatsappNumero: /^221\d{9}$/.test(boutique.whatsapp ?? '') ? boutique.whatsapp! : '221770331313',
+  telephoneAffiche: (/^221\d{9}$/.test(boutique.whatsapp ?? '') ? boutique.whatsapp!.slice(3) : '770331313').replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4'),
   reseaux: [
     { id: 'instagram', label: 'Instagram', handle: '@nalaaris', url: 'https://instagram.com/nalaaris' },
     { id: 'tiktok', label: 'TikTok', handle: '@nalaaris.perfumes', url: 'https://www.tiktok.com/@nalaaris.perfumes' },
@@ -37,17 +50,28 @@ export const infosPratiques: BlocInfo[] = [
   {
     id: 'livraison',
     titre: 'Livraison',
-    lignes: ['On s’organise avec toi sur WhatsApp, une fois ton message reçu.'],
+    lignes:
+      zones.length || boutique.retrait
+        ? [
+            ...zones.slice(0, 6).map(zoneTexte),
+            ...(boutique.retrait ? [`Retrait possible${boutique.retraitAdresse ? ` : ${boutique.retraitAdresse}` : ''}.`] : []),
+          ]
+        : ['On s’organise avec toi sur WhatsApp, une fois ton message reçu.'],
   },
   {
     id: 'paiement',
     titre: 'Paiement',
-    lignes: ['Rien à payer sur le site.', 'On voit le paiement ensemble sur WhatsApp.'],
+    lignes: paiements.length
+      ? ['Rien à payer sur le site.', `Tu paies par ${enListe(paiements)}, une fois la commande confirmée.`]
+      : ['Rien à payer sur le site.', 'On voit le paiement ensemble sur WhatsApp.'],
   },
   {
     id: 'conseil',
     titre: 'Conseil',
-    lignes: ['Tu hésites entre deux parfums ?', 'Demande-nous avant de commander, on te guide.'],
+    lignes: ['Tu hésites entre deux parfums ?',
+      'Demande-nous avant de commander, on te guide.',
+      ...(boutique.horaires ? [`On te répond ${boutique.horaires}.`] : []),
+    ],
   },
   {
     id: 'authenticite',
@@ -75,7 +99,9 @@ export const faq: { q: string; r: string }[] = [
   },
   {
     q: 'Et la livraison ?',
-    r: 'On en parle directement sur WhatsApp, une fois ton message envoyé : on s’organise avec toi.',
+    r: zones.length
+      ? `On livre à Dakar. ${zones.map(zoneTexte).join(' ; ')}.${boutique.retrait ? ' Tu peux aussi venir récupérer ta commande.' : ''} On confirme tout avec toi sur WhatsApp.`
+      : 'On en parle directement sur WhatsApp, une fois ton message envoyé : on s’organise avec toi.',
   },
   {
     q: 'Le parfum que je veux est épuisé. Comment faire ?',

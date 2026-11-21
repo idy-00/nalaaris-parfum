@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Bell, Check, Heart, Plus } from 'lucide-react';
 import {
@@ -24,6 +24,9 @@ import { useSeo } from '../hooks/useSeo';
 import { buildWhatsAppLink, messageAlerte, messageFiche } from '../lib/whatsapp';
 import { gsap, useGSAP, MQ, sousLaLigne } from '../lib/gsap';
 import { ROUTES, catalogueStyle } from '../lib/routes';
+import { suivre } from '../lib/stats';
+import { useVivant } from '../lib/vivant';
+import { PrevenirFormulaire } from '../components/PrevenirFormulaire';
 import { NotFound } from './NotFound';
 
 export function Fiche() {
@@ -38,8 +41,13 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
   const root = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const [contenance, setContenance] = useState<ChoixContenance>(() => contenanceParDefaut(parfum));
+  // On garde la contenance choisie (ml) ; prix et disponibilité sont relus à chaque rendu (prix en direct, lib/vivant)
+  useVivant();
+  const [mlChoisi, setMlChoisi] = useState(() => contenanceParDefaut(parfum).ml);
+  const contenance: ChoixContenance = parfum.contenances.find((c) => c.ml === mlChoisi) ?? contenanceParDefaut(parfum);
+  const setContenance = (c: ChoixContenance) => setMlChoisi(c.ml);
   const [image, setImage] = useState(0);
+  useEffect(() => suivre({ t: 'vue_fiche', s: parfum.slug }), [parfum.slug]);
   const { ajouter, contient, ouvrir, count } = useSelection();
   const proches = useMemo(() => suggestions(parfum), [parfum]);
 
@@ -98,6 +106,9 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
         href={lienWa}
         target="_blank"
         rel="noopener noreferrer"
+        data-evt={epuise ? 'me_prevenir' : 'clic_commander'}
+        data-slug={parfum.slug}
+        data-ml={contenance.ml || undefined}
         className={`btn min-w-0 flex-1 px-3 min-[360px]:px-4 lg:flex-[1.4] ${epuise ? 'btn-verre' : 'btn-rose'}`}
       >
         <span className={barre ? 'contents max-[359px]:hidden' : 'contents'}>
@@ -282,6 +293,8 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                   href={lienWa}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-evt="clic_commander"
+                  data-slug={parfum.slug}
                   className="inline-flex min-h-[44px] items-center font-serif text-2xl underline decoration-rose-doux/40 underline-offset-[6px] transition-colors hover:text-rose-doux"
                 >
                   Demander le prix
@@ -289,6 +302,9 @@ function FicheParfum({ parfum }: { parfum: Parfum }) {
                 <BadgeDispo dispo={parfum.dispo} long className="text-base" />
               </div>
             )}
+
+            {/* Épuisé : laisser son numéro (facultatif, mention claire) en plus du lien WhatsApp */}
+            {epuise && <PrevenirFormulaire slug={parfum.slug} ml={contenance.ml} />}
 
             {/* Actions : intégrées en desktop, barre collée en bas sur mobile */}
             <div className="hidden flex-col gap-3 lg:flex xl:flex-row">{actions(false)}</div>

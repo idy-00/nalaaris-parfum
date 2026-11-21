@@ -14,7 +14,7 @@ import { DESCRIPTIONS } from './descriptions';
 
 export type Categorie = 'femme' | 'homme' | 'unisexe';
 export type Style = 'frais' | 'fleuri' | 'boise' | 'doux' | 'vanille' | 'oriental';
-export type Dispo = 'disponible' | 'limite' | 'epuise';
+export type Dispo = 'disponible' | 'limite' | 'epuise' | 'sur_commande';
 export type Moment = 'jour' | 'soir' | 'jourSoir';
 export type Saison = 'fraiche' | 'chaude' | 'annee';
 export type Occasion = 'quotidien' | 'bureau' | 'sortie' | 'diner' | 'ceremonie';
@@ -31,7 +31,8 @@ export interface Porter {
 export interface Contenance {
   ml: number;
   prix?: number;
-  dispo: Dispo;
+  /** Absente = stock pas suivi par la boutique : aucun badge. */
+  dispo?: Dispo;
 }
 
 /** Pyramide tête / cœur / fond quand elle est publiée, sinon les notes principales en un bouquet. */
@@ -72,18 +73,53 @@ export interface Parfum extends ParfumImporte, Omit<ReglageParfum, 'description'
   porter?: Porter;
 }
 
-export const parfums: Parfum[] = catalogue.map((p) => {
-  const r = REGLAGES[p.slug] ?? {};
-  return {
-    ...p,
-    ...r,
-    nom: r.nom ?? p.nom,
-    styles: r.styles ?? p.styles,
-    description: r.description ?? DESCRIPTIONS[p.slug] ?? p.description,
-    contenances: r.contenances ?? [],
-    porter: PORTER[p.slug],
+/**
+ * Données de la boutique saisies dans l'admin (D1), récupérées au build par scripts/donnees-d1.mjs :
+ * seulement ce qui diffère des fichiers ci-dessus. Fichier absent (build local, D1 injoignable) = fichiers seuls.
+ */
+export interface DonneesD1 {
+  parfums: Record<
+    string,
+    Partial<Omit<Parfum, 'porter' | 'dispo'>> & { porter?: Porter | null; dispo?: Dispo | null; masque?: boolean }
+  >;
+  boutique: {
+    whatsapp?: string;
+    horaires?: string;
+    retrait?: boolean;
+    retraitAdresse?: string;
+    paiements?: string[];
+    zones?: { nom: string; frais: number; delai: string }[];
   };
-});
+  avis: { prenom: string; ville?: string | null; texte: string; note?: number | null; date: string }[];
+}
+export const donneesD1: DonneesD1 | undefined = Object.values(
+  import.meta.glob<DonneesD1>('./d1.generated.json', { eager: true, import: 'default' }),
+)[0];
+
+export const parfums: Parfum[] = catalogue
+  .filter((p) => !donneesD1?.parfums[p.slug]?.masque)
+  .map((p) => {
+    const r = REGLAGES[p.slug] ?? {};
+    const parfum: Parfum = {
+      ...p,
+      ...r,
+      nom: r.nom ?? p.nom,
+      styles: r.styles ?? p.styles,
+      description: r.description ?? DESCRIPTIONS[p.slug] ?? p.description,
+      contenances: r.contenances ?? [],
+      porter: PORTER[p.slug],
+    };
+    // D1 passe avant les fichiers (null = valeur retirée dans l'admin)
+    const d = donneesD1?.parfums[p.slug];
+    if (d) {
+      const { porter, dispo, ...reste } = d;
+      delete reste.masque;
+      Object.assign(parfum, reste);
+      if (porter !== undefined) parfum.porter = porter ?? undefined;
+      if (dispo !== undefined) parfum.dispo = dispo ?? undefined;
+    }
+    return parfum;
+  });
 
 /* ---------- Libellés et méta-données d'affichage ---------- */
 
@@ -108,6 +144,7 @@ export const styleInfo = (s: Style) => STYLES.find((x) => x.id === s)!;
 export const DISPO_LABEL: Record<Dispo, string> = {
   disponible: 'Disponible',
   limite: 'Stock limité',
+  sur_commande: 'Sur commande',
   epuise: 'Épuisé',
 };
 
@@ -141,9 +178,9 @@ export function srcsetImage(src: string): string | undefined {
  * `undefined` = stock pas encore validé par la boutique : on n'affiche rien (ni « Disponible », ni « Épuisé »).
  */
 export function dispoGlobale(p: Parfum): Dispo | undefined {
-  if (!p.contenances.length) return p.dispo;
-  if (p.contenances.some((c) => c.dispo === 'disponible')) return 'disponible';
-  if (p.contenances.some((c) => c.dispo === 'limite')) return 'limite';
+  const ds = p.contenances.map((c) => c.dispo).filter((d): d is Dispo => !!d);
+  if (!ds.length) return p.dispo;
+  for (const d of ['disponible', 'limite', 'sur_commande'] as const) if (ds.includes(d)) return d;
   return 'epuise';
 }
 

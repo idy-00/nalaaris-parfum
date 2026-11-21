@@ -2,3 +2,4 @@
 # Sur Cloudflare Pages, les règles de ce fichier passent AVANT les fichiers existants :
 # un catch-all écraserait les pages /parfum/<slug>.html générées au build (aperçus Open Graph).
 # Route inconnue : Cloudflare Pages sert 404.html (pré-rendu, statut 404), que React reprend tel quel.
+/admin/* /admin.html 200

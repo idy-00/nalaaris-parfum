@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["admin/src"],
+  "compilerOptions": { "incremental": false }
+}

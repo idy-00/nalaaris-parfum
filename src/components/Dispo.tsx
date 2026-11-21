@@ -3,6 +3,7 @@ import { DISPO_LABEL, type Dispo } from '../data/parfums';
 const POINT: Record<Dispo, string> = {
   disponible: 'bg-dispo-ok',
   limite: 'bg-dispo-limite',
+  sur_commande: 'bg-dispo-limite',
   epuise: 'bg-dispo-epuise',
 };
 

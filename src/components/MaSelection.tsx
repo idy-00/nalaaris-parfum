@@ -6,6 +6,7 @@ import { Panneau } from './Panneau';
 import { VisuelParfum } from './FlaconPlaceholder';
 import { IconeWhatsApp } from './IconesReseaux';
 import { buildWhatsAppLink, messageSelection } from '../lib/whatsapp';
+import { useVivant } from '../lib/vivant';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { DISPO_LABEL } from '../data/parfums';
 import { ROUTES } from '../lib/routes';
@@ -96,6 +97,7 @@ export function MaSelection({ page }: { page: string }) {
     setAnnulable(null);
   };
 
+  useVivant(); // prix / disponibilité mis à jour après chargement
   const lien = buildWhatsAppLink(messageSelection(lignes.map((l) => ({ parfum: l.parfum, ml: l.ml }))));
 
   return (
@@ -125,7 +127,15 @@ export function MaSelection({ page }: { page: string }) {
         pied={
           count > 0 ? (
             <div className="space-y-3">
-              <a href={lien} target="_blank" rel="noopener noreferrer" className="btn btn-rose w-full" data-autofocus>
+              <a
+                href={lien}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-rose w-full"
+                data-autofocus
+                data-evt="clic_commander"
+                data-slug={lignes.map((l) => l.slug).join(',')}
+              >
                 <IconeWhatsApp /> Envoyer ma sélection sur WhatsApp
               </a>
               <p className="text-center text-sm text-sourdine">On te confirme la disponibilité, le prix et la livraison.</p>
@@ -202,7 +212,7 @@ export function MaSelection({ page }: { page: string }) {
                             className={`puce min-w-[64px] justify-center px-3 ${x.dispo === 'epuise' ? 'text-sourdine line-through decoration-encre/30' : ''}`}
                           >
                             {x.ml} ml
-                            {x.dispo !== 'disponible' && <span className="sr-only"> ({DISPO_LABEL[x.dispo].toLowerCase()})</span>}
+                            {x.dispo && x.dispo !== 'disponible' && <span className="sr-only"> ({DISPO_LABEL[x.dispo].toLowerCase()})</span>}
                           </button>
                         ))}
                       </div>

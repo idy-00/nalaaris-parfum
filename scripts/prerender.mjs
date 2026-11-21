@@ -77,7 +77,7 @@ const POLICES = [/^bodoni-moda-latin-opsz-normal-.*\.woff2$/].map((re) => {
   return `<link rel="preload" as="font" type="font/woff2" href="/assets/${f}" crossorigin />`;
 });
 
-const DISPO_SCHEMA = {disponible: 'InStock', limite: 'LimitedAvailability', epuise: 'OutOfStock' };
+const DISPO_SCHEMA = { disponible: 'InStock', limite: 'LimitedAvailability', sur_commande: 'BackOrder', epuise: 'OutOfStock' };
 
 const magasin = {
   '@context': 'https://schema.org',
@@ -111,7 +111,8 @@ function produit(p) {
     offers: p.contenances.length ? p.contenances.map((c) => ({
       '@type': 'Offer',
       name: `${c.ml} ml`,
-      availability: `https://schema.org/${DISPO_SCHEMA[c.dispo]}`,
+      // Stock non suivi : pas de disponibilité déclarée (rien d'inventé)
+      ...(DISPO_SCHEMA[c.dispo] ? { availability: `https://schema.org/${DISPO_SCHEMA[c.dispo]}` } : {}),
       seller: { '@type': 'Organization', name: 'Nal’Aaris Perfumes' },
       ...(c.prix != null ? { price: c.prix, priceCurrency: 'XOF' } : {}),
     })) : undefined, // pas de prix ni de contenance inventés : aucune offre tant qu’ils ne sont pas renseignés

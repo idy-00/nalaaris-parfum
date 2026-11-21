@@ -13,11 +13,13 @@ import { BadgeDispo } from './Dispo';
 import { useSelection } from '../hooks/useSelection';
 import { gsap, useGSAP, MQ } from '../lib/gsap';
 import { useReflet } from '../hooks/useReflet';
+import { useVivant } from '../lib/vivant';
 
 /** `priorite` : l'une des 2 premières cartes (image LCP : chargée tout de suite, fetchpriority high, préchargée). */
 export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; priorite?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const { ajouter, contient, ouvrir } = useSelection();
+  useVivant(); // prix / disponibilité mis à jour après chargement
   const c = contenanceParDefaut(parfum);
   const dejaLa = contient(parfum.slug, c.ml);
   const dispo = dispoGlobale(parfum);
@@ -29,12 +31,14 @@ export function CarteParfum({ parfum, priorite = false }: { parfum: Parfum; prio
     if (!window.matchMedia(`${MQ.desktop} and ${MQ.motion}`).matches) return;
     gsap.to(root.current, { y: -4, duration: 0.3, overwrite: 'auto' });
     gsap.to('.flacon', { scale: 1.03, duration: 0.35, overwrite: 'auto' });
-    gsap.to('.scene-photo', { scale: 1.16, duration: 0.9, ease: 'power2.out', overwrite: 'auto' });
+    const photo = root.current?.querySelector('.scene-photo');
+    if (photo) gsap.to(photo, { scale: 1.16, duration: 0.9, ease: 'power2.out', overwrite: 'auto' });
   });
   const sortir = contextSafe(() => {
     gsap.to(root.current, { y: 0, scale: 1, duration: 0.25, overwrite: 'auto' });
     gsap.to('.flacon', { scale: 1, duration: 0.25, overwrite: 'auto' });
-    gsap.to('.scene-photo', { scale: 1.1, duration: 0.5, overwrite: 'auto' });
+    const photo = root.current?.querySelector('.scene-photo');
+    if (photo) gsap.to(photo, { scale: 1.1, duration: 0.5, overwrite: 'auto' });
   });
   const presser = contextSafe((e: ReactPointerEvent) => {
     if (e.pointerType === 'mouse') return;

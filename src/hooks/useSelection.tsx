@@ -1,3 +1,4 @@
+import { suivre } from '../lib/stats';
 import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { getParfum, type Parfum } from '../data/parfums';
 import { ecrire, lire } from '../lib/storage';
@@ -53,6 +54,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
   );
 
   const ajouter = useCallback((slug: string, ml: number) => {
+    suivre({ t: 'ajout_selection', s: slug, ml });
     setBrut((prev) => (prev.some((l) => l.slug === slug && l.ml === ml) ? prev : [...prev, { slug, ml }]));
   }, []);
 

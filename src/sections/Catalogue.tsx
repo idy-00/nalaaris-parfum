@@ -9,6 +9,7 @@ import { useHydrate } from '../hooks/useHydrate';
 import { Panneau } from '../components/Panneau';
 import { IconeWhatsApp } from '../components/IconesReseaux';
 import { buildWhatsAppLink, messageRecherche } from '../lib/whatsapp';
+import { suivre } from '../lib/stats';
 import { Flip, gsap, gsapPret, useGSAP, ScrollTrigger, MQ, sousLaLigne } from '../lib/gsap';
 
 /** Filtre « Jour / Soir » (les parfums jour & soir sont dans les deux). */
@@ -55,6 +56,20 @@ export function Catalogue() {
     }, 220);
     return () => window.clearTimeout(t);
   }, [saisie, filtres.q, appliquer]);
+
+  // Statistique « recherche » : envoyée une fois la frappe terminée (1,5 s), une seule fois par texte.
+  // Nombre de résultats de la recherche seule (sans les autres filtres) : repère les parfums demandés qu'on n'a pas.
+  const derniereEnvoyee = useRef('');
+  useEffect(() => {
+    const q = filtres.q.trim();
+    if (q.length < 2 || q.toLowerCase() === derniereEnvoyee.current) return;
+    const t = window.setTimeout(() => {
+      derniereEnvoyee.current = q.toLowerCase();
+      const n = filtrer({ q, cat: null, styles: [], moment: null, marque: null, dispo: false }).length;
+      suivre({ t: 'recherche', q, n });
+    }, 1500);
+    return () => window.clearTimeout(t);
+  }, [filtres.q]);
 
   // Si la recherche change depuis l'extérieur (retour arrière, lien partagé), on resynchronise la saisie
   useEffect(() => {

@@ -16,3 +16,8 @@ scripts/photos/sources/
 # Fichiers locaux de travail (cache Python, contrôle photo) : jamais versionnés
 scripts/__pycache__/
 scripts/photos-brutes/
+
+# Espace admin : données D1 du build, secrets locaux, base locale wrangler
+src/data/d1.generated.json
+.dev.vars
+.wrangler/

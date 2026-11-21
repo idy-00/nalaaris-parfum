@@ -4,6 +4,7 @@ import { SelectionMoment } from '../sections/SelectionMoment';
 import { Maison } from '../sections/Maison';
 import { Manifeste } from '../sections/Manifeste';
 import { Commander } from '../sections/Commander';
+import { Avis } from '../sections/Avis';
 import { Goutte } from '../components/Goutte';
 import { useSeo } from '../hooks/useSeo';
 
@@ -28,6 +29,7 @@ export function Accueil() {
       </div>
       <Maison numero="03" apercu />
       <Manifeste />
+      <Avis />
       <div className="border-t border-encre/5 bg-fond-2/85">
         <Commander numero="04" lienInfos />
       </div>

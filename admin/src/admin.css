@@ -1,0 +1,130 @@
+@config "../../tailwind.admin.config.js";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Espace admin — mêmes couleurs, mêmes polices que le site (« Le Sillage »), mais une interface d'OUTIL :
+ * surfaces pleines (pas de verre ni de flou : rapide sur un téléphone d'entrée de gamme), gros chiffres,
+ * zones tactiles de 44 px minimum, barre du bas. Thème clair / sombre partagé avec le site (localStorage).
+ */
+:root {
+  --c-fond: 255 255 255;
+  --c-fond-2: 255 247 249;
+  --c-fond-3: 251 234 240;
+  --c-encre: 43 22 32;
+  --c-sourdine: 110 90 100;
+  --c-rose: 168 18 79;
+  --c-rose-vif: 142 15 67;
+  --c-rose-logo: 218 8 98;
+  --c-rose-doux: 179 23 90;
+  --c-rose-brume: 138 37 80;
+  --c-rose-profond: 246 215 226;
+  --c-cuivre: 154 90 63;
+  --c-dispo-ok: 31 122 77;
+  --c-dispo-limite: 165 90 0;
+  --c-dispo-epuise: 122 111 120;
+  --c-danger: 176 32 48;
+  --c-carte: 255 255 255;
+  --ombre-carte: 0 1px 2px rgba(43, 22, 32, 0.05), 0 8px 24px -16px rgba(122, 28, 66, 0.25);
+  color-scheme: light;
+}
+[data-theme='sombre'] {
+  --c-fond: 11 10 12;
+  --c-fond-2: 16 14 18;
+  --c-fond-3: 29 24 31;
+  --c-encre: 245 239 234;
+  --c-sourdine: 169 158 165;
+  --c-rose: 168 18 79;
+  --c-rose-vif: 190 26 92;
+  --c-rose-logo: 218 8 98;
+  --c-rose-doux: 229 139 174;
+  --c-rose-brume: 242 198 214;
+  --c-rose-profond: 74 6 32;
+  --c-cuivre: 201 135 106;
+  --c-dispo-ok: 111 207 151;
+  --c-dispo-limite: 242 182 109;
+  --c-dispo-epuise: 158 148 157;
+  --c-danger: 255 128 140;
+  --c-carte: 24 21 26;
+  --ombre-carte: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 24px -16px rgba(0, 0, 0, 0.8);
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: rgb(var(--c-fond-2));
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-fond-2 font-sans text-base text-encre antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 {
+    @apply font-serif font-normal;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  a, button, [role='button'], label, summary, input, select, textarea { touch-action: manipulation; }
+  button:not(:disabled), a[href] { cursor: pointer; }
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-rose-doux));
+    outline-offset: 2px;
+    border-radius: 10px;
+  }
+  /* Champs : 16 px minimum (iOS ne zoome pas), chiffres alignés */
+  input, select, textarea { font-size: 16px; }
+  input[type='number'] { -moz-appearance: textfield; }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  ::selection { background: rgba(218, 8, 98, 0.18); }
+}
+
+@layer components {
+  .carte {
+    background: rgb(var(--c-carte));
+    box-shadow: var(--ombre-carte);
+    @apply rounded-2xl border border-encre/[0.07];
+  }
+  .label { @apply text-label font-semibold uppercase text-sourdine; }
+  .chiffre { @apply font-serif tabular-nums leading-none; font-variant-numeric: lining-nums tabular-nums; }
+
+  .btn {
+    @apply inline-flex min-h-[48px] select-none items-center justify-center gap-2 rounded-full px-5 text-[0.9375rem] font-semibold transition-[background-color,transform,opacity] duration-150;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+  .btn:disabled { @apply cursor-not-allowed opacity-50; }
+  .btn-rose { @apply bg-rose text-white; }
+  .btn-rose:hover:not(:disabled) { @apply bg-rose-vif; }
+  .btn-doux { @apply bg-fond-3 text-encre; }
+  .btn-doux:hover:not(:disabled) { @apply bg-rose-profond; }
+  .btn-trait { @apply border border-encre/15 text-encre; }
+  .btn-trait:hover:not(:disabled) { @apply border-rose-doux/60; }
+  .btn-danger { @apply border border-danger/40 text-danger; }
+  .btn-wa { background: #1a7f4b; @apply text-white; }
+  .btn-wa:hover { background: #156a3e; }
+
+  /* Puces (choix exclusifs : contenance, paiement, statut…) */
+  .puce {
+    @apply inline-flex min-h-[44px] select-none items-center justify-center gap-1.5 rounded-full border border-encre/15 px-4 text-sm font-medium text-encre/85 transition-colors duration-150;
+  }
+  .puce[aria-pressed='true'],
+  .puce[aria-checked='true'] { @apply border-rose bg-rose text-white; }
+
+  .champ {
+    @apply min-h-[48px] w-full rounded-xl border border-encre/15 bg-fond px-3.5 text-encre transition-colors placeholder:text-sourdine/80;
+  }
+  .champ:focus { @apply border-rose-doux outline-none; box-shadow: 0 0 0 3px rgb(var(--c-rose-doux) / 0.18); }
+  .champ[aria-invalid='true'] { @apply border-danger; }
+  .champ-nb { @apply champ text-right tabular-nums; }
+
+  .safe-bas { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  .ligne + .ligne { @apply border-t border-encre/[0.07]; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

@@ -20,7 +20,7 @@ export function Plus() {
   };
   return <>
     <EnTete titre="Plus" sousTitre="La boutique au quotidien" />
-    <Page>
+    <Page className="admin-grille">
       <Section titre="La boutique"><div className="carte divide-y divide-encre/10">
         <LienLigne to="/admin/plus/boutique">Informations, livraison et paiement <span className="ml-auto">›</span></LienLigne>
         <LienLigne to="/admin/plus/avis">Avis clients <span className="ml-auto">›</span></LienLigne>

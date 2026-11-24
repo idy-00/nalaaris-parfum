@@ -34,7 +34,7 @@ export function Accueil() {
 
   return (
     <>
-      <header className="mx-auto max-w-3xl px-4 pb-1 pt-[calc(env(safe-area-inset-top)+20px)]">
+      <header className="admin-largeur pb-1 pt-[calc(env(safe-area-inset-top)+20px)]">
         <p className="text-sm capitalize text-sourdine">{dateLongue()}</p>
         <h1 tabIndex={-1} className="text-[2.25rem] leading-tight outline-none">
           Bonjour{moi ? ` ${moi.prenom}` : ''}
@@ -44,7 +44,7 @@ export function Accueil() {
         {erreur && <ErreurBloc message={erreur} reessayer={recharger} />}
         {!t && !erreur && <Squelette lignes={6} />}
         {t && (
-          <div ref={zone}>
+          <div ref={zone} className="admin-tableau">
             <ChiffresSemaine t={t} />
             <AFaire t={t} onMaj={recharger} />
             <PlusDemandes t={t} />
@@ -66,7 +66,7 @@ function ChiffresSemaine({ t }: { t: Tableau }) {
   ];
   return (
     <Section titre="Cette semaine" action={<span className="text-xs text-sourdine">vs semaine dernière, même moment</span>}>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="admin-stats grid grid-cols-2 gap-3">
         {cartes.map((c) => {
           const d = variation(c.v.n, c.v.prec);
           const contenu = (
@@ -343,7 +343,7 @@ function Barres({ parJour }: { parJour: Tableau['parJour'] }) {
         <p className="grid h-24 place-items-center rounded-xl bg-fond-2 text-sm text-sourdine">Pas encore de vente sur 30 jours.</p>
       ) : (
         <>
-          <svg viewBox={`0 0 300 ${H + 14}`} className="h-auto w-full touch-pan-y" role="img" aria-label={`Ventes des 30 derniers jours : ${fcfa(total)} au total. Détail dans le tableau.`} onPointerLeave={() => setActif(null)}>
+          <svg viewBox={`0 0 300 ${H + 14}`} className="admin-graphique h-auto w-full touch-pan-y" role="img" aria-label={`Ventes des 30 derniers jours : ${fcfa(total)} au total. Détail dans le tableau.`} onPointerLeave={() => setActif(null)}>
             <line x1="0" x2="300" y1={H} y2={H} stroke="rgb(var(--c-encre) / 0.15)" strokeWidth="1" />
             {jours.map((j, i) => {
               const h = j.ca ? Math.max((j.ca / max) * (H - 4), 3) : 0;

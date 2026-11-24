@@ -49,7 +49,7 @@ export function Ventes() {
       />
       <Page>
         <Puces label="Période" valeur={periode} onChange={(v) => changer('periode', v)} options={PERIODES} />
-        <div className="mt-2 grid grid-cols-2 gap-2">
+        <div className="admin-filtres mt-2 grid grid-cols-2 gap-2">
           <select value={statut} onChange={(e) => changer('statut', e.target.value)} aria-label="Statut" className="champ">
             <option value="">Tous les statuts</option>
             <option value="a_livrer">À livrer</option>

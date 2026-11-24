@@ -102,7 +102,7 @@ export function Catalogue() {
             );
           })}
         </div>
-        <div className="mt-2 grid grid-cols-2 gap-2">
+        <div className="admin-filtres mt-2 grid grid-cols-2 gap-2">
           <select value={marque} onChange={(e) => changer('marque', e.target.value)} aria-label="Marque" className="champ">
             <option value="">Toutes les marques</option>
             {data?.marques.map((m) => (
@@ -133,7 +133,7 @@ export function Catalogue() {
           </div>
         )}
 
-        <div ref={zone} className="mt-2 space-y-3">
+        <div ref={zone} className="admin-catalogue mt-2 space-y-3">
           {erreur && <ErreurBloc message={erreur} reessayer={recharger} />}
           {!data && chargement && <Squelette lignes={5} />}
           {data && !data.parfums.length && (
@@ -159,8 +159,8 @@ export function Catalogue() {
       </Page>
 
       {selection && (
-        <div className="fixed inset-x-0 bottom-[calc(60px+max(8px,env(safe-area-inset-bottom)))] z-barre px-3 md:bottom-4 md:left-24">
-          <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-2xl bg-encre p-2 pl-4 text-fond shadow-xl">
+        <div className="admin-barre-actions fixed inset-x-0 bottom-[calc(60px+max(8px,env(safe-area-inset-bottom)))] z-barre px-3 md:bottom-4">
+          <div className="admin-largeur flex items-center gap-2 rounded-2xl bg-encre p-2 pl-4 text-fond shadow-xl">
             <p className="flex-1 text-sm font-semibold">
               {selection.size} sélectionné{selection.size > 1 ? 's' : ''}
             </p>

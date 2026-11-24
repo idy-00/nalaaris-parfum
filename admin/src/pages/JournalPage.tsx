@@ -7,7 +7,7 @@ export function JournalPage() {
   const [page, setPage] = useState(0);
   const { data, erreur, chargement, recharger } = useDonnees<{ lignes: Ligne[]; suivante: boolean }>(`journal?page=${page}`);
   return <><EnTete titre="Journal des modifications" retour="/admin/plus" /><Page>
-    {erreur ? <ErreurBloc message={erreur} reessayer={recharger} /> : !data || chargement ? <Squelette /> : !data.lignes.length ? <Vide titre="Aucune modification" /> : <div className="space-y-3">{data.lignes.map((l) => <article key={l.id} className="carte space-y-2 p-4">
+    {erreur ? <ErreurBloc message={erreur} reessayer={recharger} /> : !data || chargement ? <Squelette /> : !data.lignes.length ? <Vide titre="Aucune modification" /> : <div className="admin-catalogue space-y-3">{data.lignes.map((l) => <article key={l.id} className="carte space-y-2 p-4">
       <p className="text-sm text-sourdine">{dateHeure(l.quand)} · {l.qui}</p>
       <h2 className="font-sans text-base font-semibold">{l.libelle ?? l.action}</h2>
       <p className="text-sm">{l.action}{l.champ ? ` · ${l.champ}` : ''}</p>

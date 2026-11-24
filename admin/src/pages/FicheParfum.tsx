@@ -64,7 +64,7 @@ export function FicheParfum() {
           ) : undefined
         }
       />
-      <Page>
+      <Page className="admin-grille">
         <div className="flex items-center gap-4">
           <Vignette parfum={p} taille={72} />
           <div className="flex flex-wrap gap-1.5">
@@ -225,6 +225,7 @@ function Textes({ p, onMaj }: { p: ParfumFiche; onMaj: (p: ParfumFiche) => void 
 
   return (
     <form
+      className="admin-grille"
       onSubmit={(e) => {
         e.preventDefault();
         const corps: Record<string, unknown> = {
@@ -294,7 +295,7 @@ function Textes({ p, onMaj }: { p: ParfumFiche; onMaj: (p: ParfumFiche) => void 
           </div>
         </div>
       </Section>
-      <div className="sticky bottom-[calc(68px+env(safe-area-inset-bottom))] mt-4 md:bottom-4">
+      <div className="admin-actions-formulaire sticky bottom-[calc(68px+env(safe-area-inset-bottom))] mt-4 md:bottom-4">
         <button type="submit" className="btn btn-rose w-full shadow-lg">
           Enregistrer les textes
         </button>

@@ -60,7 +60,7 @@
   body {
     @apply bg-fond-2 font-sans text-base text-encre antialiased;
     min-height: 100dvh;
-    overflow-x: hidden;
+    min-width: 0;
   }
   h1, h2, h3 {
     @apply font-serif font-normal;
@@ -77,6 +77,8 @@
   }
   /* Champs : 16 px minimum (iOS ne zoome pas), chiffres alignés */
   input, select, textarea { font-size: 16px; }
+  input, select, textarea, fieldset, label { min-width: 0; }
+  textarea { max-width: 100%; }
   input[type='number'] { -moz-appearance: textfield; }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -123,6 +125,71 @@
 
   .safe-bas { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .ligne + .ligne { @apply border-t border-encre/[0.07]; }
+}
+
+/* Le même cadre aligne en-têtes, contenu et actions, sans agrandir les champs mobiles. */
+.admin-largeur { width: 100%; max-width: 1320px; margin-inline: auto; padding-inline: 16px; }
+.admin-contenu { min-width: 0; }
+.admin-navigation {
+  position: fixed; inset: auto 0 0; z-index: 50;
+  background: rgb(var(--c-fond) / .97); border-top: 1px solid rgb(var(--c-encre) / .08);
+}
+.admin-onglets { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 512px; margin-inline: auto; }
+.admin-lien { display: flex; min-height: 60px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; font-weight: 600; letter-spacing: .025em; }
+.admin-marque, .admin-voir-site { display: none; }
+.admin-libelle-vente { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+.admin-barre-actions { min-width: 0; }
+.admin-page > *, .admin-grille > *, .admin-tableau > *, .admin-catalogue > * { min-width: 0; }
+.admin-grille > section { min-width: 0; }
+.admin-stats > * { min-width: 0; }
+.admin-stats .chiffre { overflow-wrap: anywhere; }
+
+@media (min-width: 768px) {
+  :root { --admin-navigation-largeur: 88px; }
+  .admin-contenu { margin-left: var(--admin-navigation-largeur); }
+  .admin-largeur { padding-inline: 24px; }
+  .admin-entete { min-height: 88px; gap: 16px; }
+  .admin-page { padding-top: 24px; }
+  .admin-navigation {
+    inset: 0 auto 0 0; width: var(--admin-navigation-largeur); height: 100dvh;
+    display: flex; flex-direction: column; overflow-y: auto;
+    border-top: 0; border-right: 1px solid rgb(var(--c-encre) / .08); padding: 24px 8px 16px;
+  }
+  .admin-marque { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 28px; }
+  .admin-marque-texte { display: none; }
+  .admin-onglets { display: flex; flex-direction: column; gap: 8px; width: 100%; margin: 0; }
+  .admin-lien { min-height: 72px; border-radius: 14px; }
+  .admin-lien[aria-current='page'] { background: rgb(var(--c-rose) / .08); }
+  .admin-libelle-vente { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; max-width: 100%; text-align: center; line-height: 1.4; }
+  .admin-voir-site { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: auto; padding-top: 24px; color: rgb(var(--c-sourdine)); }
+  .admin-voir-site span { display: none; }
+  .admin-barre-actions { left: var(--admin-navigation-largeur); }
+  .admin-filtres { max-width: 640px; }
+  .admin-dialogue { max-width: 640px; margin: 24px; padding: 24px; }
+}
+
+@media (min-width: 1280px) {
+  :root { --admin-navigation-largeur: 240px; }
+  .admin-largeur { padding-inline: 40px; }
+  .admin-navigation { padding: 32px 16px 24px; }
+  .admin-marque { justify-content: flex-start; padding-inline: 12px; margin-bottom: 36px; }
+  .admin-marque-texte { display: block; }
+  .admin-lien { flex-direction: row; justify-content: flex-start; gap: 12px; min-height: 56px; padding: 8px 12px; font-size: 14px; letter-spacing: 0; }
+  .admin-lien:hover { background: rgb(var(--c-encre) / .04); }
+  .admin-icone { width: 36px; height: 36px; }
+  .admin-icone-vente { width: 36px; height: 36px; }
+  .admin-libelle-vente { text-align: left; }
+  .admin-voir-site { justify-content: flex-start; padding-inline: 12px; font-size: 14px; }
+  .admin-voir-site span { display: inline; }
+  .admin-grille, .admin-tableau { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; align-items: start; }
+  .admin-grille > :not(section), .admin-tableau > section:first-child, .admin-vente > section:first-of-type { grid-column: 1 / -1; }
+  .admin-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .admin-catalogue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+  .admin-catalogue > :not(article) { grid-column: 1 / -1; }
+  .admin-catalogue > * + * { margin-top: 0; }
+  .admin-page .btn { max-width: 100%; }
+  .admin-actions-formulaire { justify-self: start; min-width: 240px; max-width: 400px; }
+  .admin-graphique { max-height: 260px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

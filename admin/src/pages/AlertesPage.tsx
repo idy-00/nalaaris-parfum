@@ -19,7 +19,7 @@ export function AlertesPage() {
   return <><EnTete titre="Retours en stock" retour="/admin/plus" /><Page>
     <p className="carte p-4 text-sm text-sourdine">Vérifie le stock, ouvre WhatsApp pour prévenir la personne, puis marque la demande comme traitée. Les demandes de plus de six mois sont retirées.</p>
     {message && <p role="alert" className="mt-4 text-danger">{message}</p>}
-    {erreur ? <ErreurBloc message={erreur} reessayer={recharger} /> : !data ? <Squelette /> : !data.length ? <Vide titre="Aucune demande en attente" /> : <div className="mt-4 space-y-3">{data.map((a) => <article key={a.id} className="carte space-y-3 p-4">
+    {erreur ? <ErreurBloc message={erreur} reessayer={recharger} /> : !data ? <Squelette /> : !data.length ? <Vide titre="Aucune demande en attente" /> : <div className="admin-catalogue mt-4 space-y-3">{data.map((a) => <article key={a.id} className="carte space-y-3 p-4">
       <div className="flex items-start justify-between gap-3"><h2 className="text-xl">{a.prenom ?? telAffiche(a.telephone)}</h2><Pastille ton={a.prevenue_le ? 'ok' : 'alerte'}>{a.prevenue_le ? 'Prévenue' : 'À prévenir'}</Pastille></div>
       <Link className="block min-h-[44px] py-2 font-medium underline" to={`/admin/catalogue/${a.slug}`}>{a.libelle ?? a.slug}{a.ml ? ` · ${a.ml} ml` : ''}</Link>
       <p className="text-sm text-sourdine">{telAffiche(a.telephone)} · {dateHeure(a.cree_le)}</p>

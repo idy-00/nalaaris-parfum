@@ -117,7 +117,7 @@ export function EnTete({ titre, sousTitre, retour, actions }: { titre: ReactNode
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-nav border-b border-encre/[0.06] bg-fond-2/95 pt-[env(safe-area-inset-top)] backdrop-blur-sm">
-      <div className="mx-auto flex min-h-[60px] max-w-3xl items-center gap-2 px-4">
+      <div className="admin-largeur admin-entete flex min-h-[60px] items-center gap-2">
         {retour && (
           <button
             type="button"
@@ -129,8 +129,8 @@ export function EnTete({ titre, sousTitre, retour, actions }: { titre: ReactNode
           </button>
         )}
         <div className="min-w-0 flex-1 py-2">
-          <h1 tabIndex={-1} className="truncate text-[1.625rem] leading-tight outline-none">{titre}</h1>
-          {sousTitre && <p className="truncate text-sm text-sourdine">{sousTitre}</p>}
+          <h1 tabIndex={-1} className="text-[1.625rem] leading-tight outline-none md:text-3xl">{titre}</h1>
+          {sousTitre && <p className="mt-1 text-sm text-sourdine">{sousTitre}</p>}
         </div>
         {actions}
       </div>
@@ -139,13 +139,13 @@ export function EnTete({ titre, sousTitre, retour, actions }: { titre: ReactNode
 }
 
 export const Page = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-  <main className={`mx-auto max-w-3xl px-4 pb-32 pt-4 md:pb-16 ${className}`}>{children}</main>
+  <main className={`admin-largeur admin-page pb-32 pt-4 md:pb-16 ${className}`}>{children}</main>
 );
 
 export function Section({ titre, action, children, className = '' }: { titre: ReactNode; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
     <section className={`mt-6 ${className}`}>
-      <div className="mb-2 flex min-h-[32px] items-end justify-between gap-3 px-1">
+      <div className="mb-2 flex min-h-[32px] flex-wrap items-end justify-between gap-x-3 gap-y-1 px-1">
         <h2 className="label">{titre}</h2>
         {action}
       </div>
@@ -275,7 +275,7 @@ export function Feuille({ ouverte, onFermer, titre, children }: { ouverte: boole
         role="dialog"
         aria-modal="true"
         aria-label={titre}
-        className="safe-bas relative max-h-[88dvh] w-full max-w-lg overflow-y-auto rounded-t-[24px] bg-fond px-4 pt-3 md:rounded-[24px] md:pb-4"
+        className="admin-dialogue safe-bas relative max-h-[88dvh] w-full max-w-lg overflow-y-auto rounded-t-[24px] bg-fond px-4 pt-3 md:rounded-[24px] md:pb-4"
       >
         <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-encre/15 md:hidden" aria-hidden="true" />
         <div className="mb-3 flex items-center justify-between gap-3">

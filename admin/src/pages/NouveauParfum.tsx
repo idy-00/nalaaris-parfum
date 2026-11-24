@@ -61,7 +61,7 @@ export function NouveauParfum() {
         <p className="carte p-4 text-sm text-sourdine">
           Le parfum sera <strong className="text-encre">masqué du site</strong> tant que son visuel studio n’est pas créé. Il apparaît dans la liste « Visuels à créer ».
         </p>
-        <form onSubmit={valider} noValidate>
+        <form className="admin-grille" onSubmit={valider} noValidate>
           <Section titre="Parfum">
             <div className="carte grid gap-4 p-4">
               <div className="grid grid-cols-2 gap-3">
@@ -105,7 +105,7 @@ export function NouveauParfum() {
               {erreur}
             </p>
           )}
-          <button type="submit" disabled={envoi || !f.marque.trim() || !f.nom.trim()} className="btn btn-rose mt-6 w-full">
+          <button type="submit" disabled={envoi || !f.marque.trim() || !f.nom.trim()} className="admin-actions-formulaire btn btn-rose mt-6 w-full">
             {envoi ? 'Enregistrement…' : 'Ajouter le parfum'}
           </button>
         </form>

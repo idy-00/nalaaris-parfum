@@ -15,7 +15,7 @@ function Formulaire({ initial }: { initial: Boutique }) {
   const [erreur, setErreur] = useState('');
   const toast = useToast();
   const zone = (i: number, v: Partial<NonNullable<Boutique['zones']>[number]>) => setF({ ...f, zones: f.zones!.map((z, j) => j === i ? { ...z, ...v } : z) });
-  return <form onSubmit={async (e) => {
+  return <form className="admin-grille" onSubmit={async (e) => {
     e.preventDefault(); if (envoi) return; setEnvoi(true); setErreur('');
     try { setF(await api.put<Boutique>('reglages/boutique', f)); toast('Informations enregistrées. Publie pour les afficher sur le site.'); }
     catch (err) { setErreur((err as Error).message); } finally { setEnvoi(false); }
@@ -42,6 +42,6 @@ function Formulaire({ initial }: { initial: Boutique }) {
       <button type="button" className="btn btn-trait w-full" disabled={f.zones!.length >= 30} onClick={() => setF({ ...f, zones: [...f.zones!, { nom: '', frais: 0, delai: '' }] })}>Ajouter une zone</button>
     </div></Section>
     {erreur && <p role="alert" className="mt-4 text-danger">{erreur}</p>}
-    <button type="submit" disabled={envoi} className="btn btn-rose mt-6 w-full">{envoi ? 'Enregistrement…' : 'Enregistrer les informations'}</button>
+    <button type="submit" disabled={envoi} className="admin-actions-formulaire btn btn-rose mt-6 w-full">{envoi ? 'Enregistrement…' : 'Enregistrer les informations'}</button>
   </form>;
 }

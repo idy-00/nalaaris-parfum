@@ -102,11 +102,11 @@ export function NouvelleVente() {
   return (
     <>
       <EnTete titre="Nouvelle vente" sousTitre="Commande reçue sur WhatsApp" />
-      <Page className="pb-48">
+      <Page className="admin-grille admin-vente pb-48">
         {erreurCat && <p role="alert" className="carte p-4 text-danger">{erreurCat} <button type="button" className="btn btn-trait" onClick={() => void rechargerCat()}>Réessayer</button></p>}
         {/* 1. Parfum(s) */}
         <Section titre="Parfum">
-          <div className="space-y-3">
+          <div className="space-y-3 xl:grid xl:grid-cols-2 xl:gap-4 xl:space-y-0">
             {lignes.map((l, i) => (
               <LigneSaisie key={i} l={l} onMaj={(x) => maj(i, x)} onRetirer={() => setLignes((ls) => ls.filter((_, j) => j !== i))} />
             ))}
@@ -177,15 +177,15 @@ export function NouvelleVente() {
 
       {/* Total + Enregistrer : toujours à portée de pouce */}
       {lignes.length > 0 && (
-        <div className="fixed inset-x-0 bottom-[calc(60px+max(8px,env(safe-area-inset-bottom)))] z-barre border-t border-encre/[0.08] bg-fond/95 px-4 py-3 backdrop-blur-sm md:bottom-0 md:left-24">
-          <div className="mx-auto max-w-3xl">
+        <div className="admin-barre-actions fixed inset-x-0 bottom-[calc(60px+max(8px,env(safe-area-inset-bottom)))] z-barre border-t border-encre/[0.08] bg-fond/95 px-4 py-3 backdrop-blur-sm md:bottom-0">
+          <div className="admin-largeur">
             {erreur && (
               <p role="alert" className="mb-2 rounded-xl bg-danger/10 p-3 text-sm font-medium text-danger">
                 {erreur}
               </p>
             )}
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="min-w-[130px] flex-1">
                 <p className="label">Total</p>
                 <p className="chiffre text-[1.75rem]">{fcfa(total)}</p>
               </div>

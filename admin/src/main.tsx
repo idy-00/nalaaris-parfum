@@ -1,7 +1,7 @@
 import { Component, StrictMode, lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router-dom';
-import { Home, LayoutGrid, Plus, ReceiptText, Menu } from 'lucide-react';
+import { Home, LayoutGrid, Plus, ReceiptText, Menu, ExternalLink } from 'lucide-react';
 import '@fontsource-variable/bodoni-moda/opsz.css';
 import '@fontsource-variable/manrope/wght.css';
 import './admin.css';
@@ -45,15 +45,16 @@ const ONGLETS = [
 /** Barre du bas (mobile) / rail latéral (ordinateur). */
 function Navigation() {
   return (
-    <nav aria-label="Navigation principale" className="safe-bas fixed inset-x-0 bottom-0 z-barre border-t border-encre/[0.08] bg-fond/95 backdrop-blur-sm md:inset-x-auto md:bottom-auto md:left-0 md:top-0 md:h-dvh md:w-24 md:border-r md:border-t-0 md:pt-6">
-      <ul className="mx-auto grid max-w-lg grid-cols-5 md:flex md:flex-col md:gap-2">
+    <nav aria-label="Navigation principale" className="admin-navigation safe-bas">
+      <a href="/admin" className="admin-marque" aria-label="Nal’Aaris — accueil de gestion"><span className="font-serif text-3xl text-rose-doux">Np</span><span className="admin-marque-texte"><span className="block font-serif text-xl">Nal’Aaris</span><span className="text-xs text-sourdine">Espace de gestion</span></span></a>
+      <ul className="admin-onglets">
         {ONGLETS.map(({ to, l, i: Icone, fin, principal }) => (
           <li key={to}>
             <NavLink
               to={to}
               end={fin}
               className={({ isActive }) =>
-                `group flex min-h-[60px] flex-col items-center justify-center gap-1 text-[0.6875rem] font-semibold tracking-wide ${
+                `admin-lien group ${
                   isActive ? 'text-rose-doux' : 'text-sourdine hover:text-encre'
                 }`
               }
@@ -61,14 +62,14 @@ function Navigation() {
               {({ isActive }) =>
                 principal ? (
                   <>
-                    <span className="grid h-11 w-11 place-items-center rounded-full bg-rose text-white shadow-[0_8px_18px_-8px_rgba(168,18,79,0.8)] transition-transform group-active:scale-95">
+                    <span className="admin-icone-vente grid h-11 w-11 shrink-0 place-items-center rounded-full bg-rose text-white shadow-[0_8px_18px_-8px_rgba(168,18,79,0.8)] transition-transform group-active:scale-95">
                       <Icone size={24} strokeWidth={2.25} aria-hidden="true" />
                     </span>
-                    <span className="sr-only md:not-sr-only">Nouvelle vente</span>
+                    <span className="admin-libelle-vente">Nouvelle vente</span>
                   </>
                 ) : (
                   <>
-                    <span className={`grid h-8 w-14 place-items-center rounded-full transition-colors ${isActive ? 'bg-rose/10' : ''}`}>
+                    <span className={`admin-icone grid h-8 w-14 shrink-0 place-items-center rounded-full transition-colors ${isActive ? 'bg-rose/10' : ''}`}>
                       <Icone size={22} strokeWidth={isActive ? 2.25 : 1.75} aria-hidden="true" />
                     </span>
                     {l}
@@ -79,6 +80,7 @@ function Navigation() {
           </li>
         ))}
       </ul>
+      <a href="/" target="_blank" rel="noopener noreferrer" className="admin-voir-site"><ExternalLink size={18} aria-hidden="true" /><span>Voir la boutique</span></a>
     </nav>
   );
 }
@@ -97,7 +99,7 @@ function App() {
   return (
     <FournisseurToasts>
       <AuChangement />
-      <div className="md:pl-24">
+      <div className="admin-contenu">
         <Suspense
           fallback={
             <Page>

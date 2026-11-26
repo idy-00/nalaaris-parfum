@@ -106,7 +106,7 @@ export async function cataloguePublic(env: Env, complet: boolean) {
       styles: json<string[]>(x.styles) ?? json<string[]>(x.styles_import) ?? ['doux'],
       description: x.description ?? x.description_import,
       porter: json(x.porter) ?? null,
-      contenances: (parSlug.get(x.slug) ?? []).map((c) => ({ ml: c.ml, prix: c.prix_vente, dispo: dispoContenance(c) })),
+      contenances: (parSlug.get(x.slug) ?? []).map((c) => ({ ml: c.ml, prix: c.prix_vente, dispo: x.dispo_force ?? dispoContenance(c) })),
       dispo: x.dispo_force,
       nouveau: !!x.nouveau,
       coupDeCoeur: !!x.coup_de_coeur,

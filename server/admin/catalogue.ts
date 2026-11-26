@@ -177,7 +177,7 @@ export async function modifier(c: Ctx) {
 
   const champs: [string, unknown][] = [];
   if ('nom_public' in b) champs.push(['nom_public', texte(b.nom_public, 'Nom affiché', 80)]);
-  if ('description' in b) champs.push(['description', texte(b.description, 'Description', 1200)]);
+  if ('description' in b) champs.push(['description', b.description === null ? null : texte(b.description, 'Description', 1200) ?? '']);
   if ('styles' in b) {
     if (!Array.isArray(b.styles) || b.styles.length < 1 || b.styles.length > 3) throw new ErreurHttp(422, 'Ambiances : 1 à 3');
     champs.push(['styles', JSON.stringify(b.styles.map((x) => choix(x, 'Ambiance', STYLES)))]);

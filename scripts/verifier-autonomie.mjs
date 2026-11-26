@@ -20,6 +20,9 @@ try{
   await pause(200);
  }
  assert.ok(pret,`Le serveur de test n'a pas démarré. ${journal}`);
+ for(const path of ['/admin/catalogue/nouveau','/admin/catalogue/afnan-9pm','/admin/ventes']){
+  const r=await fetch(origine+path,{redirect:'manual'});assert.equal(r.status,200,`${path} doit rester sur son URL`);assert.match(await r.text(),/id="admin"/);
+ }
  assert.equal((await requete('/api/admin/parfums')).status,401);
  const login=await requete('/api/auth/login',{identifiant:'admin',motDePasse:process.env.NALAARIS_TEST_PASSWORD??'admin123'});
  assert.equal(login.status,200,await login.clone().text());cookie=login.headers.get('Set-Cookie').split(';')[0];

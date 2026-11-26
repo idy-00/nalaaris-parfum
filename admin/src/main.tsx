@@ -12,6 +12,18 @@ import { Connexion } from './Connexion';
 
 appliquerTheme();
 
+// Une page ouverte avant un déploiement peut demander un ancien module supprimé.
+// Relire une fois le HTML courant, sans boucle si la connexion reste coupée.
+window.addEventListener('vite:preloadError', (e) => {
+  try {
+    const cle = 'nalaaris:admin-recharge';
+    if (Date.now() - Number(sessionStorage.getItem(cle) || 0) < 15000) return;
+    sessionStorage.setItem(cle, String(Date.now()));
+    e.preventDefault();
+    window.location.reload();
+  } catch { /* Le filet d’erreur propose encore un rechargement manuel. */ }
+});
+
 class FiletErreur extends Component<{ children: ReactNode }, { erreur: boolean }> {
   state = { erreur: false };
   static getDerivedStateFromError() { return { erreur: true }; }

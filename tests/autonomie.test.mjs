@@ -103,3 +103,21 @@ test('effacer concentration, conseil et disponibilité efface aussi les ancienne
   const [p]=fusionnerCatalogue([ancienne],d);assert.equal(p.concentration,undefined);assert.equal(p.porter,undefined);assert.equal(p.dispo,undefined);
  }finally{b.close();}
 });
+
+test('une description vidée ne reprend pas le texte historique',async()=>{
+ const b=base();try{
+  b.sqlite.prepare("UPDATE parfums SET description_import='Ancien texte' WHERE slug='test-rose'").run();
+  await cat.modifier(contexte(b.db,{description:''},{slug:'test-rose'}));
+  assert.equal((await cataloguePublic({DB:b.db},true)).parfums['test-rose'].description,'');
+  assert.equal((await(await cat.lire(contexte(b.db,{}, {slug:'test-rose'}))).json()).description,'');
+ }finally{b.close();}
+});
+
+test('la disponibilité générale choisie s’applique aux formats puis revient au stock',async()=>{
+ const b=base();try{
+  await cat.modifier(contexte(b.db,{dispo_force:'sur_commande'},{slug:'test-rose'}));
+  assert.equal((await cataloguePublic({DB:b.db},true)).parfums['test-rose'].contenances[0].dispo,'sur_commande');
+  await cat.modifier(contexte(b.db,{dispo_force:null},{slug:'test-rose'}));
+  assert.equal((await cataloguePublic({DB:b.db},true)).parfums['test-rose'].contenances[0].dispo,'disponible');
+ }finally{b.close();}
+});

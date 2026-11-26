@@ -21,7 +21,7 @@ for (const fichier of [...pages, 'admin.html', 'parfum-dynamique.html']) {
 }
 const headers = readFileSync(join(dist, '_headers'), 'utf8');
 assert.ok(!headers.includes('{{HASH_SCRIPTS}}'), 'CSP : hash non remplacé');
-assert.ok(readFileSync(join(dist, '_redirects'), 'utf8').includes('/admin/* /admin.html 200'), 'Routes admin manquantes');
+assert.ok(readFileSync(join(dist, '_redirects'), 'utf8').includes('/admin/* /admin 200'), 'Routes admin manquantes');
 const manifeste = JSON.parse(readFileSync(join(dist, 'admin.webmanifest'), 'utf8'));
 for (const icon of manifeste.icons) assert.ok(existsSync(join(dist, icon.src)), `Icône manquante : ${icon.src}`);
 assert.ok(existsSync(join(dist, 'sitemap.xml')) && existsSync(join(dist, 'robots.txt')), 'SEO : fichiers manquants');

@@ -17,10 +17,10 @@ function Formulaire({ initial }: { initial: Boutique }) {
   const zone = (i: number, v: Partial<NonNullable<Boutique['zones']>[number]>) => setF({ ...f, zones: f.zones!.map((z, j) => j === i ? { ...z, ...v } : z) });
   return <form className="admin-grille" onSubmit={async (e) => {
     e.preventDefault(); if (envoi) return; setEnvoi(true); setErreur('');
-    try { setF(await api.put<Boutique>('reglages/boutique', f)); toast('Informations enregistrées. Publie pour les afficher sur le site.'); }
+    try { setF(await api.put<Boutique>('reglages/boutique', f)); toast('Informations enregistrées. Le site se met à jour automatiquement.'); }
     catch (err) { setErreur((err as Error).message); } finally { setEnvoi(false); }
   }}>
-    <p className="carte p-4 text-sm text-sourdine">Les informations remplies ici apparaissent sur le site après publication. Les champs vides gardent les textes généraux.</p>
+    <p className="carte p-4 text-sm text-sourdine">Les informations remplies ici apparaissent automatiquement sur le site. Les champs vides gardent les textes généraux.</p>
     <Section titre="Contact"><div className="carte grid gap-4 p-4">
       <Champ label="Numéro WhatsApp" value={f.whatsapp ?? ''} onChange={(v) => setF({ ...f, whatsapp: v })} inputMode="tel" placeholder="77 123 45 67" />
       <Champ label="Horaires de réponse" value={f.horaires ?? ''} onChange={(v) => setF({ ...f, horaires: v })} placeholder="du lundi au samedi, de 9 h à 19 h" />

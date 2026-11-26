@@ -1,3 +1,4 @@
+import { ajouterImage, servirImage } from '../images';
 /** Catalogue : liste, fiche, contenances (prix / stock), modification groupée, ajout, photos. */
 import {
   ErreurHttp,
@@ -172,34 +173,39 @@ export async function modifier(c: Ctx) {
   const b = await lireJson(c.req);
   const actuel = await c.env.DB.prepare('SELECT source, statut FROM parfums WHERE slug = ?').bind(s).first<{ source: string; statut: string }>();
   if (!actuel) throw new ErreurHttp(404, 'Parfum introuvable.');
-  if (b.masque === false && actuel.statut !== 'publie') throw new ErreurHttp(422, 'Le visuel studio doit être intégré avant de rendre ce parfum visible.');
   const libelle = await libelleParfum(c, s);
 
   const champs: [string, unknown][] = [];
   if ('nom_public' in b) champs.push(['nom_public', texte(b.nom_public, 'Nom affiché', 80)]);
   if ('description' in b) champs.push(['description', texte(b.description, 'Description', 1200)]);
   if ('styles' in b) {
-    if (!Array.isArray(b.styles) || b.styles.length > 3) throw new ErreurHttp(422, 'Ambiances : 1 à 3');
+    if (!Array.isArray(b.styles) || b.styles.length < 1 || b.styles.length > 3) throw new ErreurHttp(422, 'Ambiances : 1 à 3');
     champs.push(['styles', JSON.stringify(b.styles.map((x) => choix(x, 'Ambiance', STYLES)))]);
   }
   if ('porter' in b) champs.push(['porter', validerPorter(b.porter)]);
   for (const k of ['nouveau', 'coup_de_coeur', 'masque'] as const) if (k in b) champs.push([k, booleen(b[k], k)]);
   if ('dispo_force' in b)
     champs.push(['dispo_force', b.dispo_force == null ? null : choix(b.dispo_force, 'Disponibilité', ['disponible', 'limite', 'epuise', 'sur_commande'] as const)]);
-  // Champs de l'import : modifiables seulement pour un parfum ajouté depuis l'admin
-  const champsImport = ['marque', 'nom', 'concentration', 'categorie', 'notes'].filter((k) => k in b);
-  if (champsImport.length && actuel.source !== 'admin') throw new ErreurHttp(422, 'Ce champ vient du catalogue importé : il ne se modifie pas ici.');
   if ('marque' in b) champs.push(['marque', texte(b.marque, 'Marque', 60, true)]);
   if ('nom' in b) champs.push(['nom', texte(b.nom, 'Nom', 80, true)]);
   if ('concentration' in b) champs.push(['concentration', texte(b.concentration, 'Concentration', 40)]);
   if ('categorie' in b) champs.push(['categorie', choix(b.categorie, 'Catégorie', CATEGORIES)]);
-  if ('notes' in b) champs.push(['notes', JSON.stringify({ bouquet: listeNotes(b.notes) })]);
-  if (!champs.length) throw new ErreurHttp(422, 'Rien à modifier.');
+  if ('notes' in b) champs.push(['notes', JSON.stringify(validerNotes(b.notes))]);
+  if ('ingredients' in b) champs.push(['ingredients', JSON.stringify(listeNotes(b.ingredients))]);
+  if ('images' in b) champs.push(['images', JSON.stringify(validerImages(b.images))]);
+  if ('masque' in b) champs.push(['statut', 'publie']);
+  if (!champs.length && !('contenances' in b)) throw new ErreurHttp(422, 'Rien à modifier.');
 
-  const stmts = champs.flatMap(([col, v]) => [
-    journalChamp(c, 'parfums', col, 'slug = ?', [s], s, libelle, v),
-    c.env.DB.prepare(`UPDATE parfums SET ${col} = ?, maj_le = ?, maj_par = ? WHERE slug = ?`).bind(v, maintenant(), c.moi.prenom, s),
-  ]);
+  // Deux requêtes pour la fiche entière, afin de rester sous les limites D1 même avec vingt formats.
+  const stmts:D1PreparedStatement[]=champs.length ? [
+    c.env.DB.prepare(`INSERT INTO journal (qui, action, entite, cle, libelle, avant, apres)
+      SELECT ?, 'modifier', 'parfum', ?, ?, json_object(${champs.map(([col])=>`'${col}',${col}`).join(',')}), ? FROM parfums
+      WHERE slug=? AND (${champs.map(([col])=>`${col} IS NOT ?`).join(' OR ')})`)
+      .bind(c.moi.prenom,s,libelle,JSON.stringify(Object.fromEntries(champs)),s,...champs.map(([,v])=>v)),
+    c.env.DB.prepare(`UPDATE parfums SET ${champs.map(([col])=>`${col}=?`).join(',')},maj_le=?,maj_par=? WHERE slug=?`)
+      .bind(...champs.map(([,v])=>v),maintenant(),c.moi.prenom,s),
+  ] : [];
+  if ('contenances' in b) stmts.push(...remplacerContenances(c, s, libelle, b.contenances, b.contenances_initiales));
   await c.env.DB.batch(stmts);
   return lire(c);
 }
@@ -304,71 +310,77 @@ export async function groupe(c: Ctx) {
   return json({ ok: true, n: slugs.length });
 }
 
-/** POST /parfums — nouveau parfum : « Visuel à créer », masqué du site tant que le visuel studio n'existe pas. */
+/** Création complète : la boutique choisit publication immédiate ou brouillon. */
 export async function creer(c: Ctx) {
   const b = await lireJson(c.req);
   const marque = texte(b.marque, 'Marque', 60, true)!;
   const nom = texte(b.nom, 'Nom', 80, true)!;
-  const base = enSlug(`${marque} ${nom}`);
+  const base = enSlug(`${marque} ${nom}`).slice(0, 110);
   if (!base) throw new ErreurHttp(422, 'Nom : lettres ou chiffres attendus');
-  const existants = await c.env.DB.prepare("SELECT slug FROM parfums WHERE slug = ? OR slug LIKE ? || '-%'")
-    .bind(base, base)
-    .all<{ slug: string }>();
+  const existants = await c.env.DB.prepare("SELECT slug FROM parfums WHERE slug = ? OR slug LIKE ? || '-%'").bind(base, base).all<{slug:string}>();
   let s = base;
-  for (let i = 2; existants.results.some((x) => x.slug === s); i++) s = `${base}-${i}`;
-  const photo = b.photo_r2 == null ? null : texte(b.photo_r2, 'Photo', 200);
-  if (photo && !/^parfums\/[a-z0-9-]+\/[0-9]+\.(jpg|png|webp)$/.test(photo)) throw new ErreurHttp(422, 'Photo invalide.');
-  await c.env.DB.batch([
-    c.env.DB.prepare(
-      `INSERT INTO parfums (slug, marque, nom, concentration, categorie, notes, statut, masque, source, photo_r2, maj_par)
-       VALUES (?, ?, ?, ?, ?, ?, 'visuel_a_creer', 1, 'admin', ?, ?)`,
-    ).bind(
-      s,
-      marque,
-      nom,
-      texte(b.concentration, 'Concentration', 40),
-      choix(b.categorie, 'Catégorie', CATEGORIES),
-      JSON.stringify({ bouquet: listeNotes(b.notes) }),
-      photo,
-      c.moi.prenom,
-    ),
-    journal(c, 'ajouter', 'parfum', s, `${marque} ${nom}`),
-  ]);
-  return json({ slug: s }, 201);
+  for (let i=2; existants.results.some(x=>x.slug===s); i++) s = `${base}-${i}`;
+  const images = validerImages(b.images ?? []);
+  const styles = b.styles ?? ['doux'];
+  if (!Array.isArray(styles) || styles.length < 1 || styles.length > 3) throw new ErreurHttp(422, 'Choisis une à trois ambiances.');
+  await c.env.DB.batch([c.env.DB.prepare(`INSERT INTO parfums
+    (slug, marque, nom, concentration, categorie, notes, ingredients, images, description, styles, porter, nouveau, coup_de_coeur, dispo_force, statut, masque, source, maj_par)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publie', ?, 'admin', ?)`)
+    .bind(s, marque, nom, texte(b.concentration,'Concentration',40), choix(b.categorie,'Catégorie',CATEGORIES),
+      JSON.stringify(validerNotes(b.notes)), JSON.stringify(listeNotes(b.ingredients)), JSON.stringify(images),
+      texte(b.description,'Description',1200), JSON.stringify(styles.map(x=>choix(x,'Ambiance',STYLES))), validerPorter(b.porter),
+      booleen(b.nouveau ?? false,'Nouveau'), booleen(b.coup_de_coeur ?? false,'Coup de cœur'),
+      b.dispo_force == null ? null : choix(b.dispo_force,'Disponibilité',['disponible','limite','epuise','sur_commande'] as const),
+      booleen(b.masque ?? false,'Brouillon'), c.moi.prenom),
+    ...remplacerContenances(c,s,`${marque} ${nom}`,b.contenances ?? []), journal(c,'ajouter','parfum',s,`${marque} ${nom}`)]);
+  return json({slug:s},201);
 }
 
-/** POST /photos?slug= (corps = l'image) — envoi vers R2, 5 Mo max, JPEG / PNG / WebP vérifiés par signature. */
-export async function envoyerPhoto(c: Ctx) {
-  if (!c.env.PHOTOS) throw new ErreurHttp(503, 'Stockage des photos pas encore activé (R2).');
-  const base = enSlug(c.url.searchParams.get('slug') ?? 'nouveau') || 'nouveau';
-  const corps = new Uint8Array(await c.req.arrayBuffer());
-  if (!corps.length) throw new ErreurHttp(422, 'Photo vide.');
-  if (corps.length > 5_000_000) throw new ErreurHttp(413, 'Photo trop lourde (5 Mo maximum).');
-  const sig = (o: number, octets: number[]) => octets.every((x, i) => corps[o + i] === x);
-  const ext = sig(0, [0xff, 0xd8, 0xff])
-    ? 'jpg'
-    : sig(0, [0x89, 0x50, 0x4e, 0x47])
-      ? 'png'
-      : sig(0, [0x52, 0x49, 0x46, 0x46]) && sig(8, [0x57, 0x45, 0x42, 0x50])
-        ? 'webp'
-        : null;
-  if (!ext) throw new ErreurHttp(415, 'Format accepté : JPEG, PNG ou WebP.');
-  const cle = `parfums/${base}/${Date.now()}.${ext}`;
-  await c.env.PHOTOS.put(cle, corps, { httpMetadata: { contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}` } });
-  return json({ cle }, 201);
+function validerNotes(v: unknown) {
+  if (v && typeof v === 'object' && !Array.isArray(v)) {
+    const n=v as Record<string,unknown>;
+    if ('bouquet' in n) return {bouquet:listeNotes(n.bouquet)};
+    return {tete:listeNotes(n.tete),coeur:listeNotes(n.coeur),fond:listeNotes(n.fond)};
+  }
+  return {bouquet:listeNotes(v)};
 }
-
-/** GET /photos/<clé> — photo envoyée (réservée à l'admin). */
-export async function lirePhoto(c: Ctx) {
-  if (!c.env.PHOTOS) throw new ErreurHttp(404, 'Photo introuvable.');
-  const cle = c.p.cle;
-  if (!/^parfums\/[a-z0-9-]+\/[0-9]+\.(jpg|png|webp)$/.test(cle)) throw new ErreurHttp(404, 'Photo introuvable.');
-  const o = await c.env.PHOTOS.get(cle);
-  if (!o) throw new ErreurHttp(404, 'Photo introuvable.');
-  return new Response(o.body, {
-    headers: { 'Content-Type': o.httpMetadata?.contentType ?? 'application/octet-stream', 'Cache-Control': 'private, max-age=86400', 'X-Content-Type-Options': 'nosniff' },
+function validerImages(v: unknown): string[] {
+  if (!Array.isArray(v) || v.length>6) throw new ErreurHttp(422,'Images : six maximum.');
+  return [...new Set(v.map(x=>{
+    const url=texte(x,'Image',250,true)!;
+    if (!/^\/parfums\/[a-z0-9-]+\/[a-z0-9.-]+\.(webp|png|jpg|jpeg)$/.test(url) && !/^\/api\/public\/photos\/parfums\/[a-z0-9-]+\/[0-9]+\.(jpg|png|webp)$/.test(url)) throw new ErreurHttp(422,'Image invalide. Ajoute une photo depuis le formulaire.');
+    return url;
+  }))];
+}
+function remplacerContenances(c: Ctx,s: string,libelle: string,v: unknown,origine?:unknown) {
+  if (!Array.isArray(v) || v.length>20) throw new ErreurHttp(422,'Formats : vingt maximum.');
+  const formats=v.map(x=>{
+    if (!x || typeof x!=='object') throw new ErreurHttp(422,'Format invalide.');
+    return {ml:validerMl(x.ml),valeurs:valeursContenance(x)};
   });
+  if (new Set(formats.map(x=>x.ml)).size!==formats.length) throw new ErreurHttp(422,'Chaque contenance doit être unique.');
+  if(origine!==undefined && (!Array.isArray(origine)||origine.length>20))throw new ErreurHttp(422,'Liste initiale des formats invalide.');
+  const retires=Array.isArray(origine)?origine.map(validerMl).filter(ml=>!formats.some(x=>x.ml===ml)):null;
+  const suppression=retires===null?[c.env.DB.prepare(`DELETE FROM contenances WHERE slug = ?${formats.length ? ` AND ml NOT IN (${formats.map(()=>'?').join(',')})` : ''}`).bind(s,...formats.map(x=>x.ml))]:
+    retires.length?[c.env.DB.prepare(`DELETE FROM contenances WHERE slug=? AND ml IN (${retires.map(()=>'?').join(',')})`).bind(s,...retires)]:[];
+  return [...suppression,...formats.flatMap(x=>{
+    const colonnes=x.valeurs.map(([k])=>k);
+    const cle=`${s} ${x.ml}`;
+    const log=c.env.DB.prepare(`INSERT INTO journal (qui,action,entite,cle,libelle,avant,apres)
+      SELECT ?, CASE WHEN c.slug IS NULL THEN 'ajouter' ELSE 'modifier' END, 'contenance', ?, ?,
+        CASE WHEN c.slug IS NULL THEN NULL ELSE json_object('prix_vente',c.prix_vente,'prix_achat',c.prix_achat,'stock',c.stock,'seuil_alerte',c.seuil_alerte,'dispo_force',c.dispo_force) END, ?
+      FROM (SELECT 1) LEFT JOIN contenances c ON c.slug=? AND c.ml=?
+      WHERE c.slug IS NULL${colonnes.length ? ` OR ${colonnes.map(k=>`c.${k} IS NOT ?`).join(' OR ')}`:''}`)
+      .bind(c.moi.prenom,cle,`${libelle} ${x.ml} ml`,JSON.stringify(Object.fromEntries(x.valeurs)),s,x.ml,...x.valeurs.map(([,v])=>v));
+    const ecrire=c.env.DB.prepare(`INSERT INTO contenances (slug,ml,ordre,maj_par${colonnes.length ? ','+colonnes.join(','):''})
+      VALUES (?,?,?,?${colonnes.map(()=>',?').join('')}) ON CONFLICT (slug,ml) ${colonnes.length ? `DO UPDATE SET ${colonnes.map(k=>`${k}=excluded.${k}`).join(',')},maj_le=?,maj_par=?`:'DO NOTHING'}`)
+      .bind(s,x.ml,x.ml,c.moi.prenom,...x.valeurs.map(([,v])=>v),...(colonnes.length?[maintenant(),c.moi.prenom]:[]));
+    return [log,ecrire];
+  })];
 }
+
+export const envoyerPhoto = (c: Ctx) => ajouterImage(c.req,c.env);
+export const lirePhoto = (c: Ctx) => servirImage(c.p.cle,c.env,false);
 
 /** GET /visuels-a-creer.csv — liste à transmettre pour les visuels studio. */
 export async function visuelsCsv(c: Ctx) {

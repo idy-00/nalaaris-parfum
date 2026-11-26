@@ -45,10 +45,7 @@ catalogue.forEach((p, i) => {
        q(p.description), q(description), j(p.notes), j(p.ingredients), j(p.images), j(PORTER[p.slug] ?? null),
        r.nouveau ? 1 : 0, r.coupDeCoeur ? 1 : 0, q(r.dispo ?? null), q('publie'), q('import'), i, q('import'),
      ].join(', ')})
-     ON CONFLICT (slug) DO UPDATE SET marque = excluded.marque, nom = excluded.nom, concentration = excluded.concentration,
-       categorie = excluded.categorie, styles_import = excluded.styles_import, description_import = excluded.description_import,
-       notes = excluded.notes, ingredients = excluded.ingredients, images = excluded.images, ordre = excluded.ordre,
-       statut = 'publie';`,
+     ON CONFLICT (slug) DO NOTHING;`,
   );
   // Contenances déjà saisies dans le fichier : créées si absentes, jamais modifiées ensuite
   for (const [k, c] of (r.contenances ?? []).entries()) {

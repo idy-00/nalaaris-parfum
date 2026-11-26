@@ -1,3 +1,4 @@
+import { preparerImages } from '../images';
 /** Plus : boutique, avis, alertes, journal, publication, sauvegarde. */
 import { ErreurHttp, booleen, choix, entier, json, lireJson, maintenant, telephone, texte } from '../base';
 import { lireBoutique } from '../catalogue';
@@ -138,38 +139,9 @@ export async function lireJournal(c: Ctx) {
 
 /* ---------- Publier sur le site (deploy hook) ---------- */
 
-async function etatPublication(c: Ctx) {
-  const derniere = await c.env.DB.prepare("SELECT quand, qui FROM publications WHERE statut = 'envoyee' ORDER BY id DESC LIMIT 1").first<{ quand: string; qui: string }>();
-  // Changements visibles sur le site : catalogue, contenances, boutique, avis (pas les ventes)
-  const attente = await c.env.DB.prepare(
-    "SELECT count(*) AS n FROM journal WHERE entite IN ('parfum', 'contenance', 'boutique', 'avis') AND quand > ?",
-  )
-    .bind(derniere?.quand ?? '1970-01-01')
-    .first<{ n: number }>();
-  return { derniere, enAttente: attente?.n ?? 0, configure: !!c.env.DEPLOY_HOOK_URL };
-}
-
-export const lirePublication = async (c: Ctx) => json(await etatPublication(c));
-
-export async function publier(c: Ctx) {
-  if (!c.env.DEPLOY_HOOK_URL) throw new ErreurHttp(503, 'Publication pas encore configurée (deploy hook).');
-  const recente = await c.env.DB.prepare("SELECT 1 FROM publications WHERE statut = 'envoyee' AND quand > ?")
-    .bind(new Date(Date.now() - 60_000).toISOString())
-    .first();
-  if (recente) throw new ErreurHttp(429, 'Une publication vient d’être lancée : attends une minute.');
-  let ok = false;
-  let detail = '';
-  try {
-    const r = await fetch(c.env.DEPLOY_HOOK_URL, { method: 'POST' });
-    ok = r.ok;
-    detail = `HTTP ${r.status}`;
-  } catch (e) {
-    detail = String(e).slice(0, 200);
-  }
-  await c.env.DB.prepare('INSERT INTO publications (qui, statut, detail) VALUES (?, ?, ?)').bind(c.moi.prenom, ok ? 'envoyee' : 'echec', detail).run();
-  if (!ok) throw new ErreurHttp(502, 'La publication n’a pas pu être lancée. Réessaie dans quelques minutes.');
-  return json(await etatPublication(c));
-}
+// Le site lit directement D1 : aucun deploy hook nécessaire.
+export const lirePublication = async (_c: Ctx) => json({derniere:null,enAttente:0,configure:true,automatique:true});
+export const publier = lirePublication;
 
 /* ---------- Sauvegarde ---------- */
 
@@ -180,7 +152,26 @@ export async function exporter(c: Ctx) {
   const r = await c.env.DB.batch(TABLES.map((t) => c.env.DB.prepare(`SELECT * FROM ${t}`)));
   const data = Object.fromEntries(TABLES.map((t, i) => [t, r[i].results]));
   await journal(c, 'exporter', 'sauvegarde', null, 'Export JSON complet').run();
-  return new Response(JSON.stringify({ exporteLe: maintenant(), version: 1, ...data }), {
+  await preparerImages(c.env.DB);
+  const encoder=new TextEncoder();
+  async function* morceaux() {
+    yield JSON.stringify({exporteLe:maintenant(),version:2,...data}).slice(0,-1)+',"images_boutique":[';
+    let curseur='';let premier=true;
+    while(true){
+      const lot=await c.env.DB.prepare('SELECT cle,type,contenu,cree_le FROM images_boutique WHERE cle>? ORDER BY cle LIMIT 20').bind(curseur).all<{cle:string;type:string;contenu:ArrayBuffer;cree_le:string}>();
+      if(!lot.results.length)break;
+      for(const image of lot.results){
+        const bytes=new Uint8Array(image.contenu);let binaire='';
+        for(let i=0;i<bytes.length;i+=32768)binaire+=String.fromCharCode(...bytes.subarray(i,i+32768));
+        yield (premier?'':',')+JSON.stringify({cle:image.cle,type:image.type,cree_le:image.cree_le,contenu_base64:btoa(binaire)});
+        premier=false;curseur=image.cle;
+      }
+    }
+    yield ']}';
+  }
+  const iterateur=morceaux();
+  const corps=new ReadableStream<Uint8Array>({async pull(controller){try{const r=await iterateur.next();if(r.done)controller.close();else controller.enqueue(encoder.encode(r.value));}catch(e){controller.error(e);}},async cancel(){await iterateur.return(undefined);}});
+  return new Response(corps, {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Content-Disposition': `attachment; filename="nalaaris-sauvegarde-${maintenant().slice(0, 10)}.json"`,

@@ -40,6 +40,8 @@ export interface Porter {
 }
 
 export interface ParfumFiche extends Omit<ParfumListe, 'contenances'> {
+  images: string[];
+  ingredients: string[];
   nom_public: string | null;
   concentration: string | null;
   description: string | null;

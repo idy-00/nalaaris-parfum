@@ -5,9 +5,11 @@ import { join, resolve } from 'node:path';
 const dist = resolve(import.meta.dirname, '../dist');
 const pages = ['index.html', 'catalogue.html', 'la-maison.html', 'commander.html', '404.html', ...readdirSync(join(dist, 'parfum')).map((f) => `parfum/${f}`)];
 let liens = 0;
-for (const fichier of [...pages, 'admin.html']) {
+for (const fichier of [...pages, 'admin.html', 'parfum-dynamique.html']) {
   const html = readFileSync(join(dist, fichier), 'utf8');
-  if (fichier !== 'admin.html') {
+  if (fichier === 'parfum-dynamique.html') {
+    assert.ok(html.includes('<div id="root"></div>'), 'Gabarit des nouveaux parfums manquant');
+  } else if (fichier !== 'admin.html') {
     assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${fichier} : un seul h1`);
     assert.ok(!html.includes('<!--app-->'), `${fichier} : pré-rendu manquant`);
   }

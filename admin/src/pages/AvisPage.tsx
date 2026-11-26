@@ -17,7 +17,7 @@ export function AvisPage() {
     try { setData(await action()); return true; } catch (e) { setMessage((e as Error).message); return false; } finally { setOccupe(false); }
   };
   return <><EnTete titre="Avis clients" retour="/admin/plus" /><Page className="admin-grille">
-    <p className="carte p-4 text-sm text-sourdine">Ajoute uniquement des avis réels, avec l’accord de la personne. Le site les affiche à partir de trois avis publiés, après publication du site.</p>
+    <p className="carte p-4 text-sm text-sourdine">Ajoute uniquement des avis réels, avec l’accord de la personne. Le site les affiche à partir de trois avis publiés, automatiquement.</p>
     {message && <p role="alert" className="mt-4 text-danger">{message}</p>}
     <Section titre={edition ? 'Modifier l’avis' : 'Ajouter un avis'}><form className="carte grid gap-4 p-4" onSubmit={async (e) => {
       e.preventDefault();

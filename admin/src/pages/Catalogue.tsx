@@ -17,7 +17,6 @@ const FILTRES = [
   { v: 'stock_bas', l: 'Stock bas', c: 'stock_bas' },
   { v: 'epuise', l: 'Épuisés', c: 'epuise' },
   { v: 'masque', l: 'Masqués', c: 'masque' },
-  { v: 'visuel', l: 'Visuels à créer', c: 'visuel' },
 ] as const;
 
 export function tonDispo(d: Contenance['dispo']) {
@@ -218,7 +217,7 @@ function CarteCatalogue({
             <span className="block truncate text-xs font-semibold uppercase tracking-wider text-sourdine">{p.marque}</span>
             <span className="block truncate font-serif text-lg leading-snug">{p.nom}</span>
             <span className="mt-1 flex flex-wrap gap-1">
-              {p.statut === 'visuel_a_creer' && <Pastille ton="rose">Visuel à créer</Pastille>}
+              {p.statut === 'visuel_a_creer' && <Pastille ton="rose">Brouillon</Pastille>}
               {!!p.masque && p.statut !== 'visuel_a_creer' && <Pastille>Masqué</Pastille>}
               {!!p.nouveau && <Pastille ton="rose">Nouveau</Pastille>}
               {!!p.coup_de_coeur && <Pastille ton="rose">Coup de cœur</Pastille>}

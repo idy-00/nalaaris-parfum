@@ -6,12 +6,13 @@ import { useReveal } from '../hooks/useReveal';
  * Avis clients réels, publiés depuis l'admin avec l'accord de chaque cliente (jamais inventés).
  * Affichés seulement à partir de 3 avis : en dessous, la section n'existe pas.
  */
-const AVIS = donneesD1?.avis ?? [];
+
 export const MIN_AVIS = 3;
 
 const dateCourte = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric', timeZone: 'Africa/Dakar' });
 
 export function Avis({ numero }: { numero?: string }) {
+  const AVIS=donneesD1?.avis??[];
   const root = useRef<HTMLElement>(null);
   useReveal(root);
   if (AVIS.length < MIN_AVIS) return null;

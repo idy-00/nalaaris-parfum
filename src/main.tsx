@@ -1,5 +1,5 @@
 import { StrictMode, lazy, startTransition } from 'react';
-import { hydrateRoot } from 'react-dom/client';
+import { hydrateRoot, createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import '@fontsource-variable/bodoni-moda/opsz.css';
 import '@fontsource-variable/bodoni-moda/opsz-italic.css';
@@ -8,7 +8,7 @@ import './styles/index.css';
 import { Coquille, rechargerUneFois, type Pages } from './App';
 import { planifierGsap } from './lib/gsap';
 import { ecouterLiensWhatsApp } from './lib/stats';
-import { chargerCatalogueVivant } from './lib/vivant';
+import { chargerCatalogueVivant, recevoirCatalogue } from './lib/vivant';
 import { Accueil } from './pages/Accueil';
 import { NotFound } from './pages/NotFound';
 
@@ -70,8 +70,10 @@ Promise.all([prechargement(window.location.pathname).catch(() => undefined), ima
     // Hydratation en transition : React la découpe en tranches de quelques ms (pas de longue tâche au chargement).
     // Le HTML pré-rendu reste affiché et cliquable (liens) pendant ce temps.
     startTransition(() => {
-      hydrateRoot(
-        document.getElementById('root')!,
+      const instantane=document.getElementById('nalaaris-catalogue');
+      if(instantane?.textContent){try{recevoirCatalogue(JSON.parse(instantane.textContent));}catch{/* L'API sera relue. */}}
+      const afficher=(element:React.ReactNode)=>instantane?createRoot(document.getElementById('root')!).render(element):hydrateRoot(document.getElementById('root')!,element);
+      afficher(
         <StrictMode>
           <BrowserRouter>
             <Coquille pages={pages} />
@@ -83,9 +85,7 @@ Promise.all([prechargement(window.location.pathname).catch(() => undefined), ima
     planifierGsap();
     // Statistiques et prix en direct : hors du chargement critique, quand le navigateur est libre
     ecouterLiensWhatsApp();
-    const plusTard = (f: () => void) =>
-      'requestIdleCallback' in window ? requestIdleCallback(f, { timeout: 4000 }) : setTimeout(f, 2500);
-    const apresChargement = () => plusTard(() => void chargerCatalogueVivant());
-    if (document.readyState === 'complete') apresChargement();
-    else window.addEventListener('load', apresChargement, { once: true });
+    void chargerCatalogueVivant();
+    window.addEventListener('focus',()=>void chargerCatalogueVivant());
+    window.setInterval(()=>{if(document.visibilityState==='visible')void chargerCatalogueVivant();},30000);
   });

@@ -1,3 +1,4 @@
+import { useVivant } from '../lib/vivant';
 import { suivre } from '../lib/stats';
 import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { getParfum, type Parfum } from '../data/parfums';
@@ -27,6 +28,7 @@ const CLE = 'nalaaris:selection:v1';
 const Ctx = createContext<SelectionCtx | null>(null);
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
+  const versionCatalogue=useVivant();
   // Vide au premier rendu (identique au HTML pré-rendu, donc hydratable), puis relu depuis le stockage
   const [brut, setBrut] = useState<LigneSelection[]>([]);
   const [charge, setCharge] = useState(false);
@@ -50,7 +52,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
         const parfum = getParfum(l.slug);
         return parfum ? [{ ...l, parfum }] : []; // ignore les parfums retirés du catalogue
       }),
-    [brut],
+    [brut,versionCatalogue],
   );
 
   const ajouter = useCallback((slug: string, ml: number) => {

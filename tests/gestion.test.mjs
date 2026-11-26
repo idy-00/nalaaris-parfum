@@ -14,11 +14,11 @@ test('prix et stock sauvegardés avec ancienne et nouvelle valeur au journal', a
     assert.deepEqual({ ...log }, { avant: '25000', apres: '27000' });
   } finally { b.close(); }
 });
-test('création de parfum masquée tant que son visuel studio est absent', async () => {
+test('création de parfum publiée sans intervention extérieure', async () => {
   const b = base(); try {
     const r = await (await cat.creer(contexte(b.db, { marque: 'TEST', nom: 'Nouveau', categorie: 'unisexe', notes: 'rose, vanille' }))).json();
     const p = b.sqlite.prepare('SELECT masque, statut FROM parfums WHERE slug = ?').get(r.slug);
-    assert.equal(p.masque, 1); assert.equal(p.statut, 'visuel_a_creer');
+    assert.equal(p.masque, 0); assert.equal(p.statut, 'publie');
   } finally { b.close(); }
 });
 test('avis : accord obligatoire et date réelle obligatoire', async () => {

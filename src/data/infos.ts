@@ -127,3 +127,15 @@ export const etapesCommande = (formats: boolean) => [
   { n: '02', titre: 'Envoie sur WhatsApp', texte: 'Envoie ta sélection sur WhatsApp, le message est déjà prêt.' },
   { n: '03', titre: 'On confirme', texte: 'On confirme avec toi la livraison et le paiement.' },
 ];
+
+/** Les coordonnées et informations pratiques suivent les réglages enregistrés dans l'admin. */
+export function appliquerBoutique(b:DonneesD1['boutique']) {
+  contacts.whatsappNumero=/^221\d{9}$/.test(b.whatsapp??'')?b.whatsapp!:'221770331313';
+  contacts.telephoneAffiche=contacts.whatsappNumero.slice(3).replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/,'$1 $2 $3 $4');
+  const livraison=b.zones?.length||b.retrait?[...(b.zones??[]).slice(0,6).map(zoneTexte),...(b.retrait?[`Retrait possible${b.retraitAdresse?` : ${b.retraitAdresse}`:''}.`]:[])]:["On s’organise avec toi sur WhatsApp, une fois ton message reçu."];
+  infosPratiques.find(x=>x.id==='livraison')!.lignes=livraison;
+  const moyens=(b.paiements??[]).map(p=>LIB_PAIEMENT[p]).filter(Boolean);
+  infosPratiques.find(x=>x.id==='paiement')!.lignes=moyens.length?['Rien à payer sur le site.',`Tu paies par ${enListe(moyens)}, une fois la commande confirmée.`]:['Rien à payer sur le site.','On voit le paiement ensemble sur WhatsApp.'];
+  infosPratiques.find(x=>x.id==='conseil')!.lignes=['Tu hésites entre deux parfums ?', 'Demande-nous avant de commander, on te guide.',...(b.horaires?[`On te répond ${b.horaires}.`]:[])];
+  faq[3].r=(b.zones?.length||b.retrait)?`${livraison.join(' ')} On confirme tout avec toi sur WhatsApp.`:'On en parle directement sur WhatsApp, une fois ton message envoyé : on s’organise avec toi.';
+}

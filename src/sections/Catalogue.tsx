@@ -1,3 +1,4 @@
+import { useVivant } from '../lib/vivant';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
@@ -22,11 +23,12 @@ const MOMENTS = [
 const PAR_PAGE = 24;
 
 export function Catalogue() {
+  const versionCatalogue=useVivant();
   const [params, setParams] = useSearchParams();
   // Le catalogue pré-rendu n'a pas de filtres : ceux de l'URL s'appliquent juste après l'hydratation
   const hydrate = useHydrate();
   const filtres = useMemo(() => lireFiltres(hydrate ? params : new URLSearchParams()), [params, hydrate]);
-  const resultats = useMemo(() => filtrer(filtres), [filtres]);
+  const resultats = useMemo(() => filtrer(filtres), [filtres,versionCatalogue]);
   const [nbVisibles, setNbVisibles] = useState(PAR_PAGE);
   const visibles = resultats.slice(0, nbVisibles);
   const reste = resultats.length - visibles.length;

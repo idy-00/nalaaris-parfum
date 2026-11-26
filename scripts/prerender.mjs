@@ -184,19 +184,22 @@ for (const pg of PAGES) {
     ${(([l, h]) => `<meta property="og:image:width" content="${l}" />\n    <meta property="og:image:height" content="${h}" />`)(pg.imageTaille ?? [1200, 630])}
     <meta name="twitter:card" content="summary_large_image" />
     <!--og:end-->`;
-  const jsonld = (pg.jsonld ?? []).map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n    ');
+  const jsonld = (pg.jsonld ?? []).map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('\n    ');
 
   const app = render(pg.url);
   let html = gabarit
-    .replace(/<!--og:start-->[\s\S]*?<!--og:end-->/, meta)
+    .replace(/<!--og:start-->[\s\S]*?<!--og:end-->/, () => meta)
     .replace('<!--jsonld-->', [...POLICES, preloads(app), jsonld].filter(Boolean).join('\n    '))
-    .replace('<!--app-->', app);
+    .replace('<!--app-->', () => app);
   if (!html.includes('<h1')) throw new Error(`Rendu vide pour ${pg.url}`);
 
   const cible = resolve(dist, pg.fichier);
   await mkdir(resolve(cible, '..'), { recursive: true });
   await writeFile(cible, html);
 }
+
+// Gabarit pour les fiches creees dans l'admin, sans nouveau deploiement.
+await writeFile(resolve(dist,'parfum-dynamique.html'),gabarit.replace('<!--app-->',''));
 
 // Plan du site et robots
 const urls = PAGES.filter((p) => !p.noindex).map((p) => p.url);

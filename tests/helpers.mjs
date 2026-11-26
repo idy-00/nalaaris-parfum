@@ -24,7 +24,7 @@ export function base() {
   sqlite.exec('PRAGMA foreign_keys = ON');
   for (const f of readdirSync(new URL('../migrations/', import.meta.url)).filter((f) => f.endsWith('.sql')).sort()) sqlite.exec(readFileSync(new URL(`../migrations/${f}`, import.meta.url), 'utf8'));
   class Requete {
-    constructor(sql, valeurs = []) { this.sql = sql; this.valeurs = valeurs; }
+    constructor(sql, valeurs = []) { this.sql = sql; this.valeurs = valeurs.map(v=>v instanceof ArrayBuffer?new Uint8Array(v):v); }
     bind(...valeurs) { return new Requete(this.sql, valeurs); }
     execute() {
       const stmt = sqlite.prepare(this.sql);

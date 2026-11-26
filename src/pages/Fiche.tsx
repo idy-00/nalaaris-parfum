@@ -30,6 +30,7 @@ import { PrevenirFormulaire } from '../components/PrevenirFormulaire';
 import { NotFound } from './NotFound';
 
 export function Fiche() {
+  useVivant();
   const { slug = '' } = useParams();
   const parfum = getParfum(slug);
   if (!parfum) return <NotFound />;

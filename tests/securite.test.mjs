@@ -50,9 +50,10 @@ test('recherche SQL hostile ne modifie pas le catalogue', async () => {
     await catalogue.lister(c); assert.equal(b.sqlite.prepare('SELECT count(*) AS n FROM parfums').get().n, 1);
   } finally { b.close(); }
 });
-test('visuel en attente : publication forcée refusée côté serveur', async () => {
+test('ancien brouillon publiable directement par la boutique', async () => {
   const b = base(); try {
     b.sqlite.exec("UPDATE parfums SET statut='visuel_a_creer', masque=1");
-    await assert.rejects(catalogue.modifier(contexte(b.db, { masque: false }, { slug: 'test-rose' })), (e) => e.status === 422);
+    await catalogue.modifier(contexte(b.db, { masque: false }, { slug: 'test-rose' }));
+    assert.equal(b.sqlite.prepare('SELECT statut FROM parfums').get().statut,'publie');
   } finally { b.close(); }
 });

@@ -1,3 +1,4 @@
+import { useVivant } from './lib/vivant';
 import { Component, Suspense, useEffect, useRef, type ComponentType, type ReactNode } from 'react';
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { BrumeProvider } from './components/Brume';
@@ -129,6 +130,7 @@ function TransitionPage({ children }: { children: ReactNode }) {
 }
 
 export function Coquille({ pages }: { pages: Pages }) {
+  useVivant();
   const { pathname, hash } = useLocation();
   if (pathname === ROUTES.accueil && ANCRES[hash]) return <Navigate to={ANCRES[hash]} replace />;
   const { Accueil, CataloguePage, Fiche, MaisonPage, CommanderPage, NotFound } = pages;

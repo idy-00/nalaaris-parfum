@@ -20,6 +20,7 @@ export function dispoContenance(c: { stock: number | null; seuil_alerte: number;
 interface LigneParfum {
   slug: string;
   nom: string;
+  marque: string; concentration: string | null; categorie: string; images: string; notes: string; ingredients: string; styles_import: string; description_import: string;
   nom_public: string | null;
   styles: string | null;
   description: string | null;
@@ -63,8 +64,8 @@ export async function lireBoutique(db: D1Database): Promise<Boutique> {
 export async function cataloguePublic(env: Env, complet: boolean) {
   const [parfums, contenances] = await env.DB.batch([
     env.DB.prepare(
-      `SELECT slug, nom, nom_public, styles, description, porter, nouveau, coup_de_coeur, masque, dispo_force
-       FROM parfums WHERE statut = 'publie' ORDER BY ordre, slug`,
+      `SELECT slug, nom, marque, concentration, categorie, images, notes, ingredients, styles_import, description_import, nom_public, styles, description, porter, nouveau, coup_de_coeur, masque, dispo_force
+       FROM parfums WHERE statut = 'publie' AND masque = 0 ORDER BY ordre, slug`,
     ),
     env.DB.prepare(
       `SELECT c.slug, c.ml, c.prix_vente, c.stock, c.seuil_alerte, c.dispo_force
@@ -99,12 +100,14 @@ export async function cataloguePublic(env: Env, complet: boolean) {
   const sortie: Record<string, unknown> = {};
   for (const x of parfums.results as unknown as LigneParfum[]) {
     sortie[x.slug] = {
-      nom: x.nom_public ?? undefined,
-      styles: json<string[]>(x.styles),
-      description: x.description ?? undefined,
-      porter: json(x.porter),
+      slug: x.slug, marque: x.marque, categorie: x.categorie, concentration: x.concentration,
+      images: json<string[]>(x.images) ?? [], notes: json(x.notes) ?? {bouquet:[]}, ingredients: json<string[]>(x.ingredients) ?? [],
+      nom: x.nom_public ?? x.nom,
+      styles: json<string[]>(x.styles) ?? json<string[]>(x.styles_import) ?? ['doux'],
+      description: x.description ?? x.description_import,
+      porter: json(x.porter) ?? null,
       contenances: (parSlug.get(x.slug) ?? []).map((c) => ({ ml: c.ml, prix: c.prix_vente, dispo: dispoContenance(c) })),
-      dispo: x.dispo_force ?? undefined,
+      dispo: x.dispo_force,
       nouveau: !!x.nouveau,
       coupDeCoeur: !!x.coup_de_coeur,
       masque: !!x.masque,
@@ -113,5 +116,5 @@ export async function cataloguePublic(env: Env, complet: boolean) {
   const avis = await env.DB.prepare(
     'SELECT prenom, ville, texte, note, date_avis AS date FROM avis WHERE publie = 1 AND accord_cliente = 1 ORDER BY date_avis DESC LIMIT 12',
   ).all();
-  return { v: 1, genereLe: new Date().toISOString(), parfums: sortie, boutique: await lireBoutique(env.DB), avis: avis.results };
+  return { v: 2, complet: true, genereLe: new Date().toISOString(), parfums: sortie, boutique: await lireBoutique(env.DB), avis: avis.results };
 }

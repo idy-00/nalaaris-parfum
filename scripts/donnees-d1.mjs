@@ -12,7 +12,6 @@
  */
 import { writeFile, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 const racine = resolve(import.meta.dirname, '..');
 const sortie = resolve(racine, 'src/data/d1.generated.json');
@@ -44,47 +43,5 @@ try {
   throw new Error(`Données D1 injoignables (${base} : ${e.message}). Publication interrompue pour conserver le catalogue en ligne. Pour une première installation sans API, utiliser DONNEES_URL=aucune.`);
 }
 
-const charger = (f) => import(pathToFileURL(resolve(racine, 'src/data', f)).href);
-const [{ catalogue }, { REGLAGES }, { PORTER }, { DESCRIPTIONS }] = await Promise.all(
-  ['catalogue.generated.ts', 'reglages-parfums.ts', 'porter.ts', 'descriptions.ts'].map(charger),
-);
-const pareil = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
-
-const parfums = {};
-let nbModifies = 0;
-for (const p of catalogue) {
-  const d = api.parfums[p.slug];
-  if (!d) continue;
-  const r = REGLAGES[p.slug] ?? {};
-  const fichier = {
-    nom: r.nom ?? p.nom,
-    styles: r.styles ?? p.styles,
-    description: r.description ?? DESCRIPTIONS[p.slug] ?? p.description,
-    porter: PORTER[p.slug],
-    contenances: (r.contenances ?? []).map((c) => ({ ml: c.ml, ...(c.prix != null ? { prix: c.prix } : {}), ...(c.dispo ? { dispo: c.dispo } : {}) })),
-    dispo: r.dispo,
-    nouveau: !!r.nouveau,
-    coupDeCoeur: !!r.coupDeCoeur,
-  };
-  const d1 = {
-    nom: d.nom ?? p.nom,
-    styles: d.styles ?? p.styles,
-    description: d.description ?? p.description,
-    porter: d.porter,
-    contenances: (d.contenances ?? []).map((c) => ({ ml: c.ml, ...(c.prix != null ? { prix: c.prix } : {}), ...(c.dispo ? { dispo: c.dispo } : {}) })),
-    dispo: d.dispo ?? undefined,
-    nouveau: !!d.nouveau,
-    coupDeCoeur: !!d.coupDeCoeur,
-  };
-  const diff = {};
-  for (const k of Object.keys(d1)) if (!pareil(d1[k], fichier[k])) diff[k] = d1[k] ?? null;
-  if (d.masque) diff.masque = true;
-  if (Object.keys(diff).length) {
-    parfums[p.slug] = diff;
-    nbModifies++;
-  }
-}
-
-const avis = Array.isArray(api.avis) ? api.avis : [];
-await writeFile(sortie, JSON.stringify({ source: base, genereLe: api.genereLe, parfums, boutique: api.boutique ?? {}, avis }, null, 0));
-console.log(`Données D1 (${base}) : ${nbModifies} parfum(s) modifié(s) par rapport aux fichiers, ${avis.length} avis publié(s).`);
+await writeFile(sortie,JSON.stringify({complet:api.complet===true,parfums:api.parfums,boutique:api.boutique??{},avis:api.avis??[]}));
+console.log(`Catalogue D1 : ${Object.keys(api.parfums).length} parfums.`);

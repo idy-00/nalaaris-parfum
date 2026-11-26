@@ -1,3 +1,4 @@
+import { fusionnerCatalogue } from '../lib/catalogue-donnees';
 /**
  * CATALOGUE — les parfums réels de Nal’Aaris.
  *
@@ -75,12 +76,13 @@ export interface Parfum extends ParfumImporte, Omit<ReglageParfum, 'description'
 
 /**
  * Données de la boutique saisies dans l'admin (D1), récupérées au build par scripts/donnees-d1.mjs :
- * seulement ce qui diffère des fichiers ci-dessus. Fichier absent (build local, D1 injoignable) = fichiers seuls.
+ * instantané complet du catalogue public. Les données en direct prennent ensuite le relais.
  */
 export interface DonneesD1 {
+  complet?: boolean;
   parfums: Record<
     string,
-    Partial<Omit<Parfum, 'porter' | 'dispo'>> & { porter?: Porter | null; dispo?: Dispo | null; masque?: boolean }
+    Partial<Omit<Parfum, 'porter' | 'dispo' | 'concentration'>> & { concentration?: string | null; porter?: Porter | null; dispo?: Dispo | null; masque?: boolean }
   >;
   boutique: {
     whatsapp?: string;
@@ -92,12 +94,11 @@ export interface DonneesD1 {
   };
   avis: { prenom: string; ville?: string | null; texte: string; note?: number | null; date: string }[];
 }
-export const donneesD1: DonneesD1 | undefined = Object.values(
+export let donneesD1: DonneesD1 | undefined = Object.values(
   import.meta.glob<DonneesD1>('./d1.generated.json', { eager: true, import: 'default' }),
 )[0];
 
-export const parfums: Parfum[] = catalogue
-  .filter((p) => !donneesD1?.parfums[p.slug]?.masque)
+const catalogueInitial: Parfum[] = catalogue
   .map((p) => {
     const r = REGLAGES[p.slug] ?? {};
     const parfum: Parfum = {
@@ -109,17 +110,14 @@ export const parfums: Parfum[] = catalogue
       contenances: r.contenances ?? [],
       porter: PORTER[p.slug],
     };
-    // D1 passe avant les fichiers (null = valeur retirée dans l'admin)
-    const d = donneesD1?.parfums[p.slug];
-    if (d) {
-      const { porter, dispo, ...reste } = d;
-      delete reste.masque;
-      Object.assign(parfum, reste);
-      if (porter !== undefined) parfum.porter = porter ?? undefined;
-      if (dispo !== undefined) parfum.dispo = dispo ?? undefined;
-    }
     return parfum;
   });
+
+export const parfums:Parfum[]=fusionnerCatalogue(catalogueInitial,donneesD1);
+export function appliquerCatalogue(d:DonneesD1) {
+  parfums.splice(0,parfums.length,...fusionnerCatalogue(catalogueInitial,d));
+  donneesD1=d;
+}
 
 /* ---------- Libellés et méta-données d'affichage ---------- */
 

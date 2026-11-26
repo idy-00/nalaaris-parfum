@@ -1,5 +1,15 @@
 # Raccordement Cloudflare et vérification avant production
 
+## Mise à jour du 26 novembre 2026 : gestion autonome
+
+La boutique peut créer, modifier, masquer et publier les parfums sans redéploiement. L’API publique complète est désormais autoritaire : les ajouts et retraits sont relus à l’ouverture, au retour dans l’onglet et toutes les trente secondes visibles. Les fiches `/parfum/[slug]` et `/sitemap.xml` sont servies depuis D1, y compris pour les créations postérieures au build. Les pages pré-rendues existantes conservent leur mise en page.
+
+Les photos envoyées sont stockées dans D1, sans abonnement R2. La migration additive `0003_images_boutique.sql` crée cette table ; l’API l’initialise aussi à la demande pour les installations existantes. Aucun ancien enregistrement n’est remplacé. L’export JSON version 2 contient les nouvelles photos en base64. Limite applicative : 100 Mo et 600 photos, 600 Ko par photo après réduction.
+
+Le seed préserve désormais les parfums déjà présents dans D1, y compris leurs textes et images édités. Les secrets restent dans Cloudflare, jamais dans Git. Le deploy hook et R2 ne sont plus nécessaires pour la publication quotidienne. Les détails de l’installation initiale ci-dessous sont historiques ; les références à une publication manuelle ou à R2 obligatoire ne s’appliquent plus.
+
+Validation : `npm test`, `npm run build`, `npm run check:dist`, puis `npm run test:autonomie` sur la base locale migrée et alimentée. La recette HTTP attend un accès local `admin` et le mot de passe de test configuré dans `.dev.vars` ; `NALAARIS_TEST_PASSWORD` permet de choisir une autre valeur pour le test.
+
 ## État du raccordement au 21 novembre 2026
 
 Les bases `nalaaris-prod` et `nalaaris-test` sont créées et leurs véritables identifiants sont dans `wrangler.toml`. Les deux migrations et les 81 parfums sont installés sur les deux bases. La production contient 81 parfums, deux migrations et six déclencheurs de stock. Le déploiement initial a réussi et l'API publique retourne les 81 parfums.
@@ -8,7 +18,7 @@ Le fichier `.node-version` impose Node.js 24. Les variables texte de production 
 
 Les deux secrets de connexion, `ADMIN_PASSWORD_HASH` et `ADMIN_SESSION_SECRET`, doivent être enregistrés comme **Secret** dans Cloudflare, puis un déploiement doit suivre. Ils ne sont jamais versionnés. Le formulaire reste fermé tant qu'ils manquent.
 
-R2 n'est pas activé sur ce compte : son activation demande un abonnement avec facturation possible. Aucun abonnement n'a été souscrit. Le binding optionnel `PHOTOS` est donc absent ; les visuels du catalogue existant fonctionnent, mais l'envoi de nouvelles photos nécessite cette activation.
+R2 n'est pas activé sur ce compte : son activation demande un abonnement avec facturation possible. Aucun abonnement n'a été souscrit. Le binding optionnel `PHOTOS` est donc absent ; les visuels historiques fonctionnent ; depuis le 26 novembre, les nouvelles photos utilisent D1 sans cette activation.
 
 `docs/installation-initiale.sql` permet une installation via le Studio D1 sur une **base vide uniquement**. Il contient les deux migrations, le catalogue public et les entrées de suivi Wrangler. `node scripts/seed-d1.mjs --export=<fichier.sql>` exporte le catalogue seul pour préparer une installation ; cette option n'exécute aucune requête distante. Pour une base déjà utilisée, appliquer les migrations et le seed habituels afin de préserver les données.
 

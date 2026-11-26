@@ -2,6 +2,7 @@
  * Ventes notées depuis WhatsApp. Le stock bouge dans la MÊME transaction que la vente :
  * la contrainte SQL `stock >= 0` fait échouer tout le lot si un flacon manque (rien n'est enregistré).
  */
+import { parfumActif } from '../suppression';
 import { ErreurHttp, choix, entier, json, lireJson, maintenant, ml as validerMl, slug as validerSlug, telephone, texte } from '../base';
 import { ajouterJours, csv, debutSemaine, estRuptureStock, journal, jourIso, type Ctx } from './commun';
 
@@ -87,10 +88,16 @@ async function messageRupture(c: Ctx, lignes: Ligne[]): Promise<string> {
   return 'Stock insuffisant pour cette vente.';
 }
 
-async function verifierParfums(c: Ctx, lignes: Ligne[]) {
+async function verifierParfums(c: Ctx, lignes: Ligne[], historiques: Ligne[] = []) {
   const slugs = [...new Set(lignes.map((l) => l.slug))];
-  const r = await c.env.DB.prepare(`SELECT slug FROM parfums WHERE slug IN (${slugs.map(() => '?').join(',')})`).bind(...slugs).all();
+  const r = await c.env.DB.prepare(`SELECT slug, NOT (${parfumActif()}) AS supprime FROM parfums p WHERE slug IN (${slugs.map(() => '?').join(',')})`).bind(...slugs).all();
   if (r.results.length !== slugs.length) throw new ErreurHttp(404, 'Parfum introuvable.');
+  for (const l of lignes) {
+    if (r.results.some(p => p.slug === l.slug && p.supprime)) {
+      const ancienne = historiques.find(a => a.slug === l.slug && a.ml === l.ml);
+      if (!ancienne || l.quantite > ancienne.quantite) throw new ErreurHttp(409, 'Ce parfum a été supprimé du catalogue. Il ne peut plus être ajouté à une vente.');
+    }
+  }
   for (const l of lignes) {
     const existe = await c.env.DB.prepare('SELECT 1 FROM contenances WHERE slug = ? AND ml = ?').bind(l.slug, l.ml).first();
     if (!existe) throw new ErreurHttp(422, 'Cette contenance n’existe plus. Recharge le catalogue.');
@@ -148,7 +155,7 @@ async function lireVente(c: Ctx, id: number): Promise<Record<string, unknown> & 
 export async function top(c: Ctx) {
   const r = await c.env.DB.prepare(
     `SELECT l.slug, sum(l.quantite) AS n FROM lignes_vente l JOIN ventes v ON v.id = l.vente_id
-     WHERE v.statut != 'annulee' AND v.date_vente >= ? GROUP BY l.slug ORDER BY n DESC LIMIT 5`,
+     WHERE v.statut != 'annulee' AND NOT EXISTS (SELECT 1 FROM reglages WHERE cle='parfum_supprime:' || l.slug) AND v.date_vente >= ? GROUP BY l.slug ORDER BY n DESC LIMIT 5`,
   )
     .bind(ajouterJours(new Date(), -90).toISOString())
     .all<{ slug: string; n: number }>();
@@ -234,7 +241,7 @@ export async function modifier(c: Ctx) {
   if (actuelle.statut === 'annulee') throw new ErreurHttp(409, 'Vente annulée : elle ne se modifie plus.');
   const v = validerVente(b, true);
   const nouvelles = 'lignes' in b ? validerLignes(b.lignes) : null;
-  if (nouvelles) await verifierParfums(c, nouvelles);
+  if (nouvelles) await verifierParfums(c, nouvelles, actuelle.lignes as unknown as Ligne[]);
   const anciennes = (actuelle.lignes as unknown as Ligne[]).map((l) => ({ slug: l.slug, ml: l.ml, quantite: l.quantite, prix_unitaire: l.prix_unitaire }));
   const historiques = new Map((actuelle.lignes as unknown as (Ligne & { prix_achat_unitaire: number | null })[]).map((l) => [`${l.slug}|${l.ml}`, l.prix_achat_unitaire]));
   const lignes = nouvelles ?? anciennes;

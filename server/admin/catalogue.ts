@@ -1,4 +1,5 @@
 import { ajouterImage, servirImage } from '../images';
+import { parfumActif } from '../suppression';
 /** Catalogue : liste, fiche, contenances (prix / stock), modification groupée, ajout, photos. */
 import {
   ErreurHttp,
@@ -60,7 +61,7 @@ export async function lister(c: Ctx) {
   const filtre = c.url.searchParams.get('filtre');
   const marque = c.url.searchParams.get('marque');
   const cat = c.url.searchParams.get('cat');
-  const conditions: string[] = [];
+  const conditions: string[] = [parfumActif()];
   const binds: unknown[] = [];
   if (q) {
     conditions.push("(p.marque || ' ' || COALESCE(p.nom_public, p.nom) || ' ' || p.slug) LIKE ? ESCAPE '\\'");
@@ -107,9 +108,9 @@ export async function lister(c: Ctx) {
               sum(EXISTS (SELECT 1 FROM contenances x WHERE x.slug = p.slug AND x.stock > 0 AND x.stock <= x.seuil_alerte)) AS stock_bas,
               sum(EXISTS (SELECT 1 FROM contenances x WHERE x.slug = p.slug AND (x.stock = 0 OR x.dispo_force = 'epuise'))) AS epuise,
               sum(p.masque) AS masque, sum(p.statut = 'visuel_a_creer') AS visuel
-       FROM parfums p`,
+       FROM parfums p WHERE ${parfumActif()}`,
     ),
-    c.env.DB.prepare('SELECT DISTINCT marque FROM parfums ORDER BY marque'),
+    c.env.DB.prepare(`SELECT DISTINCT marque FROM parfums p WHERE ${parfumActif()} ORDER BY marque`),
   ]);
   return json({
     parfums: r.results.map(({ images, ...p }) => ({ ...p, vignette: vignette(images), contenances: cs.get(p.slug) ?? [] })),
@@ -121,7 +122,7 @@ export async function lister(c: Ctx) {
 /** GET /parfums/:slug — fiche complète pour l'édition. */
 export async function lire(c: Ctx) {
   const s = validerSlug(c.p.slug);
-  const p = await c.env.DB.prepare('SELECT * FROM parfums WHERE slug = ?').bind(s).first<Record<string, unknown>>();
+  const p = await c.env.DB.prepare(`SELECT * FROM parfums p WHERE slug = ? AND ${parfumActif()}`).bind(s).first<Record<string, unknown>>();
   if (!p) throw new ErreurHttp(404, 'Parfum introuvable.');
   const cs = await contenancesDe(c, [s]);
   const parse = (v: unknown) => {
@@ -301,7 +302,7 @@ export async function groupe(c: Ctx) {
   const mlv = validerMl(b.ml);
   const valeurs = valeursContenance({ prix_vente: b.prix_vente });
   const noms = await c.env.DB.prepare(
-    `SELECT slug, marque || ' ' || COALESCE(nom_public, nom) AS libelle FROM parfums WHERE slug IN (${slugs.map(() => '?').join(',')})`,
+    `SELECT slug, marque || ' ' || COALESCE(nom_public, nom) AS libelle FROM parfums WHERE ${parfumActif('parfums')} AND slug IN (${slugs.map(() => '?').join(',')})`,
   )
     .bind(...slugs)
     .all<{ slug: string; libelle: string }>();
@@ -320,7 +321,8 @@ export async function creer(c: Ctx) {
   const existants = await c.env.DB.prepare("SELECT slug FROM parfums WHERE slug = ? OR slug LIKE ? || '-%'").bind(base, base).all<{slug:string}>();
   let s = base;
   for (let i=2; existants.results.some(x=>x.slug===s); i++) s = `${base}-${i}`;
-  const images = validerImages(b.images ?? []);
+  // Les onglets encore ouverts sur l'ancien formulaire envoient photo_r2 au lieu de images.
+  const images = validerImages(b.images ?? (b.photo_r2 ? [`/api/public/photos/${texte(b.photo_r2,'Photo',200,true)}`] : []));
   const styles = b.styles ?? ['doux'];
   if (!Array.isArray(styles) || styles.length < 1 || styles.length > 3) throw new ErreurHttp(422, 'Choisis une à trois ambiances.');
   await c.env.DB.batch([c.env.DB.prepare(`INSERT INTO parfums
@@ -408,4 +410,20 @@ export async function visuelsCsv(c: Ctx) {
       p.cree_le.slice(0, 10),
     ]),
   );
+}
+
+/** DELETE /parfums/:slug — retrait conservant les ventes et le stock historique. */
+export async function supprimer(c: Ctx) {
+  const s = validerSlug(c.p.slug);
+  const libelle = await libelleParfum(c, s);
+  const date = maintenant();
+  await c.env.DB.batch([
+    c.env.DB.prepare(`INSERT INTO journal (qui,action,entite,cle,libelle)
+      SELECT ?, 'supprimer', 'parfum', ?, ? WHERE NOT EXISTS (SELECT 1 FROM reglages WHERE cle=?)`)
+      .bind(c.moi.prenom,s,libelle,'parfum_supprime:'+s),
+    c.env.DB.prepare('INSERT INTO reglages (cle,valeur,maj_le,maj_par) VALUES (?,?,?,?) ON CONFLICT(cle) DO NOTHING')
+      .bind('parfum_supprime:'+s,JSON.stringify({supprimeLe:date}),date,c.moi.prenom),
+    c.env.DB.prepare("UPDATE parfums SET masque=1,images='[]',maj_le=?,maj_par=? WHERE slug=?").bind(date,c.moi.prenom,s),
+  ]);
+  return json({ok:true});
 }

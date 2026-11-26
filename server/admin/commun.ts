@@ -1,4 +1,5 @@
 import { ErreurHttp, type Env, type Utilisateur } from '../base';
+import { parfumActif } from '../suppression';
 
 export interface Ctx {
   req: Request;
@@ -48,7 +49,7 @@ export const journalChamp = (
 
 /** « Afnan 9pm » — nom affiché dans le journal et les listes. */
 export async function libelleParfum(c: Ctx, slug: string): Promise<string> {
-  const r = await c.env.DB.prepare('SELECT marque, COALESCE(nom_public, nom) AS nom FROM parfums WHERE slug = ?')
+  const r = await c.env.DB.prepare(`SELECT marque, COALESCE(nom_public, nom) AS nom FROM parfums p WHERE slug = ? AND ${parfumActif()}`)
     .bind(slug)
     .first<{ marque: string; nom: string }>();
   if (!r) throw new ErreurHttp(404, 'Parfum introuvable.');

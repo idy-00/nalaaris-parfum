@@ -1,7 +1,8 @@
 import type { Env } from '../server/base';
+import { parfumActif } from '../server/suppression';
 export const onRequestGet:PagesFunction<Env>=async({request,env})=>{
  try{
-  const r=await env.DB.prepare("SELECT slug FROM parfums WHERE masque=0 AND statut='publie' ORDER BY slug").all<{slug:string}>();
+  const r=await env.DB.prepare(`SELECT slug FROM parfums p WHERE masque=0 AND statut='publie' AND ${parfumActif()} ORDER BY slug`).all<{slug:string}>();
   const origine=(env as Env&{VITE_SITE_URL?:string}).VITE_SITE_URL??new URL(request.url).origin;
   const xml=(v:string)=>v.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]!));
   const urls=['/','/catalogue','/la-maison','/commander',...r.results.map(p=>`/parfum/${encodeURIComponent(p.slug)}`)];

@@ -62,3 +62,7 @@ Télécharger régulièrement la sauvegarde JSON dans **Plus** : elle contient l
 - Stock insuffisant : vérifier le format et la quantité.
 - Photo refusée : utiliser JPEG, PNG ou WebP de moins de 15 Mo avant réduction.
 - Appareil partagé : **Plus → Se déconnecter** après utilisation.
+
+## Supprimer un parfum
+
+Ouvrir sa fiche, puis **Supprimer le parfum** et **Confirmer la suppression**. Le parfum disparaît du catalogue de gestion et du site. Les ventes, les montants et les mouvements de stock déjà enregistrés sont conservés. Pour une simple indisponibilité temporaire, désactiver plutôt **Visible sur le site**.

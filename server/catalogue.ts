@@ -2,6 +2,7 @@
  * Données publiques du catalogue, calculées depuis D1. Jamais : quantité en stock, prix d'achat, ventes, clientes.
  */
 import type { Env } from './base';
+import { parfumActif } from './suppression';
 
 export type Dispo = 'disponible' | 'limite' | 'epuise' | 'sur_commande';
 
@@ -65,7 +66,7 @@ export async function cataloguePublic(env: Env, complet: boolean) {
   const [parfums, contenances] = await env.DB.batch([
     env.DB.prepare(
       `SELECT slug, nom, marque, concentration, categorie, images, notes, ingredients, styles_import, description_import, nom_public, styles, description, porter, nouveau, coup_de_coeur, masque, dispo_force
-       FROM parfums WHERE statut = 'publie' AND masque = 0 ORDER BY ordre, slug`,
+       FROM parfums p WHERE statut = 'publie' AND masque = 0 AND ${parfumActif()} ORDER BY ordre, slug`,
     ),
     env.DB.prepare(
       `SELECT c.slug, c.ml, c.prix_vente, c.stock, c.seuil_alerte, c.dispo_force

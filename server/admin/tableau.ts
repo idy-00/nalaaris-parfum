@@ -1,5 +1,6 @@
 /** GET /accueil — tous les chiffres du tableau de bord en un seul appel (une seule transaction de lecture). */
 import { json } from '../base';
+import { parfumActif } from '../suppression';
 import { ajouterJours, debutSemaine, type Ctx } from './commun';
 
 export async function accueil(c: Ctx) {
@@ -33,7 +34,7 @@ export async function accueil(c: Ctx) {
     db.prepare(
       `SELECT count(*) AS total,
               sum(EXISTS (SELECT 1 FROM contenances x WHERE x.slug = p.slug AND x.prix_vente IS NOT NULL)) AS avec_prix
-       FROM parfums p WHERE p.statut = 'publie'`,
+       FROM parfums p WHERE p.statut = 'publie' AND ${parfumActif()}`,
     ),
     db.prepare(
       `SELECT c.slug, c.ml, c.stock, c.seuil_alerte, p.marque || ' ' || COALESCE(p.nom_public, p.nom) AS libelle
@@ -47,7 +48,7 @@ export async function accueil(c: Ctx) {
     db.prepare(
       `SELECT a.id, a.slug, a.ml, a.prenom, a.telephone, a.cree_le, p.marque || ' ' || COALESCE(p.nom_public, p.nom) AS libelle
        FROM alertes_stock a JOIN parfums p ON p.slug = a.slug
-       WHERE a.prevenue_le IS NULL AND EXISTS (
+       WHERE a.prevenue_le IS NULL AND ${parfumActif()} AND EXISTS (
          SELECT 1 FROM contenances c WHERE c.slug = a.slug AND (a.ml IS NULL OR c.ml = a.ml)
            AND (c.stock IS NULL OR c.stock > 0) AND (c.dispo_force IS NULL OR c.dispo_force != 'epuise'))
        ORDER BY a.cree_le LIMIT 20`,
@@ -57,7 +58,7 @@ export async function accueil(c: Ctx) {
               (SELECT sum(stock) FROM contenances c WHERE c.slug = e.slug) AS stock,
               (SELECT count(*) FROM contenances c WHERE c.slug = e.slug AND c.stock IS NOT NULL) AS suivi
        FROM evenements e JOIN parfums p ON p.slug = e.slug
-       WHERE e.type = 'clic_commander' AND e.cree_le >= ? GROUP BY e.slug ORDER BY clics DESC LIMIT 5`,
+       WHERE ${parfumActif()} AND e.type = 'clic_commander' AND e.cree_le >= ? GROUP BY e.slug ORDER BY clics DESC LIMIT 5`,
     ).bind(j30),
     db.prepare(
       `SELECT texte, count(*) AS n, max(cree_le) AS derniere FROM evenements

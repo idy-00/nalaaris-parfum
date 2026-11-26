@@ -13,6 +13,7 @@ const ROUTES: [string, string, Handler][] = [
   ['POST', 'parfums/groupe', cat.groupe],
   ['GET', 'parfums/:slug', cat.lire],
   ['PATCH', 'parfums/:slug', cat.modifier],
+  ['DELETE', 'parfums/:slug', cat.supprimer],
   ['PUT', 'parfums/:slug/contenances/:ml', cat.ecrireContenance],
   ['DELETE', 'parfums/:slug/contenances/:ml', cat.supprimerContenance],
   ['POST', 'photos', cat.envoyerPhoto],

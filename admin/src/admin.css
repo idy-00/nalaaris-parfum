@@ -195,3 +195,6 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* Action visible dès l'ouverture, au-dessus du long formulaire, y compris sur mobile. */
+.admin-publication { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 60; }

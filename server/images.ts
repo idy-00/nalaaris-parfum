@@ -1,4 +1,5 @@
 import { ErreurHttp, enSlug, json, type Env } from './base';
+import { parfumActif } from './suppression';
 export const CLE_IMAGE = /^parfums\/[a-z0-9-]+\/[0-9]+\.(jpg|png|webp)$/;
 /** Table additive, initialisée aussi à la demande pour les installations existantes. */
 export async function preparerImages(db:D1Database) {
@@ -24,7 +25,7 @@ export async function ajouterImage(request:Request,env:Env) {
 export async function servirImage(cle:string,env:Env,publique:boolean) {
   if(!CLE_IMAGE.test(cle))throw new ErreurHttp(404,'Photo introuvable.');
   if(publique){
-    const liee=await env.DB.prepare("SELECT 1 FROM parfums p,json_each(p.images) i WHERE p.masque=0 AND p.statut='publie' AND i.value=? LIMIT 1").bind(`/api/public/photos/${cle}`).first();
+    const liee=await env.DB.prepare(`SELECT 1 FROM parfums p,json_each(p.images) i WHERE p.masque=0 AND p.statut='publie' AND ${parfumActif()} AND i.value=? LIMIT 1`).bind(`/api/public/photos/${cle}`).first();
     if(!liee)throw new ErreurHttp(404,'Photo introuvable.');
   }
   await preparerImages(env.DB);

@@ -41,6 +41,11 @@ export function EditeurParfum({initial,onSave}:{initial?:ParfumFiche;onSave:(bod
     try{await onSave({...f,contenances:formatsModifies(f.contenances,initial?.contenances),contenances_initiales:initial?.contenances.map(c=>c.ml)??[],nom_public:null,dispo_force:f.dispo_force||null,porter:f.avecConseil?f.porter:null,notes:f.pyramide?{tete:notes(f.tete),coeur:notes(f.coeur),fond:notes(f.fond)}:{bouquet:notes(f.bouquet)},ingredients:notes(f.ingredients)});}
     catch(e){setErreur((e as Error).message);}finally{setEnvoi(false);}
   }}>
+    <div className="admin-publication rounded-xl border border-encre/10 bg-fond p-3 shadow-sm">
+      <button type="submit" disabled={envoi||photos||!f.styles.length} className="btn btn-rose w-full sm:w-auto">{envoi?'Enregistrement…':f.masque?'Enregistrer le brouillon':initial?'Enregistrer et publier':'Publier le parfum'}</button>
+      <p className="mt-2 text-sm text-sourdine">Les photos et les changements de cette fiche sont conservés après cet enregistrement.</p>
+      {erreur&&<p role="alert" className="mt-2 text-danger">{erreur}</p>}
+    </div>
     <Section titre="Le parfum"><div className="carte grid gap-4 p-4">
       <div className="grid gap-4 sm:grid-cols-2">{champ('marque','Marque',false,true)}{champ('nom','Nom',false,true)}</div>
       {champ('concentration','Concentration (facultative)')}
@@ -50,6 +55,7 @@ export function EditeurParfum({initial,onSave}:{initial?:ParfumFiche;onSave:(bod
     </div></Section>
     <Section titre="Photos"><div className="carte grid gap-4 p-4">
       <p className="text-sm text-sourdine">Jusqu’à six photos. La première apparaît dans le catalogue. Elles sont réduites automatiquement avant l’envoi.</p>
+      {!f.images.length&&<p className="text-sm text-sourdine">Aucune photo enregistrée. Ajoute une photo, puis enregistre la fiche avec le bouton en haut.</p>}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{f.images.map((src,i)=><div className="min-w-0" key={src}>
         <img className="aspect-[4/5] w-full rounded-xl bg-fond-3 object-contain" src={src.startsWith('/api/public/photos/')?src.replace('/api/public/photos/','/api/admin/photos/'):src} alt={`Photo ${i+1}`}/>
         <div className="mt-2 flex flex-wrap gap-2">{i>0?<button type="button" className="min-h-[44px] text-sm text-rose-doux" onClick={()=>setF({...f,images:[src,...f.images.filter(x=>x!==src)]})}>Photo principale</button>:<span className="py-2 text-sm font-semibold">Principale</span>}<button type="button" className="min-h-[44px] text-sm text-danger" onClick={()=>setF({...f,images:f.images.filter(x=>x!==src)})}>Retirer</button></div>
@@ -92,7 +98,7 @@ export function EditeurParfum({initial,onSave}:{initial?:ParfumFiche;onSave:(bod
       <label className="grid gap-1"><span className="label">Disponibilité générale</span><select className="champ" value={f.dispo_force} onChange={e=>setF({...f,dispo_force:e.target.value as typeof f.dispo_force})}><option value="">Selon les formats</option><option value="disponible">Disponible</option><option value="limite">Stock limité</option><option value="sur_commande">Sur commande</option><option value="epuise">Épuisé</option></select></label>
       <p className="text-sm text-sourdine">{f.masque?'Ce parfum restera invisible dans le catalogue public.':'La fiche sera publiée automatiquement après l’enregistrement.'}</p>
     </div></Section>
-    {erreur&&<p role="alert" className="mt-5 rounded-xl bg-danger/10 p-4 text-danger">{erreur}</p>}
-    <button type="submit" disabled={envoi||photos||!f.styles.length} className="admin-actions-formulaire btn btn-rose sticky bottom-[calc(76px+env(safe-area-inset-bottom))] mt-6 w-full shadow-lg md:bottom-4">{envoi?'Enregistrement…':f.masque?'Enregistrer le brouillon':initial?'Enregistrer et publier':'Publier le parfum'}</button>
+
+
   </form>;
 }

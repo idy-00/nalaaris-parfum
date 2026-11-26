@@ -30,7 +30,7 @@ try{
  const photo=await readFile('public/parfums/afnan-9pm/360.webp');
  const upload=await requete('/api/admin/photos?slug=validation-http',photo,'POST',true);assert.equal(upload.status,201,await upload.clone().text());const media=await upload.json();
  assert.equal((await requete(media.url)).status,404);
- const corps={marque:'TEST LOCAL',nom:`Recette ${Date.now()}`,categorie:'unisexe',description:'Création complète vérifiée sur D1 local.',styles:['boise','doux'],images:[media.url],notes:{bouquet:['Bois','Musc']},masque:true,contenances:[{ml:75,prix_vente:18000,stock:4,prix_achat:6000,seuil_alerte:1,dispo_force:null}]};
+ const corps={marque:'TEST LOCAL',nom:`Recette ${Date.now()}`,categorie:'unisexe',description:'Création complète vérifiée sur D1 local.',styles:['boise','doux'],photo_r2:media.cle,notes:{bouquet:['Bois','Musc']},masque:true,contenances:[{ml:75,prix_vente:18000,stock:4,prix_achat:6000,seuil_alerte:1,dispo_force:null}]};
  const creation=await requete('/api/admin/parfums',corps);assert.equal(creation.status,201,await creation.clone().text());const {slug}=await creation.json();
  assert.equal((await requete(`/parfum/${slug}`)).status,404);
  const publication=await requete(`/api/admin/parfums/${slug}`,{masque:false},'PATCH');assert.equal(publication.status,200,await publication.clone().text());
@@ -41,6 +41,10 @@ try{
  const apres=await(await requete('/api/public/catalogue?complet=1')).json();assert.equal(apres.parfums[slug].marque,'MARQUE MODIFIÉE');assert.equal(apres.parfums[slug].contenances[0].ml,30);
  assert.equal((await requete(media.url)).status,404);
  assert.equal((await requete(`/api/admin/parfums/${slug}`,{masque:true},'PATCH')).status,200);
+ assert.equal((await requete(`/parfum/${slug}`)).status,404);
+ const suppression=await requete(`/api/admin/parfums/${slug}`,undefined,'DELETE');assert.equal(suppression.status,200,await suppression.clone().text());
+ assert.equal((await requete(`/api/admin/parfums/${slug}`)).status,404);
+ const listeFinale=await(await requete('/api/admin/parfums')).json();assert.ok(!listeFinale.parfums.some(p=>p.slug===slug));
  assert.equal((await requete(`/parfum/${slug}`)).status,404);
  console.log('Recette HTTP OK : authentification, photo sans R2, brouillon privé, création, publication, lien direct, prix/stock, modifications et masquage sans redéploiement.');
 }finally{serveur.kill('SIGTERM');}

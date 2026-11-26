@@ -30,3 +30,10 @@
 
 /brand/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=604800
+
+# L'administration doit relire son HTML après chaque déploiement.
+/admin
+  Cache-Control: no-store
+
+/admin/*
+  Cache-Control: no-store
